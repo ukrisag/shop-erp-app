@@ -1,0 +1,508 @@
+<div class="delivery-list-container p-6">
+  <!-- Header Section -->
+  <div class="header-section mb-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-start gap-4">
+        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">การจัดส่งสินค้า</h1>
+          <p class="text-gray-600">จัดการข้อมูลการจัดส่งสินค้าทั้งหมด</p>
+        </div>
+      </div>
+      <button (click)="openAddModal()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        สร้างการจัดส่ง
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <!-- Scheduled -->
+    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-blue-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">กำหนดการ</p>
+          <p class="text-2xl font-bold text-gray-900">{{ deliveries().filter(d => d.status === 'scheduled').length }}</p>
+        </div>
+        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+          <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- In Transit -->
+    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-yellow-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">กำลังจัดส่ง</p>
+          <p class="text-2xl font-bold text-gray-900">{{ deliveries().filter(d => d.status === 'in_transit').length }}</p>
+        </div>
+        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+          <svg class="w-7 h-7 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delivered -->
+    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-green-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">จัดส่งสำเร็จ</p>
+          <p class="text-2xl font-bold text-gray-900">{{ deliveries().filter(d => d.status === 'delivered').length }}</p>
+        </div>
+        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+          <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Failed/Cancelled -->
+    <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-red-500">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">ไม่สำเร็จ/ยกเลิก</p>
+          <p class="text-2xl font-bold text-gray-900">{{ deliveries().filter(d => d.status === 'failed' || d.status === 'cancelled').length }}</p>
+        </div>
+        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+          <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section bg-white rounded-lg shadow-sm p-4 mb-6">
+    <!-- Search -->
+    <div class="mb-4">
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input
+          type="text"
+          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [value]="searchTerm()"
+          (input)="onSearchChange($any($event.target).value)"
+          placeholder="ค้นหาเลขที่, ผู้รับ, ที่อยู่..."
+        />
+      </div>
+    </div>
+
+    <!-- Filter Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Branch Filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">สาขา</label>
+        <select
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [value]="selectedBranch()"
+          (change)="onBranchFilterChange($any($event.target).value)">
+          <option value="">ทั้งหมด</option>
+          @for (branch of branches(); track branch.id) {
+            <option [value]="branch.id">{{ branch.name }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Status Filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">สถานะ</label>
+        <select
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          [value]="selectedStatus()"
+          (change)="onStatusFilterChange($any($event.target).value)">
+          <option value="">ทั้งหมด</option>
+          @for (status of statuses; track status.value) {
+            <option [value]="status.value">{{ status.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+      <p class="mt-4 text-gray-600">กำลังโหลดข้อมูล...</p>
+    </div>
+  } @else {
+    <!-- Desktop Table View -->
+    <div class="hidden md:block bg-white rounded-lg shadow-sm overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">เลขที่การจัดส่ง</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">วันที่กำหนดส่ง</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">สาขา</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ผู้รับ</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">พนักงานขับรถ</th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">สถานะ</th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">จัดการ</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          @if (getPaginated().length === 0) {
+            <tr>
+              <td colspan="7" class="px-6 py-12 text-center">
+                <div class="flex flex-col items-center">
+                  <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                  </svg>
+                  <p class="text-gray-500 font-medium">ไม่พบข้อมูลการจัดส่ง</p>
+                </div>
+              </td>
+            </tr>
+          }
+          @for (delivery of getPaginated(); track delivery.id) {
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="font-medium text-blue-600">{{ delivery.deliveryNumber }}</div>
+                @if (delivery.ecommerceOrderNumber || delivery.erpSalesOrderNumber) {
+                  <div class="text-xs text-gray-500">
+                    {{ delivery.ecommerceOrderNumber || delivery.erpSalesOrderNumber }}
+                  </div>
+                }
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <div>{{ formatDate(delivery.scheduledDate) }}</div>
+                @if (delivery.actualDeliveryDate) {
+                  <div class="text-xs text-green-600">ส่งจริง: {{ formatDate(delivery.actualDeliveryDate) }}</div>
+                }
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                {{ delivery.branchName }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <div>{{ delivery.contactPerson || '-' }}</div>
+                @if (delivery.contactPhone) {
+                  <div class="text-xs text-gray-500">{{ delivery.contactPhone }}</div>
+                }
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                @if (delivery.driverName) {
+                  <div>{{ delivery.driverName }}</div>
+                  @if (delivery.vehicleNumber) {
+                    <div class="text-xs text-gray-500">{{ delivery.vehicleNumber }}</div>
+                  }
+                } @else {
+                  -
+                }
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <span class="px-2 py-1 text-xs font-medium rounded-full"
+                  [class.bg-blue-100]="delivery.status === 'scheduled'"
+                  [class.text-blue-800]="delivery.status === 'scheduled'"
+                  [class.bg-yellow-100]="delivery.status === 'in_transit'"
+                  [class.text-yellow-800]="delivery.status === 'in_transit'"
+                  [class.bg-green-100]="delivery.status === 'delivered'"
+                  [class.text-green-800]="delivery.status === 'delivered'"
+                  [class.bg-red-100]="delivery.status === 'failed'"
+                  [class.text-red-800]="delivery.status === 'failed'"
+                  [class.bg-gray-100]="delivery.status === 'cancelled'"
+                  [class.text-gray-800]="delivery.status === 'cancelled'">
+                  {{ getStatusLabel(delivery.status) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                <button
+                  (click)="openEditModal(delivery)"
+                  class="text-blue-600 hover:text-blue-900 mr-3">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                </button>
+                <button
+                  (click)="openDeleteModal(delivery)"
+                  class="text-red-600 hover:text-red-900">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="md:hidden space-y-4">
+      @if (getPaginated().length === 0) {
+        <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+          </svg>
+          <p class="mt-2 text-gray-500">ไม่พบข้อมูลการจัดส่ง</p>
+        </div>
+      }
+      @for (delivery of getPaginated(); track delivery.id) {
+        <div class="bg-white rounded-lg shadow-sm p-4">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <h3 class="font-semibold text-blue-600">{{ delivery.deliveryNumber }}</h3>
+              @if (delivery.ecommerceOrderNumber || delivery.erpSalesOrderNumber) {
+                <p class="text-xs text-gray-500 mt-1">{{ delivery.ecommerceOrderNumber || delivery.erpSalesOrderNumber }}</p>
+              }
+            </div>
+            <span class="px-2 py-1 text-xs font-medium rounded-full"
+              [class.bg-blue-100]="delivery.status === 'scheduled'"
+              [class.text-blue-800]="delivery.status === 'scheduled'"
+              [class.bg-yellow-100]="delivery.status === 'in_transit'"
+              [class.text-yellow-800]="delivery.status === 'in_transit'"
+              [class.bg-green-100]="delivery.status === 'delivered'"
+              [class.text-green-800]="delivery.status === 'delivered'"
+              [class.bg-red-100]="delivery.status === 'failed'"
+              [class.text-red-800]="delivery.status === 'failed'"
+              [class.bg-gray-100]="delivery.status === 'cancelled'"
+              [class.text-gray-800]="delivery.status === 'cancelled'">
+              {{ getStatusLabel(delivery.status) }}
+            </span>
+          </div>
+
+          <div class="space-y-2 mb-4">
+            <div class="flex items-center text-sm text-gray-600">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              {{ formatDate(delivery.scheduledDate) }}
+            </div>
+            <div class="flex items-center text-sm text-gray-600">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+              {{ delivery.branchName }}
+            </div>
+            @if (delivery.contactPerson) {
+              <div class="flex items-center text-sm text-gray-600">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                {{ delivery.contactPerson }}
+                @if (delivery.contactPhone) {
+                  <span class="ml-1">({{ delivery.contactPhone }})</span>
+                }
+              </div>
+            }
+            @if (delivery.driverName) {
+              <div class="flex items-center text-sm text-gray-600">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
+                </svg>
+                {{ delivery.driverName }}
+                @if (delivery.vehicleNumber) {
+                  <span class="ml-1">({{ delivery.vehicleNumber }})</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="flex gap-2 pt-3 border-t border-gray-200">
+            <button
+              (click)="openEditModal(delivery)"
+              class="flex-1 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              แก้ไข
+            </button>
+            <button
+              (click)="openDeleteModal(delivery)"
+              class="flex-1 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              ลบ
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (getTotalPages() > 1) {
+      <div class="mt-6 flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow-sm">
+        <div class="text-sm text-gray-700">
+          แสดง {{ (currentPage() - 1) * itemsPerPage() + 1 }} - {{ Math.min(currentPage() * itemsPerPage(), filteredDeliveries().length) }}
+          จากทั้งหมด {{ filteredDeliveries().length }} รายการ
+        </div>
+        <div class="flex gap-2">
+          <button
+            (click)="previousPage()"
+            [disabled]="currentPage() === 1"
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+            ก่อนหน้า
+          </button>
+          <button
+            (click)="nextPage()"
+            [disabled]="currentPage() === getTotalPages()"
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+            ถัดไป
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>
+
+<!-- Add/Edit Modal -->
+@if (showModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900">
+          {{ isEditMode() ? 'แก้ไขการจัดส่ง' : 'สร้างการจัดส่งใหม่' }}
+        </h2>
+        <button (click)="closeModals()" class="text-gray-400 hover:text-gray-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-6">
+        <form (ngSubmit)="save()">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Branch -->
+            @if (!isEditMode()) {
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">สาขา <span class="text-red-500">*</span></label>
+                <select [(ngModel)]="deliveryForm.branchId" name="branchId" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option [value]="null">เลือกสาขา</option>
+                  @for (branch of branches(); track branch.id) {
+                    <option [value]="branch.id">{{ branch.name }}</option>
+                  }
+                </select>
+              </div>
+            }
+
+            <!-- Scheduled Date -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">วันที่กำหนดส่ง <span class="text-red-500">*</span></label>
+              <input type="date" [(ngModel)]="deliveryForm.scheduledDate" name="scheduledDate" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Actual Delivery Date -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">วันที่ส่งจริง</label>
+              <input type="date" [(ngModel)]="deliveryForm.actualDeliveryDate" name="actualDeliveryDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Driver -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">พนักงานขับรถ</label>
+              <select [(ngModel)]="deliveryForm.driverId" name="driverId" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option [value]="null">เลือกพนักงาน</option>
+                @for (driver of drivers(); track driver.id) {
+                  <option [value]="driver.id">{{ driver.firstName }} {{ driver.lastName }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Vehicle Number -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">ทะเบียนรถ</label>
+              <input type="text" [(ngModel)]="deliveryForm.vehicleNumber" name="vehicleNumber" placeholder="กข-1234" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Delivery Address -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2">ที่อยู่จัดส่ง <span class="text-red-500">*</span></label>
+              <textarea [(ngModel)]="deliveryForm.deliveryAddress" name="deliveryAddress" required rows="3" placeholder="กรอกที่อยู่สำหรับจัดส่งสินค้า" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+            </div>
+
+            <!-- Contact Person -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">ผู้ติดต่อ</label>
+              <input type="text" [(ngModel)]="deliveryForm.contactPerson" name="contactPerson" placeholder="ชื่อผู้รับสินค้า" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Contact Phone -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">เบอร์โทร</label>
+              <input type="tel" [(ngModel)]="deliveryForm.contactPhone" name="contactPhone" placeholder="08X-XXX-XXXX" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Status (Edit mode only) -->
+            @if (isEditMode()) {
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">สถานะ</label>
+                <select [(ngModel)]="deliveryForm.status" name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  @for (status of statuses; track status.value) {
+                    <option [value]="status.value">{{ status.label }}</option>
+                  }
+                </select>
+              </div>
+            }
+
+            <!-- Notes -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2">หมายเหตุ</label>
+              <textarea [(ngModel)]="deliveryForm.notes" name="notes" rows="3" placeholder="บันทึกข้อมูลเพิ่มเติม..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="flex items-center justify-end gap-3 mt-6">
+            <button type="button" (click)="closeModals()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium">
+              ยกเลิก
+            </button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+              {{ isEditMode() ? 'บันทึก' : 'สร้างการจัดส่ง' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <div class="p-6">
+        <div class="flex flex-col items-center text-center">
+          <!-- Icon -->
+          <div class="w-12 h-12 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
+
+          <!-- Content -->
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">ยืนยันการลบการจัดส่ง</h3>
+          <p class="text-sm text-gray-600 mb-6">
+            คุณแน่ใจหรือไม่ว่าต้องการลบการจัดส่ง <span class="font-semibold">{{ selectedDelivery()?.deliveryNumber }}</span>?<br>
+            การดำเนินการนี้ไม่สามารถย้อนกลับได้
+          </p>
+
+          <!-- Actions -->
+          <div class="flex gap-3 w-full">
+            <button type="button" (click)="closeModals()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium">
+              ยกเลิก
+            </button>
+            <button type="button" (click)="delete()" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium">
+              ลบ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

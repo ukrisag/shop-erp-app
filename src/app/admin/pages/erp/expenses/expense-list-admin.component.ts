@@ -1,0 +1,373 @@
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ExpensesService, ExpenseCategoriesService, BranchesService } from '../../../../services/openapi-client';
+import {
+  ExpenseDto,
+  CreateExpenseDto,
+  UpdateExpenseDto,
+  ExpenseCategoryDto,
+  BranchDto
+} from '../../../../services/openapi-client/model/models';
+import { NotificationService } from '../../../../services/notification.service';
+
+@Component({
+  selector: 'app-expense-list-admin',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './expense-list-admin.component.html',
+  styleUrls: ['./expense-list-admin.component.css']
+})
+export class ExpenseListAdminComponent implements OnInit {
+  expenses = signal<ExpenseDto[]>([]);
+  filteredExpenses = signal<ExpenseDto[]>([]);
+  categories = signal<ExpenseCategoryDto[]>([]);
+  branches = signal<BranchDto[]>([]);
+  loading = signal(true);
+
+  // Active tab
+  activeTab = signal<'expenses' | 'categories'>('expenses');
+
+  // Filters
+  searchTerm = signal('');
+  selectedBranch = signal<string>('');
+  selectedCategory = signal<string>('');
+  selectedMonth = signal<string>('');
+  selectedPaymentMethod = signal<string>('');
+
+  // Modals
+  showExpenseModal = signal(false);
+  showDeleteModal = signal(false);
+  isEditMode = signal(false);
+  selectedExpense = signal<ExpenseDto | null>(null);
+
+  // Forms
+  expenseForm: any = {
+    branchId: null,
+    categoryId: null,
+    amount: 0,
+    expenseDate: '',
+    description: '',
+    reference: '',
+    paymentMethod: 'cash',
+    userId: null,
+    receiptUrl: ''
+  };
+
+  // Pagination
+  currentPage = signal(1);
+  itemsPerPage = signal(10);
+
+  paymentMethods = [
+    { value: 'cash', label: 'เงินสด' },
+    { value: 'transfer', label: 'โอนเงิน' },
+    { value: 'credit_card', label: 'บัตรเครดิต' },
+    { value: 'check', label: 'เช็ค' }
+  ];
+
+  Math = Math;
+
+  constructor(
+    private expensesService: ExpensesService,
+    private categoriesService: ExpenseCategoriesService,
+    private branchesService: BranchesService,
+    private notificationService: NotificationService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadExpenses();
+    this.loadCategories();
+    this.loadBranches();
+    this.setCurrentMonth();
+  }
+
+  setCurrentMonth(): void {
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    this.selectedMonth.set(`${year}-${month}`);
+  }
+
+  loadExpenses(): void {
+    this.loading.set(true);
+    this.expensesService.apiErpExpensesGet().subscribe({
+      next: (response: any) => {
+        if (response.success && response.data) {
+          this.expenses.set(response.data);
+          this.applyFilters();
+        }
+        this.loading.set(false);
+      },
+      error: (error: any) => {
+        console.error('Error loading expenses:', error);
+        this.loading.set(false);
+      }
+    });
+  }
+
+  loadCategories(): void {
+    this.categoriesService.apiErpExpenseCategoriesGet().subscribe({
+      next: (response: any) => {
+        if (response.success && response.data) {
+          this.categories.set(response.data);
+        }
+      },
+      error: (error: any) => {
+        console.error('Error loading categories:', error);
+      }
+    });
+  }
+
+  loadBranches(): void {
+    this.branchesService.apiErpBranchesGet().subscribe({
+      next: (response: any) => {
+        if (response.success && response.data) {
+          this.branches.set(response.data);
+        }
+      },
+      error: (error: any) => {
+        console.error('Error loading branches:', error);
+      }
+    });
+  }
+
+  applyFilters(): void {
+    let filtered = [...this.expenses()];
+
+    // Search filter
+    const search = this.searchTerm().toLowerCase();
+    if (search) {
+      filtered = filtered.filter(exp =>
+        exp.description?.toLowerCase().includes(search) ||
+        exp.reference?.toLowerCase().includes(search) ||
+        exp.categoryName?.toLowerCase().includes(search)
+      );
+    }
+
+    // Branch filter
+    if (this.selectedBranch()) {
+      filtered = filtered.filter(exp => exp.branchId?.toString() === this.selectedBranch());
+    }
+
+    // Category filter
+    if (this.selectedCategory()) {
+      filtered = filtered.filter(exp => exp.categoryId?.toString() === this.selectedCategory());
+    }
+
+    // Month filter
+    if (this.selectedMonth()) {
+      const [year, month] = this.selectedMonth().split('-');
+      filtered = filtered.filter(exp => {
+        if (!exp.expenseDate) return false;
+        const expDate = new Date(exp.expenseDate);
+        return expDate.getFullYear().toString() === year &&
+               (expDate.getMonth() + 1).toString().padStart(2, '0') === month;
+      });
+    }
+
+    // Payment method filter
+    if (this.selectedPaymentMethod()) {
+      filtered = filtered.filter(exp => exp.paymentMethod === this.selectedPaymentMethod());
+    }
+
+    this.filteredExpenses.set(filtered);
+    this.currentPage.set(1);
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm.set(value);
+    this.applyFilters();
+  }
+
+  onBranchFilterChange(value: string): void {
+    this.selectedBranch.set(value);
+    this.applyFilters();
+  }
+
+  onCategoryFilterChange(value: string): void {
+    this.selectedCategory.set(value);
+    this.applyFilters();
+  }
+
+  onMonthFilterChange(value: string): void {
+    this.selectedMonth.set(value);
+    this.applyFilters();
+  }
+
+  onPaymentMethodFilterChange(value: string): void {
+    this.selectedPaymentMethod.set(value);
+    this.applyFilters();
+  }
+
+  switchTab(tab: 'expenses' | 'categories'): void {
+    this.activeTab.set(tab);
+  }
+
+  // Expense CRUD
+  openAddExpenseModal(): void {
+    this.isEditMode.set(false);
+    this.selectedExpense.set(null);
+    const today = new Date().toISOString().split('T')[0];
+    this.expenseForm = {
+      branchId: null,
+      categoryId: null,
+      amount: 0,
+      expenseDate: today,
+      description: '',
+      reference: '',
+      paymentMethod: 'cash',
+      userId: null,
+      receiptUrl: ''
+    };
+    this.showExpenseModal.set(true);
+  }
+
+  openEditExpenseModal(expense: ExpenseDto): void {
+    this.isEditMode.set(true);
+    this.selectedExpense.set(expense);
+    this.expenseForm = {
+      branchId: expense.branchId,
+      categoryId: expense.categoryId,
+      amount: expense.amount,
+      expenseDate: expense.expenseDate?.split('T')[0],
+      description: expense.description || '',
+      reference: expense.reference || '',
+      paymentMethod: expense.paymentMethod || 'cash',
+      userId: expense.userId,
+      receiptUrl: expense.receiptUrl || ''
+    };
+    this.showExpenseModal.set(true);
+  }
+
+  openDeleteExpenseModal(expense: ExpenseDto): void {
+    this.selectedExpense.set(expense);
+    this.showDeleteModal.set(true);
+  }
+
+  closeModals(): void {
+    this.showExpenseModal.set(false);
+    this.showDeleteModal.set(false);
+  }
+
+  saveExpense(): void {
+    if (this.isEditMode()) {
+      this.updateExpense();
+    } else {
+      this.createExpense();
+    }
+  }
+
+  createExpense(): void {
+    const dto: CreateExpenseDto = {
+      branchId: this.expenseForm.branchId,
+      categoryId: this.expenseForm.categoryId,
+      amount: this.expenseForm.amount,
+      expenseDate: this.expenseForm.expenseDate,
+      description: this.expenseForm.description,
+      reference: this.expenseForm.reference,
+      paymentMethod: this.expenseForm.paymentMethod,
+      userId: this.expenseForm.userId,
+      receiptUrl: this.expenseForm.receiptUrl?.trim() || null
+    };
+
+    this.expensesService.apiErpExpensesPost(dto).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.loadExpenses();
+          this.closeModals();
+          this.notificationService.success('สร้างรายจ่ายสำเร็จ');
+        }
+      },
+      error: (error: any) => {
+        console.error('Error creating expense:', error);
+        const errorMessage = error.error?.errors?.ReceiptUrl?.[0] || error.error?.message || 'เกิดข้อผิดพลาดในการสร้างรายจ่าย';
+        this.notificationService.error(errorMessage);
+      }
+    });
+  }
+
+  updateExpense(): void {
+    const expense = this.selectedExpense();
+    if (!expense) return;
+
+    const dto: UpdateExpenseDto = {
+      categoryId: this.expenseForm.categoryId,
+      amount: this.expenseForm.amount,
+      expenseDate: this.expenseForm.expenseDate,
+      description: this.expenseForm.description,
+      reference: this.expenseForm.reference,
+      paymentMethod: this.expenseForm.paymentMethod,
+      receiptUrl: this.expenseForm.receiptUrl?.trim() || null
+    };
+
+    this.expensesService.apiErpExpensesIdPut(expense.id!, dto).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.loadExpenses();
+          this.closeModals();
+          this.notificationService.success('อัปเดตรายจ่ายสำเร็จ');
+        }
+      },
+      error: (error: any) => {
+        console.error('Error updating expense:', error);
+        const errorMessage = error.error?.errors?.ReceiptUrl?.[0] || error.error?.message || 'เกิดข้อผิดพลาดในการอัปเดตรายจ่าย';
+        this.notificationService.error(errorMessage);
+      }
+    });
+  }
+
+  deleteExpense(): void {
+    const expense = this.selectedExpense();
+    if (!expense) return;
+
+    this.expensesService.apiErpExpensesIdDelete(expense.id!).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.loadExpenses();
+          this.closeModals();
+        }
+      },
+      error: (error: any) => {
+        console.error('Error deleting expense:', error);
+        this.notificationService.error(error.error?.message || 'เกิดข้อผิดพลาดในการลบรายจ่าย');
+      }
+    });
+  }
+
+  // Helpers
+  getPaginatedExpenses(): ExpenseDto[] {
+    const start = (this.currentPage() - 1) * this.itemsPerPage();
+    const end = start + this.itemsPerPage();
+    return this.filteredExpenses().slice(start, end);
+  }
+
+  getTotalPages(): number {
+    return Math.ceil(this.filteredExpenses().length / this.itemsPerPage());
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.getTotalPages()) {
+      this.currentPage.update(page => page + 1);
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(page => page - 1);
+    }
+  }
+
+  getTotalAmount(): number {
+    return this.filteredExpenses().reduce((sum, exp) => sum + (exp.amount || 0), 0);
+  }
+
+  getPaymentMethodLabel(method: string | null | undefined): string {
+    const found = this.paymentMethods.find(pm => pm.value === method);
+    return found ? found.label : method || '-';
+  }
+
+  formatDate(date: string | null | undefined): string {
+    if (!date) return '-';
+    return new Date(date).toLocaleDateString('th-TH');
+  }
+}

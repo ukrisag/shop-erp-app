@@ -1,0 +1,492 @@
+<div class="employee-list-container p-6">
+  <!-- Header -->
+  <div class="header-section mb-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-start gap-4">
+        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">จัดการพนักงาน</h1>
+          <p class="text-sm text-gray-600 mt-1 flex items-center gap-2">
+            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            ระบบจัดการข้อมูลพนักงานและบุคลากรภายในองค์กร
+          </p>
+        </div>
+      </div>
+      <button
+        (click)="openAddModal()"
+        class="btn-primary px-6 py-3 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white rounded-xl hover:from-blue-700 hover:via-blue-800 hover:to-indigo-800 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 justify-center">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span class="font-semibold">เพิ่มพนักงาน</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section bg-white rounded-lg shadow-sm p-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- Search -->
+      <div class="col-span-1 md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-2">ค้นหา</label>
+        <input
+          type="text"
+          [value]="searchTerm()"
+          (input)="onSearchChange($any($event.target).value)"
+          placeholder="ค้นหาด้วย อีเมล, รหัสพนักงาน, ตำแหน่ง..."
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+
+      <!-- Branch Filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">สาขา</label>
+        <select
+          [value]="selectedBranch()"
+          (change)="onBranchFilterChange($any($event.target).value)"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="">ทั้งหมด</option>
+          @for (branch of branches(); track branch.id) {
+            <option [value]="branch.id">{{ branch.name }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Role Filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">บทบาท</label>
+        <select
+          [value]="selectedRole()"
+          (change)="onRoleFilterChange($any($event.target).value)"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option value="">ทั้งหมด</option>
+          @for (role of roles; track role.value) {
+            <option [value]="role.value">{{ role.label }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+  }
+
+  <!-- Employee List -->
+  @if (!loading()) {
+    <!-- Desktop Table View -->
+    <div class="hidden md:block bg-white rounded-lg shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead>
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">รหัสพนักงาน</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ชื่อ-นามสกุล</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">อีเมล</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">บทบาท</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ตำแหน่ง</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">สาขา</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">เงินเดือน</th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @if (getPaginatedEmployees().length === 0) {
+              <tr>
+                <td colspan="8" class="px-6 py-12 text-center text-gray-500">
+                  <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                  </svg>
+                  <p class="mt-2">ไม่พบข้อมูลพนักงาน</p>
+                </td>
+              </tr>
+            }
+            @for (employee of getPaginatedEmployees(); track employee.id) {
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {{ employee.employeeCode || '-' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ employee.firstName }} {{ employee.lastName }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  {{ employee.email }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 py-1 text-xs font-medium rounded-full"
+                    [class.bg-red-100]="employee.role === 'super_admin'"
+                    [class.text-red-800]="employee.role === 'super_admin'"
+                    [class.bg-purple-100]="employee.role === 'admin'"
+                    [class.text-purple-800]="employee.role === 'admin'"
+                    [class.bg-blue-100]="employee.role === 'manager'"
+                    [class.text-blue-800]="employee.role === 'manager'"
+                    [class.bg-green-100]="employee.role === 'staff'"
+                    [class.text-green-800]="employee.role === 'staff'"
+                    [class.bg-gray-100]="employee.role === 'employee'"
+                    [class.text-gray-800]="employee.role === 'employee'">
+                    {{ getRoleLabel(employee.role) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  {{ employee.position || '-' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  {{ employee.branchName || '-' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                  {{ employee.salary ? (employee.salary | number:'1.2-2') : '-' }} ฿
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                  <button
+                    (click)="openEditModal(employee)"
+                    class="text-blue-600 hover:text-blue-900 mr-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </button>
+                  <button
+                    (click)="openDeleteModal(employee)"
+                    class="text-red-600 hover:text-red-900">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="md:hidden space-y-4">
+      @if (getPaginatedEmployees().length === 0) {
+        <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+          </svg>
+          <p class="mt-2 text-gray-500">ไม่พบข้อมูลพนักงาน</p>
+        </div>
+      }
+      @for (employee of getPaginatedEmployees(); track employee.id) {
+        <div class="bg-white rounded-lg shadow-sm p-4">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+              <h3 class="font-semibold text-gray-900">{{ employee.firstName }} {{ employee.lastName }}</h3>
+              <p class="text-sm text-gray-600 mt-1">{{ employee.employeeCode || 'ไม่มีรหัส' }}</p>
+            </div>
+            <span class="px-2 py-1 text-xs font-medium rounded-full"
+              [class.bg-red-100]="employee.role === 'super_admin'"
+              [class.text-red-800]="employee.role === 'super_admin'"
+              [class.bg-purple-100]="employee.role === 'admin'"
+              [class.text-purple-800]="employee.role === 'admin'"
+              [class.bg-blue-100]="employee.role === 'manager'"
+              [class.text-blue-800]="employee.role === 'manager'"
+              [class.bg-green-100]="employee.role === 'staff'"
+              [class.text-green-800]="employee.role === 'staff'"
+              [class.bg-gray-100]="employee.role === 'employee'"
+              [class.text-gray-800]="employee.role === 'employee'">
+              {{ getRoleLabel(employee.role) }}
+            </span>
+          </div>
+
+          <div class="space-y-2 mb-4">
+            <div class="flex items-center text-sm text-gray-600">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+              {{ employee.email }}
+            </div>
+            @if (employee.position) {
+              <div class="flex items-center text-sm text-gray-600">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                {{ employee.position }}
+              </div>
+            }
+            @if (employee.branchName) {
+              <div class="flex items-center text-sm text-gray-600">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+                {{ employee.branchName }}
+              </div>
+            }
+            @if (employee.salary) {
+              <div class="flex items-center text-sm font-medium text-gray-900">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                {{ employee.salary | number:'1.2-2' }} ฿/เดือน
+              </div>
+            }
+          </div>
+
+          <div class="flex gap-2 pt-3 border-t border-gray-200">
+            <button
+              (click)="openEditModal(employee)"
+              class="flex-1 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+              แก้ไข
+            </button>
+            <button
+              (click)="openDeleteModal(employee)"
+              class="flex-1 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              ลบ
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (getTotalPages() > 1) {
+      <div class="mt-6 flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow-sm">
+        <div class="text-sm text-gray-700">
+          แสดง {{ (currentPage() - 1) * itemsPerPage() + 1 }} - {{ Math.min(currentPage() * itemsPerPage(), filteredEmployees().length) }}
+          จากทั้งหมด {{ filteredEmployees().length }} รายการ
+        </div>
+        <div class="flex gap-2">
+          <button
+            (click)="previousPage()"
+            [disabled]="currentPage() === 1"
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+            ก่อนหน้า
+          </button>
+          <button
+            (click)="nextPage()"
+            [disabled]="currentPage() === getTotalPages()"
+            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+            ถัดไป
+          </button>
+        </div>
+      </div>
+    }
+  }
+</div>
+
+<!-- Add/Edit Modal -->
+@if (showModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900">
+          {{ isEditMode() ? 'แก้ไขข้อมูลพนักงาน' : 'เพิ่มพนักงานใหม่' }}
+        </h2>
+        <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-6">
+        <form (ngSubmit)="saveEmployee()">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Email -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                อีเมล <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                [(ngModel)]="employeeForm.email"
+                name="email"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Password (only for create) -->
+            @if (!isEditMode()) {
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  รหัสผ่าน <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="password"
+                  [(ngModel)]="employeeForm.password"
+                  name="password"
+                  required
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              </div>
+            }
+
+            <!-- Employee Code -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">รหัสพนักงาน</label>
+              <input
+                type="text"
+                [(ngModel)]="employeeForm.employeeCode"
+                name="employeeCode"
+                [disabled]="isEditMode()"
+                [class.bg-gray-100]="isEditMode()"
+                [class.cursor-not-allowed]="isEditMode()"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              @if (isEditMode()) {
+                <p class="text-xs text-gray-500 mt-1">รหัสพนักงานไม่สามารถแก้ไขได้</p>
+              }
+            </div>
+
+            <!-- Role -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                บทบาท <span class="text-red-500">*</span>
+              </label>
+              <select
+                [(ngModel)]="employeeForm.role"
+                name="role"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                @for (role of roles; track role.value) {
+                  <option [value]="role.value">{{ role.label }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- First Name -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">ชื่อ</label>
+              <input
+                type="text"
+                [(ngModel)]="employeeForm.firstName"
+                name="firstName"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Last Name -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">นามสกุล</label>
+              <input
+                type="text"
+                [(ngModel)]="employeeForm.lastName"
+                name="lastName"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Phone -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">เบอร์โทร</label>
+              <input
+                type="tel"
+                [(ngModel)]="employeeForm.phone"
+                name="phone"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Position -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">ตำแหน่ง</label>
+              <input
+                type="text"
+                [(ngModel)]="employeeForm.position"
+                name="position"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Branch -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">สาขา</label>
+              <select
+                [(ngModel)]="employeeForm.branchId"
+                name="branchId"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option [value]="null">ไม่ระบุ</option>
+                @for (branch of branches(); track branch.id) {
+                  <option [value]="branch.id">{{ branch.name }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Salary -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">เงินเดือน (฿)</label>
+              <input
+                type="number"
+                [(ngModel)]="employeeForm.salary"
+                name="salary"
+                min="0"
+                step="0.01"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Commission Rate -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">อัตราค่าคอมมิชชั่น (%)</label>
+              <input
+                type="number"
+                [(ngModel)]="employeeForm.commissionRate"
+                name="commissionRate"
+                min="0"
+                max="100"
+                step="0.01"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+          </div>
+
+          <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              (click)="closeModal()"
+              class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              ยกเลิก
+            </button>
+            <button
+              type="submit"
+              class="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              {{ isEditMode() ? 'บันทึก' : 'เพิ่ม' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <div class="p-6">
+        <div class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
+          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 text-center mb-2">ยืนยันการลบพนักงาน</h3>
+        <p class="text-sm text-gray-600 text-center mb-6">
+          คุณแน่ใจหรือไม่ว่าต้องการลบพนักงาน <span class="font-semibold">{{ selectedEmployee()?.firstName }} {{ selectedEmployee()?.lastName }}</span>?<br>
+          การดำเนินการนี้ไม่สามารถย้อนกลับได้
+        </p>
+        <div class="flex gap-3">
+          <button
+            type="button"
+            (click)="closeModal()"
+            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            ยกเลิก
+          </button>
+          <button
+            type="button"
+            (click)="deleteEmployee()"
+            class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+            ลบ
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

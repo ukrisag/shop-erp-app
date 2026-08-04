@@ -1,0 +1,511 @@
+<div class="expense-list-container p-6">
+  <!-- Header -->
+  <div class="header-section mb-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-start gap-4">
+        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg flex-shrink-0">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">จัดการรายจ่าย</h1>
+          <p class="text-gray-600">บันทึกและติดตามค่าใช้จ่ายต่างๆ</p>
+        </div>
+      </div>
+      @if (activeTab() === 'expenses') {
+        <button
+          (click)="openAddExpenseModal()"
+          class="btn-primary px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <span>เพิ่มรายจ่าย</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-section mb-6">
+    <div class="border-b border-gray-200">
+      <nav class="-mb-px flex space-x-8">
+        <button
+          (click)="switchTab('expenses')"
+          [class.border-blue-500]="activeTab() === 'expenses'"
+          [class.text-blue-600]="activeTab() === 'expenses'"
+          [class.border-transparent]="activeTab() !== 'expenses'"
+          [class.text-gray-500]="activeTab() !== 'expenses'"
+          class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+          รายจ่าย
+        </button>
+        <button
+          (click)="switchTab('categories')"
+          [class.border-blue-500]="activeTab() === 'categories'"
+          [class.text-blue-600]="activeTab() === 'categories'"
+          [class.border-transparent]="activeTab() !== 'categories'"
+          [class.text-gray-500]="activeTab() !== 'categories'"
+          class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+          หมวดหมู่รายจ่าย
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Expenses Tab -->
+  @if (activeTab() === 'expenses') {
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6 border border-red-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-red-600 font-medium">รายจ่ายรวม</p>
+            <p class="text-2xl font-bold text-red-700 mt-2">{{ getTotalAmount() | number:'1.2-2' }} ฿</p>
+          </div>
+          <div class="w-12 h-12 bg-red-200 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 border border-blue-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-blue-600 font-medium">จำนวนรายการ</p>
+            <p class="text-2xl font-bold text-blue-700 mt-2">{{ filteredExpenses().length }}</p>
+          </div>
+          <div class="w-12 h-12 bg-blue-200 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 border border-green-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-green-600 font-medium">ค่าเฉลี่ยต่อรายการ</p>
+            <p class="text-2xl font-bold text-green-700 mt-2">
+              {{ filteredExpenses().length > 0 ? (getTotalAmount() / filteredExpenses().length | number:'1.2-2') : 0 }} ฿
+            </p>
+          </div>
+          <div class="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section bg-white rounded-lg shadow-sm p-4 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <!-- Search -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">ค้นหา</label>
+          <input
+            type="text"
+            [value]="searchTerm()"
+            (input)="onSearchChange($any($event.target).value)"
+            placeholder="ค้นหาด้วย รายละเอียด, เลขที่อ้างอิง..."
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        </div>
+
+        <!-- Month Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">เดือน</label>
+          <input
+            type="month"
+            [value]="selectedMonth()"
+            (input)="onMonthFilterChange($any($event.target).value)"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        </div>
+
+        <!-- Branch Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">สาขา</label>
+          <select
+            [value]="selectedBranch()"
+            (change)="onBranchFilterChange($any($event.target).value)"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <option value="">ทั้งหมด</option>
+            @for (branch of branches(); track branch.id) {
+              <option [value]="branch.id">{{ branch.name }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Category Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">หมวดหมู่</label>
+          <select
+            [value]="selectedCategory()"
+            (change)="onCategoryFilterChange($any($event.target).value)"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <option value="">ทั้งหมด</option>
+            @for (category of categories(); track category.id) {
+              <option [value]="category.id">{{ category.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading()) {
+      <div class="flex justify-center items-center py-20">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    }
+
+    <!-- Expense List -->
+    @if (!loading()) {
+      <!-- Desktop Table View -->
+      <div class="hidden md:block bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">วันที่</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">หมวดหมู่</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">รายละเอียด</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">สาขา</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">การชำระ</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">จำนวนเงิน</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              @if (getPaginatedExpenses().length === 0) {
+                <tr>
+                  <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                    </svg>
+                    <p class="mt-2">ไม่พบข้อมูลรายจ่าย</p>
+                  </td>
+                </tr>
+              }
+              @for (expense of getPaginatedExpenses(); track expense.id) {
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ formatDate(expense.expenseDate) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                      {{ expense.categoryName || '-' }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-900">
+                    <div>{{ expense.description || '-' }}</div>
+                    @if (expense.reference) {
+                      <div class="text-xs text-gray-500 mt-1">เลขที่: {{ expense.reference }}</div>
+                    }
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    {{ expense.branchName || '-' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    {{ getPaymentMethodLabel(expense.paymentMethod) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-red-600 text-right">
+                    {{ expense.amount | number:'1.2-2' }} ฿
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                    <button
+                      (click)="openEditExpenseModal(expense)"
+                      class="text-blue-600 hover:text-blue-900 mr-3">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                      </svg>
+                    </button>
+                    <button
+                      (click)="openDeleteExpenseModal(expense)"
+                      class="text-red-600 hover:text-red-900">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Mobile Card View -->
+      <div class="md:hidden space-y-4">
+        @if (getPaginatedExpenses().length === 0) {
+          <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+            </svg>
+            <p class="mt-2 text-gray-500">ไม่พบข้อมูลรายจ่าย</p>
+          </div>
+        }
+        @for (expense of getPaginatedExpenses(); track expense.id) {
+          <div class="bg-white rounded-lg shadow-sm p-4">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                    {{ expense.categoryName || '-' }}
+                  </span>
+                  <span class="text-xs text-gray-500">{{ formatDate(expense.expenseDate) }}</span>
+                </div>
+                <h3 class="font-semibold text-gray-900">{{ expense.description || 'ไม่มีรายละเอียด' }}</h3>
+              </div>
+              <p class="text-lg font-bold text-red-600">{{ expense.amount | number:'1.2-2' }} ฿</p>
+            </div>
+
+            <div class="space-y-2 mb-4 text-sm text-gray-600">
+              <div>สาขา: {{ expense.branchName || '-' }}</div>
+              <div>การชำระ: {{ getPaymentMethodLabel(expense.paymentMethod) }}</div>
+              @if (expense.reference) {
+                <div class="text-xs text-gray-500">เลขที่: {{ expense.reference }}</div>
+              }
+            </div>
+
+            <div class="flex gap-2 pt-3 border-t border-gray-200">
+              <button
+                (click)="openEditExpenseModal(expense)"
+                class="flex-1 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                แก้ไข
+              </button>
+              <button
+                (click)="openDeleteExpenseModal(expense)"
+                class="flex-1 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                ลบ
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (getTotalPages() > 1) {
+        <div class="mt-6 flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow-sm">
+          <div class="text-sm text-gray-700">
+            แสดง {{ (currentPage() - 1) * itemsPerPage() + 1 }} - {{ Math.min(currentPage() * itemsPerPage(), filteredExpenses().length) }}
+            จากทั้งหมด {{ filteredExpenses().length }} รายการ
+          </div>
+          <div class="flex gap-2">
+            <button
+              (click)="previousPage()"
+              [disabled]="currentPage() === 1"
+              class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              ก่อนหน้า
+            </button>
+            <button
+              (click)="nextPage()"
+              [disabled]="currentPage() === getTotalPages()"
+              class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              ถัดไป
+            </button>
+          </div>
+        </div>
+      }
+    }
+  }
+
+  <!-- Categories Tab -->
+  @if (activeTab() === 'categories') {
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (category of categories(); track category.id) {
+          <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <h3 class="font-semibold text-gray-900">{{ category.name }}</h3>
+                <p class="text-sm text-gray-500 mt-1">รหัส: {{ category.code || '-' }}</p>
+              </div>
+            </div>
+          </div>
+        }
+        @if (categories().length === 0) {
+          <div class="col-span-full text-center py-12 text-gray-500">
+            ไม่มีหมวดหมู่รายจ่าย
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Expense Modal -->
+@if (showExpenseModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900">
+          {{ isEditMode() ? 'แก้ไขรายจ่าย' : 'เพิ่มรายจ่ายใหม่' }}
+        </h2>
+        <button (click)="closeModals()" class="text-gray-400 hover:text-gray-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-6">
+        <form (ngSubmit)="saveExpense()">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Branch -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                สาขา <span class="text-red-500">*</span>
+              </label>
+              <select
+                [(ngModel)]="expenseForm.branchId"
+                name="branchId"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option [value]="null">เลือกสาขา</option>
+                @for (branch of branches(); track branch.id) {
+                  <option [value]="branch.id">{{ branch.name }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Category -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                หมวดหมู่ <span class="text-red-500">*</span>
+              </label>
+              <select
+                [(ngModel)]="expenseForm.categoryId"
+                name="categoryId"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option [value]="null">เลือกหมวดหมู่</option>
+                @for (category of categories(); track category.id) {
+                  <option [value]="category.id">{{ category.name }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Amount -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                จำนวนเงิน <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                [(ngModel)]="expenseForm.amount"
+                name="amount"
+                required
+                min="0"
+                step="0.01"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Date -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                วันที่ <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                [(ngModel)]="expenseForm.expenseDate"
+                name="expenseDate"
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Payment Method -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">วิธีชำระเงิน</label>
+              <select
+                [(ngModel)]="expenseForm.paymentMethod"
+                name="paymentMethod"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                @for (method of paymentMethods; track method.value) {
+                  <option [value]="method.value">{{ method.label }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Reference -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">เลขที่อ้างอิง</label>
+              <input
+                type="text"
+                [(ngModel)]="expenseForm.reference"
+                name="reference"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+
+            <!-- Description -->
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-2">รายละเอียด</label>
+              <textarea
+                [(ngModel)]="expenseForm.description"
+                name="description"
+                rows="3"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+            </div>
+          </div>
+
+          <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              (click)="closeModals()"
+              class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              ยกเลิก
+            </button>
+            <button
+              type="submit"
+              class="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              {{ isEditMode() ? 'บันทึก' : 'เพิ่ม' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <div class="p-6">
+        <div class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
+          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 text-center mb-2">ยืนยันการลบรายจ่าย</h3>
+        <p class="text-sm text-gray-600 text-center mb-6">
+          คุณแน่ใจหรือไม่ว่าต้องการลบรายจ่ายนี้?<br>
+          การดำเนินการนี้ไม่สามารถย้อนกลับได้
+        </p>
+        <div class="flex gap-3">
+          <button
+            type="button"
+            (click)="closeModals()"
+            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            ยกเลิก
+          </button>
+          <button
+            type="button"
+            (click)="deleteExpense()"
+            class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+            ลบ
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

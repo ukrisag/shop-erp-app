@@ -1,0 +1,181 @@
+/* Admin Layout Styles */
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Main Layout Container */
+.admin-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f3f4f6;
+}
+
+/* Header - Fixed at top */
+.admin-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9998;
+  height: 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .admin-header {
+    height: 4rem;
+  }
+}
+
+/* Body - Contains sidebar and main content */
+.admin-body {
+  display: flex;
+  flex: 1;
+  margin-top: 3.5rem;
+  height: calc(100vh - 3.5rem);
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .admin-body {
+    margin-top: 4rem;
+    height: calc(100vh - 4rem);
+  }
+}
+
+/* Sidebar - Fixed on left */
+.admin-sidebar {
+  position: fixed;
+  left: 0;
+  top: 3.5rem;
+  bottom: 0;
+  width: 18rem;
+  z-index: 20;
+  transition: transform 0.3s ease, width 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .admin-sidebar {
+    top: 4rem;
+  }
+}
+
+/* Mobile overlay */
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+/* Main wrapper - Contains content and footer */
+.main-wrapper {
+  flex: 1;
+  margin-left: 18rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: margin-left 0.3s ease;
+  overflow: hidden;
+}
+
+/* When sidebar is closed, expand main wrapper */
+.main-wrapper.sidebar-closed {
+  margin-left: 0;
+}
+
+/* Main Content - Scrollable area */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.5rem 2rem;
+  background: #f3f4f6;
+}
+
+/* Custom scrollbar for main content */
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #e5e7eb;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 4px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* No footer needed for admin */
+
+/* Mobile: Adjust layout */
+@media (max-width: 768px) {
+  .main-wrapper {
+    margin-left: 0;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .footer-links {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-bottom-content {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+/* Tablet: Narrow sidebar */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .admin-sidebar {
+    width: 14rem;
+  }
+
+  .main-wrapper {
+    margin-left: 14rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .main-content {
+    padding: 1rem;
+  }
+
+  .footer-content {
+    padding: 1.5rem 1rem 1rem;
+  }
+
+  .footer-links {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-bottom-content {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Desktop - Hide mobile overlay */
+@media (min-width: 769px) {
+  .mobile-overlay {
+    display: none;
+  }
+}
+
+/* Mobile - Show overlay when sidebar is open */
+@media (max-width: 768px) {
+  .mobile-overlay {
+    display: block;
+  }
+}

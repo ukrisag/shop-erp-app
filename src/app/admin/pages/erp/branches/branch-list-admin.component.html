@@ -1,0 +1,416 @@
+<div class="p-6">
+  <!-- Header -->
+  <div class="mb-6 flex items-start gap-4">
+    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg flex-shrink-0">
+      <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+      </svg>
+    </div>
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">จัดการสาขา</h1>
+      <p class="text-gray-600">รายการสาขาทั้งหมดในระบบ</p>
+    </div>
+  </div>
+
+  <!-- Actions & Filters Bar -->
+  <div class="mb-6 bg-white rounded-lg shadow p-4">
+    <!-- Search and Add Button -->
+    <div class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-4">
+      <!-- Search -->
+      <div class="w-full sm:w-96">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+          (input)="onSearch()"
+          placeholder="ค้นหาสาขา (ชื่อ, รหัส, ที่อยู่)..."
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- Add Button -->
+      <button
+        (click)="onAddNew()"
+        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+      >
+        <span>+</span>
+        <span>เพิ่มสาขาใหม่</span>
+      </button>
+    </div>
+
+    <!-- Filters Row -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <!-- Status Filter -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">สถานะ</label>
+        <select
+          [(ngModel)]="selectedStatus"
+          (change)="onFilterChange()"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option [ngValue]="undefined">ทั้งหมด</option>
+          <option [ngValue]="true">เปิดใช้งาน</option>
+          <option [ngValue]="false">ปิดใช้งาน</option>
+        </select>
+      </div>
+
+      <!-- Sort By -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">เรียงตาม</label>
+        <select
+          [(ngModel)]="sortBy"
+          (change)="onSortChange()"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="name-asc">ชื่อ (ก-ฮ)</option>
+          <option value="name-desc">ชื่อ (ฮ-ก)</option>
+          <option value="code-asc">รหัส (น้อย-มาก)</option>
+          <option value="code-desc">รหัส (มาก-น้อย)</option>
+        </select>
+      </div>
+
+      <!-- Clear Filters -->
+      <div class="flex items-end">
+        <button
+          (click)="clearFilters()"
+          class="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 border border-blue-600 hover:border-blue-800 rounded-lg transition-colors"
+        >
+          ล้างตัวกรอง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="flex justify-center items-center py-12">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error() && !loading()" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+    {{ error() }}
+  </div>
+
+  <!-- Branches Table (Desktop) -->
+  <div *ngIf="!loading() && !error()" class="hidden lg:block bg-white rounded-lg shadow overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead>
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">รหัสสาขา</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ชื่อสาขา</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ที่อยู่</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">เบอร์โทร</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">สถานะ</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">การจัดการ</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let branch of filteredBranches()" class="hover:bg-gray-50">
+          <!-- Code -->
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium text-gray-900 font-mono">{{ branch.code }}</span>
+              <span *ngIf="branch.isMain" class="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                สาขาหลัก
+              </span>
+            </div>
+          </td>
+
+          <!-- Name -->
+          <td class="px-6 py-4">
+            <div class="text-sm font-medium text-gray-900">{{ branch.name }}</div>
+            <div *ngIf="branch.email" class="text-sm text-gray-500">
+              {{ branch.email }}
+            </div>
+          </td>
+
+          <!-- Address -->
+          <td class="px-6 py-4">
+            <div class="text-sm text-gray-900 max-w-xs truncate" [title]="branch.address || '-'">
+              {{ branch.address || '-' }}
+            </div>
+          </td>
+
+          <!-- Phone -->
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ branch.phone || '-' }}</div>
+          </td>
+
+          <!-- Status -->
+          <td class="px-6 py-4 whitespace-nowrap">
+            <button
+              (click)="onToggleStatus(branch)"
+              [disabled]="branch.isMain"
+              [class]="branch.isActive
+                ? 'px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer'
+                : 'px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 hover:bg-gray-200 cursor-pointer'"
+            >
+              {{ branch.isActive ? 'เปิดใช้งาน' : 'ปิดใช้งาน' }}
+            </button>
+          </td>
+
+          <!-- Actions -->
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="flex gap-2">
+              <button
+                (click)="onEdit(branch)"
+                class="text-blue-600 hover:text-blue-900"
+                title="แก้ไข"
+              >
+                ✏️
+              </button>
+              <button
+                *ngIf="!branch.isMain"
+                (click)="onDeleteClick(branch)"
+                class="text-red-600 hover:text-red-900"
+                title="ลบ"
+              >
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredBranches().length === 0" class="text-center py-12">
+      <p class="text-gray-500">ไม่พบข้อมูลสาขา</p>
+    </div>
+  </div>
+
+  <!-- Branches Cards (Mobile) -->
+  <div *ngIf="!loading() && !error()" class="lg:hidden space-y-4">
+    <div *ngFor="let branch of filteredBranches()" class="bg-white rounded-lg shadow p-4">
+      <div class="flex justify-between items-start mb-3">
+        <div class="flex items-center gap-2">
+          <h3 class="text-lg font-semibold text-gray-900">{{ branch.name }}</h3>
+          <span *ngIf="branch.isMain" class="px-2 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+            สาขาหลัก
+          </span>
+        </div>
+        <button
+          (click)="onToggleStatus(branch)"
+          [disabled]="branch.isMain"
+          [class]="branch.isActive
+            ? 'px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800'
+            : 'px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800'"
+        >
+          {{ branch.isActive ? 'เปิดใช้งาน' : 'ปิดใช้งาน' }}
+        </button>
+      </div>
+
+      <div class="space-y-2 text-sm">
+        <div class="flex">
+          <span class="text-gray-500 w-24">รหัสสาขา:</span>
+          <span class="text-gray-900 font-mono">{{ branch.code }}</span>
+        </div>
+        <div class="flex">
+          <span class="text-gray-500 w-24">ที่อยู่:</span>
+          <span class="text-gray-900 flex-1">{{ branch.address || '-' }}</span>
+        </div>
+        <div class="flex">
+          <span class="text-gray-500 w-24">เบอร์โทร:</span>
+          <span class="text-gray-900">{{ branch.phone || '-' }}</span>
+        </div>
+        <div *ngIf="branch.email" class="flex">
+          <span class="text-gray-500 w-24">อีเมล:</span>
+          <span class="text-gray-900">{{ branch.email }}</span>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-4 pt-4 border-t">
+        <button
+          (click)="onEdit(branch)"
+          class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          แก้ไข
+        </button>
+        <button
+          *ngIf="!branch.isMain"
+          (click)="onDeleteClick(branch)"
+          class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
+          ลบ
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredBranches().length === 0" class="text-center py-12 bg-white rounded-lg shadow">
+      <p class="text-gray-500">ไม่พบข้อมูลสาขา</p>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading() && !error() && filteredBranches().length > 0" class="mt-6 flex justify-between items-center bg-white rounded-lg shadow p-4">
+    <div class="text-sm text-gray-700">
+      แสดง {{ (currentPage() - 1) * pageSize() + 1 }} - {{ Math.min(currentPage() * pageSize(), totalItems()) }} จาก {{ totalItems() }} รายการ
+    </div>
+
+    <div class="flex gap-2">
+      <button
+        (click)="onPageChange(currentPage() - 1)"
+        [disabled]="currentPage() === 1"
+        [class]="currentPage() === 1
+          ? 'px-3 py-1 rounded bg-gray-100 text-gray-400 cursor-not-allowed'
+          : 'px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'"
+      >
+        ← ก่อนหน้า
+      </button>
+
+      <button
+        *ngFor="let page of getPageNumbers()"
+        (click)="onPageChange(page)"
+        [class]="page === currentPage()
+          ? 'px-3 py-1 rounded bg-blue-600 text-white'
+          : 'px-3 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200'"
+      >
+        {{ page }}
+      </button>
+
+      <button
+        (click)="onPageChange(currentPage() + 1)"
+        [disabled]="currentPage() === totalPages()"
+        [class]="currentPage() === totalPages()
+          ? 'px-3 py-1 rounded bg-gray-100 text-gray-400 cursor-not-allowed'
+          : 'px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'"
+      >
+        ถัดไป →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div *ngIf="showModal()" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white border-b px-6 py-4">
+      <h2 class="text-xl font-bold text-gray-900">
+        {{ isEditMode() ? 'แก้ไขข้อมูลสาขา' : 'เพิ่มสาขาใหม่' }}
+      </h2>
+    </div>
+
+    <div class="p-6">
+      <div class="space-y-4">
+        <!-- Code (only for create) -->
+        <div *ngIf="!isEditMode()">
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            รหัสสาขา <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="branchForm.code"
+            placeholder="เช่น ST01, JK01"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-500]="formErrors.code"
+          />
+          <p *ngIf="formErrors.code" class="text-red-500 text-sm mt-1">{{ formErrors.code }}</p>
+        </div>
+
+        <!-- Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            ชื่อสาขา <span class="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="branchForm.name"
+            placeholder="เช่น ร้านแสงทอง, ร้านใจกล้า"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-500]="formErrors.name"
+          />
+          <p *ngIf="formErrors.name" class="text-red-500 text-sm mt-1">{{ formErrors.name }}</p>
+        </div>
+
+        <!-- Address -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">ที่อยู่</label>
+          <textarea
+            [(ngModel)]="branchForm.address"
+            rows="3"
+            placeholder="ที่อยู่ของสาขา"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+        </div>
+
+        <!-- Phone -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทรศัพท์</label>
+          <input
+            type="tel"
+            [(ngModel)]="branchForm.phone"
+            placeholder="0XX-XXX-XXXX"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-500]="formErrors.phone"
+          />
+          <p *ngIf="formErrors.phone" class="text-red-500 text-sm mt-1">{{ formErrors.phone }}</p>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">อีเมล</label>
+          <input
+            type="email"
+            [(ngModel)]="branchForm.email"
+            placeholder="email@example.com"
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [class.border-red-500]="formErrors.email"
+          />
+          <p *ngIf="formErrors.email" class="text-red-500 text-sm mt-1">{{ formErrors.email }}</p>
+        </div>
+
+        <!-- Active Status -->
+        <div class="flex items-center">
+          <input
+            type="checkbox"
+            id="isActive"
+            [(ngModel)]="branchForm.isActive"
+            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          />
+          <label for="isActive" class="ml-2 block text-sm text-gray-700">เปิดใช้งาน</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky bottom-0 bg-gray-50 px-6 py-4 flex justify-end gap-3">
+      <button
+        (click)="onCancelForm()"
+        class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+      >
+        ยกเลิก
+      </button>
+      <button
+        (click)="onSaveForm()"
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        {{ isEditMode() ? 'บันทึก' : 'เพิ่มสาขา' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="showDeleteConfirm()" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+    <h3 class="text-lg font-bold text-gray-900 mb-4">ยืนยันการลบสาขา</h3>
+    <p class="text-gray-600 mb-6">
+      คุณแน่ใจหรือไม่ว่าต้องการลบสาขา <strong>{{ branchToDelete()?.name }}</strong>?
+      การลบสาขาจะไม่สามารถย้อนกลับได้
+    </p>
+    <div class="flex justify-end gap-3">
+      <button
+        (click)="onCancelDelete()"
+        class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+      >
+        ยกเลิก
+      </button>
+      <button
+        (click)="onConfirmDelete()"
+        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+      >
+        ลบสาขา
+      </button>
+    </div>
+  </div>
+</div>
