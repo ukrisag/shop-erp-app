@@ -148,7 +148,7 @@
               <select [(ngModel)]="requisitionForm.requestedBy" name="requestedBy" required class="w-full px-4 py-2 border rounded-lg">
                 <option [value]="null">เลือกพนักงาน</option>
                 @for (emp of employees(); track emp.id) {
-                  <option [value]="emp.id">{{ emp.firstName }} {{ emp.lastName }}</option>
+                  <option [value]="emp.id">{{ emp.fullNameTh }}</option>
                 }
               </select>
             </div>

@@ -3,75 +3,109 @@
   <div class="header-section mb-6">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div class="flex items-start gap-4">
-        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg flex-shrink-0">
+        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg flex-shrink-0">
           <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
         </div>
         <div>
-          <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-1">จัดการเงินเดือน</h1>
-          <p class="text-gray-600">
-            @if (activeTab() === 'periods') {
-              งวดเงินเดือนรายเดือน
-            } @else {
-              รายการเงินเดือน: {{ selectedPeriod()?.periodName }}
-            }
+          <h1 class="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">จัดการเงินเดือน</h1>
+          <p class="text-sm text-gray-600 mt-1 flex items-center gap-2">
+            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+            ระบบคำนวณและจัดการเงินเดือนพนักงาน (รายเดือน/รายวัน)
           </p>
         </div>
-      </div>
-      <div class="flex gap-2">
-        @if (activeTab() === 'periods') {
-          <button
-            (click)="openAddPeriodModal()"
-            class="btn-primary px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 justify-center">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            <span>สร้างงวดใหม่</span>
-          </button>
-        } @else {
-          <button
-            (click)="switchTab('periods')"
-            class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            <span>กลับ</span>
-          </button>
-          <button
-            (click)="openAddRecordModal()"
-            class="btn-primary px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 justify-center">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            <span>เพิ่มพนักงาน</span>
-          </button>
-        }
       </div>
     </div>
   </div>
 
-  <!-- Periods Tab -->
-  @if (activeTab() === 'periods') {
+  <!-- Tabs -->
+  <div class="bg-white rounded-lg shadow-sm mb-6">
+    <div class="border-b border-gray-200">
+      <nav class="flex -mb-px">
+        <button
+          (click)="switchTab('records')"
+          [class.border-green-500]="activeTab() === 'records'"
+          [class.text-green-600]="activeTab() === 'records'"
+          [class.border-transparent]="activeTab() !== 'records'"
+          [class.text-gray-500]="activeTab() !== 'records'"
+          class="px-6 py-3 border-b-2 font-medium text-sm hover:text-green-600 hover:border-green-300 transition-colors">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            รายการเงินเดือน
+          </div>
+        </button>
+        <button
+          (click)="switchTab('calculate')"
+          [class.border-green-500]="activeTab() === 'calculate'"
+          [class.text-green-600]="activeTab() === 'calculate'"
+          [class.border-transparent]="activeTab() !== 'calculate'"
+          [class.text-gray-500]="activeTab() !== 'calculate'"
+          class="px-6 py-3 border-b-2 font-medium text-sm hover:text-green-600 hover:border-green-300 transition-colors">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+            คำนวณเงินเดือน
+          </div>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Salary Records Tab -->
+  @if (activeTab() === 'records') {
     <!-- Filters -->
     <div class="filters-section bg-white rounded-lg shadow-sm p-4 mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
+      <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <!-- Search -->
+        <div class="md:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-2">ค้นหา</label>
           <input
             type="text"
-            [value]="periodSearchTerm()"
-            (input)="onPeriodSearchChange($any($event.target).value)"
-            placeholder="ค้นหาด้วย ชื่องวด..."
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            [value]="searchTerm()"
+            (input)="onSearchChange($any($event.target).value)"
+            placeholder="ค้นหาด้วย ชื่อพนักงาน, รหัสพนักงาน..."
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
         </div>
 
+        <!-- Year Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">ปี</label>
+          <select
+            [value]="selectedYear()"
+            (change)="onYearFilterChange(+$any($event.target).value)"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+            @for (year of years; track year) {
+              <option [value]="year">{{ year + 543 }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Month Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">เดือน</label>
+          <select
+            [value]="selectedMonth()"
+            (change)="onMonthFilterChange(+$any($event.target).value)"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+            @for (month of months; track month.value) {
+              <option [value]="month.value">{{ month.label }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Branch Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">สาขา</label>
           <select
-            [value]="selectedPeriodBranch()"
-            (change)="onPeriodBranchFilterChange($any($event.target).value)"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            [value]="selectedBranch()"
+            (change)="onBranchFilterChange($any($event.target).value)"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
             <option value="">ทั้งหมด</option>
             @for (branch of branches(); track branch.id) {
               <option [value]="branch.id">{{ branch.name }}</option>
@@ -79,17 +113,34 @@
           </select>
         </div>
 
+        <!-- Status Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">สถานะ</label>
           <select
-            [value]="selectedPeriodStatus()"
-            (change)="onPeriodStatusFilterChange($any($event.target).value)"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            [value]="selectedStatus()"
+            (change)="onStatusFilterChange($any($event.target).value)"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
             <option value="">ทั้งหมด</option>
-            @for (status of periodStatuses; track status.value) {
+            @for (status of statuses; track status.value) {
               <option [value]="status.value">{{ status.label }}</option>
             }
           </select>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200">
+        <div class="bg-blue-50 rounded-lg p-4">
+          <div class="text-sm text-blue-600 font-medium">รายได้รวม</div>
+          <div class="text-2xl font-bold text-blue-700 mt-1">{{ formatCurrency(getTotalEarnings()) }} ฿</div>
+        </div>
+        <div class="bg-red-50 rounded-lg p-4">
+          <div class="text-sm text-red-600 font-medium">หักรวม</div>
+          <div class="text-2xl font-bold text-red-700 mt-1">{{ formatCurrency(getTotalDeductions()) }} ฿</div>
+        </div>
+        <div class="bg-green-50 rounded-lg p-4">
+          <div class="text-sm text-green-600 font-medium">สุทธิรวม</div>
+          <div class="text-2xl font-bold text-green-700 mt-1">{{ formatCurrency(getTotalNetSalary()) }} ฿</div>
         </div>
       </div>
     </div>
@@ -97,97 +148,142 @@
     <!-- Loading State -->
     @if (loading()) {
       <div class="flex justify-center items-center py-20">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     }
 
-    <!-- Period List -->
+    <!-- Salary Records Table -->
     @if (!loading()) {
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        @for (period of getPaginatedPeriods(); track period.id) {
-          <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer border border-gray-200"
-               (click)="selectPeriod(period)">
-            <div class="flex items-start justify-between mb-4">
-              <div class="flex-1">
-                <h3 class="font-semibold text-gray-900 text-lg">{{ period.periodName }}</h3>
-                <p class="text-sm text-gray-500 mt-1">{{ period.branchName || 'ไม่ระบุสาขา' }}</p>
-              </div>
-              <span class="px-3 py-1 text-xs font-medium rounded-full"
-                [class.bg-yellow-100]="period.status === 'draft'"
-                [class.text-yellow-800]="period.status === 'draft'"
-                [class.bg-blue-100]="period.status === 'approved'"
-                [class.text-blue-800]="period.status === 'approved'"
-                [class.bg-green-100]="period.status === 'paid'"
-                [class.text-green-800]="period.status === 'paid'">
-                {{ getStatusLabel(period.status) }}
-              </span>
-            </div>
-
-            <div class="space-y-2 mb-4">
-              <div class="flex items-center text-sm text-gray-600">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                {{ formatDate(period.startDate) }} - {{ formatDate(period.endDate) }}
-              </div>
-              <div class="flex items-center text-sm text-gray-600">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                </svg>
-                {{ period.recordCount || 0 }} คน
-              </div>
-            </div>
-
-            <div class="pt-4 border-t border-gray-200">
-              <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-600">ยอดรวม</span>
-                <span class="text-lg font-bold text-green-600">
-                  {{ period.totalNetSalary | number:'1.2-2' }} ฿
-                </span>
-              </div>
-            </div>
-
-            <div class="flex gap-2 mt-4 pt-4 border-t border-gray-200" (click)="$event.stopPropagation()">
-              <button
-                (click)="openEditPeriodModal(period)"
-                class="flex-1 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-sm">
-                แก้ไข
-              </button>
-              <button
-                (click)="openDeletePeriodModal(period)"
-                class="flex-1 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-sm">
-                ลบ
-              </button>
-            </div>
-          </div>
-        }
-        @if (getPaginatedPeriods().length === 0) {
-          <div class="col-span-full bg-white rounded-lg shadow-sm p-12 text-center">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-            <p class="mt-2 text-gray-500">ไม่พบงวดเงินเดือน</p>
-          </div>
-        }
+      <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">รหัส</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">พนักงาน</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">งวด</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">เงินเดือน</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">OT</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">รายได้รวม</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">หักรวม</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">สุทธิ</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">สถานะ</th>
+                <th class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              @if (getPaginatedRecords().length === 0) {
+                <tr>
+                  <td colspan="10" class="px-6 py-12 text-center text-gray-500">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <p class="mt-2">ไม่พบรายการเงินเดือน</p>
+                    <p class="text-sm mt-1">กรุณาไปที่แท็บ "คำนวณเงินเดือน" เพื่อคำนวณเงินเดือนรายเดือน</p>
+                  </td>
+                </tr>
+              }
+              @for (record of getPaginatedRecords(); track record.id) {
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {{ record.employeeCode || '-' }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    {{ record.employeeNameTh || '-' }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                    {{ getMonthLabel(record.month) }} {{ record.year ? (record.year + 543) : '-' }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">
+                    {{ formatCurrency(record.baseSalary) }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">
+                    {{ formatCurrency(record.overtimeAmount) }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-blue-700 text-right">
+                    {{ formatCurrency(record.totalEarnings) }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-red-700 text-right">
+                    {{ formatCurrency(record.totalDeductions) }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-700 text-right">
+                    {{ formatCurrency(record.netSalary) }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs font-medium rounded-full"
+                      [class.bg-yellow-100]="record.status === 'draft'"
+                      [class.text-yellow-800]="record.status === 'draft'"
+                      [class.bg-blue-100]="record.status === 'approved'"
+                      [class.text-blue-800]="record.status === 'approved'"
+                      [class.bg-green-100]="record.status === 'paid'"
+                      [class.text-green-800]="record.status === 'paid'">
+                      {{ getStatusLabel(record.status) }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap text-center text-sm font-medium">
+                    <button
+                      (click)="downloadPaySlip(record)"
+                      class="text-purple-600 hover:text-purple-900 mr-2"
+                      title="ดาวน์โหลด Pay Slip PDF">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                      </svg>
+                    </button>
+                    @if (record.status === 'draft') {
+                      <button
+                        (click)="approveRecord(record)"
+                        class="text-blue-600 hover:text-blue-900 mr-2"
+                        title="อนุมัติ">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                      </button>
+                    }
+                    @if (record.status === 'approved') {
+                      <button
+                        (click)="markAsPaid(record)"
+                        class="text-green-600 hover:text-green-900 mr-2"
+                        title="ทำเครื่องหมายจ่ายแล้ว">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                      </button>
+                    }
+                    @if (record.status !== 'paid') {
+                      <button
+                        (click)="openDeleteModal(record)"
+                        class="text-red-600 hover:text-red-900"
+                        title="ลบ">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                      </button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Pagination -->
-      @if (getTotalPeriodPages() > 1) {
+      @if (getTotalPages() > 1) {
         <div class="mt-6 flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow-sm">
           <div class="text-sm text-gray-700">
-            แสดง {{ (currentPeriodPage() - 1) * itemsPerPage() + 1 }} - {{ Math.min(currentPeriodPage() * itemsPerPage(), filteredPeriods().length) }}
-            จากทั้งหมด {{ filteredPeriods().length }} รายการ
+            แสดง {{ (currentPage() - 1) * itemsPerPage() + 1 }} - {{ Math.min(currentPage() * itemsPerPage(), filteredRecords().length) }}
+            จากทั้งหมด {{ filteredRecords().length }} รายการ
           </div>
           <div class="flex gap-2">
             <button
-              (click)="previousPeriodPage()"
-              [disabled]="currentPeriodPage() === 1"
+              (click)="previousPage()"
+              [disabled]="currentPage() === 1"
               class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
               ก่อนหน้า
             </button>
             <button
-              (click)="nextPeriodPage()"
-              [disabled]="currentPeriodPage() === getTotalPeriodPages()"
+              (click)="nextPage()"
+              [disabled]="currentPage() === getTotalPages()"
               class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
               ถัดไป
             </button>
@@ -197,197 +293,148 @@
     }
   }
 
-  <!-- Records Tab -->
-  @if (activeTab() === 'records') {
-    <!-- Summary Card -->
-    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 border border-green-200 mb-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-sm text-green-600 font-medium">เงินเดือนสุทธิรวม</p>
-          <p class="text-3xl font-bold text-green-700 mt-2">{{ getTotalRecordsNetSalary() | number:'1.2-2' }} ฿</p>
-          <p class="text-sm text-green-600 mt-1">{{ filteredRecords().length }} คน</p>
-        </div>
-        <div class="w-16 h-16 bg-green-200 rounded-full flex items-center justify-center">
-          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+  <!-- Calculate Payroll Tab -->
+  @if (activeTab() === 'calculate') {
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        </svg>
+        คำนวณเงินเดือนอัตโนมัติ
+      </h2>
+
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div class="flex gap-3">
+          <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
+          <div class="text-sm text-blue-800">
+            <p class="font-medium">การคำนวณเงินเดือนจะรวมถึง:</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li>เงินเดือนพื้นฐาน (รายเดือน) หรือ ค่าแรง × จำนวนวันทำงาน (รายวัน)</li>
+              <li>OT ที่อนุมัติแล้วในเดือนนั้น (1.5x, 2x, 3x)</li>
+              <li>เบี้ยเลี้ยงและค่าโทรศัพท์</li>
+              <li>หักประกันสังคม (5% ของฐาน 1,650-15,000 บาท)</li>
+              <li>หักเงินยืมล่วงหน้า, ค่าพาสปอร์ต, ภาษี, วันลา และอื่นๆ</li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Filter -->
-    <div class="filters-section bg-white rounded-lg shadow-sm p-4 mb-6">
-      <div class="grid grid-cols-1">
+      <!-- Calculation Form -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">ค้นหา</label>
-          <input
-            type="text"
-            [value]="recordSearchTerm()"
-            (input)="onRecordSearchChange($any($event.target).value)"
-            placeholder="ค้นหาด้วย ชื่อพนักงาน, รหัส, ตำแหน่ง..."
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <label class="block text-sm font-medium text-gray-700 mb-2">ปี <span class="text-red-500">*</span></label>
+          <select
+            [(ngModel)]="calculationForm.year"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+            @for (year of years; track year) {
+              <option [value]="year">{{ year + 543 }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">เดือน <span class="text-red-500">*</span></label>
+          <select
+            [(ngModel)]="calculationForm.month"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+            @for (month of months; track month.value) {
+              <option [value]="month.value">{{ month.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">สาขา (ถ้าต้องการกรอง)</label>
+          <select
+            [(ngModel)]="calculationForm.branchId"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+            <option [value]="null">ทั้งหมด</option>
+            @for (branch of branches(); track branch.id) {
+              <option [value]="branch.id">{{ branch.name }}</option>
+            }
+          </select>
         </div>
       </div>
-    </div>
 
-    <!-- Record List -->
-    <!-- Desktop Table View -->
-    <div class="hidden md:block bg-white rounded-lg shadow-sm overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead>
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">พนักงาน</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">เงินเดือนฐาน</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">รายได้อื่น</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">รายได้รวม</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">หักรายการ</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">สุทธิ</th>
-              <th class="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">จัดการ</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            @if (getPaginatedRecords().length === 0) {
-              <tr>
-                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
-                  <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                  </svg>
-                  <p class="mt-2">ไม่พบรายการเงินเดือน</p>
-                </td>
-              </tr>
-            }
-            @for (record of getPaginatedRecords(); track record.id) {
-              <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <div class="text-sm font-medium text-gray-900">{{ record.employeeName }}</div>
-                    <div class="text-xs text-gray-500">{{ record.employeeCode }} - {{ record.position }}</div>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                  {{ record.baseSalary | number:'1.2-2' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 text-right">
-                  {{ ((record.commission || 0) + (record.overtimeAmount || 0) + (record.bonus || 0)) | number:'1.2-2' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600 text-right">
-                  {{ record.totalEarnings | number:'1.2-2' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 text-right">
-                  {{ record.totalDeductions | number:'1.2-2' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-700 text-right">
-                  {{ record.netSalary | number:'1.2-2' }} ฿
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                  <button
-                    (click)="openEditRecordModal(record)"
-                    class="text-blue-600 hover:text-blue-900 mr-3">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                  </button>
-                  <button
-                    (click)="openDeleteRecordModal(record)"
-                    class="text-red-600 hover:text-red-900">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                  </button>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Mobile Card View -->
-    <div class="md:hidden space-y-4">
-      @if (getPaginatedRecords().length === 0) {
-        <div class="bg-white rounded-lg shadow-sm p-12 text-center">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-          </svg>
-          <p class="mt-2 text-gray-500">ไม่พบรายการเงินเดือน</p>
-        </div>
-      }
-      @for (record of getPaginatedRecords(); track record.id) {
-        <div class="bg-white rounded-lg shadow-sm p-4">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex-1">
-              <h3 class="font-semibold text-gray-900">{{ record.employeeName }}</h3>
-              <p class="text-sm text-gray-500 mt-1">{{ record.employeeCode }} - {{ record.position }}</p>
-            </div>
-            <p class="text-lg font-bold text-green-600">{{ record.netSalary | number:'1.2-2' }} ฿</p>
-          </div>
-
-          <div class="space-y-2 mb-4 text-sm">
-            <div class="flex justify-between">
-              <span class="text-gray-600">เงินเดือนฐาน</span>
-              <span class="text-gray-900">{{ record.baseSalary | number:'1.2-2' }}</span>
-            </div>
-            <div class="flex justify-between text-green-600">
-              <span>รายได้รวม</span>
-              <span class="font-semibold">{{ record.totalEarnings | number:'1.2-2' }}</span>
-            </div>
-            <div class="flex justify-between text-red-600">
-              <span>หักรายการ</span>
-              <span class="font-semibold">{{ record.totalDeductions | number:'1.2-2' }}</span>
-            </div>
-          </div>
-
-          <div class="flex gap-2 pt-3 border-t border-gray-200">
+      <!-- Employee Selection -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <label class="block text-sm font-medium text-gray-700">เลือกพนักงาน</label>
+          <div class="flex gap-2">
             <button
-              (click)="openEditRecordModal(record)"
-              class="flex-1 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors flex items-center justify-center gap-2">
-              แก้ไข
+              (click)="selectAllEmployees()"
+              class="text-sm text-green-600 hover:text-green-700 font-medium">
+              เลือกทั้งหมด
             </button>
+            <span class="text-gray-400">|</span>
             <button
-              (click)="openDeleteRecordModal(record)"
-              class="flex-1 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors flex items-center justify-center gap-2">
-              ลบ
+              (click)="deselectAllEmployees()"
+              class="text-sm text-gray-600 hover:text-gray-700 font-medium">
+              ยกเลิกทั้งหมด
             </button>
           </div>
         </div>
-      }
-    </div>
 
-    <!-- Pagination -->
-    @if (getTotalRecordPages() > 1) {
-      <div class="mt-6 flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow-sm">
-        <div class="text-sm text-gray-700">
-          แสดง {{ (currentRecordPage() - 1) * itemsPerPage() + 1 }} - {{ Math.min(currentRecordPage() * itemsPerPage(), filteredRecords().length) }}
-          จากทั้งหมด {{ filteredRecords().length }} รายการ
+        <div class="border border-gray-300 rounded-lg max-h-96 overflow-y-auto">
+          @if (employees().length === 0) {
+            <div class="p-8 text-center text-gray-500">
+              <p>ไม่พบพนักงานที่ใช้งานอยู่</p>
+            </div>
+          }
+          @for (employee of employees(); track employee.id) {
+            <div class="flex items-center p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
+              <input
+                type="checkbox"
+                [checked]="isEmployeeSelected(employee.id!)"
+                (change)="toggleEmployeeForCalculation(employee.id!)"
+                class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 mr-3">
+              <div class="flex-1">
+                <div class="font-medium text-gray-900">{{ employee.fullNameTh || employee.fullNameEn }}</div>
+                <div class="text-sm text-gray-600">
+                  {{ employee.employeeCode }} • {{ employee.branchName || '-' }} •
+                  <span [class.text-blue-600]="employee.employmentType === 'Monthly'" [class.text-green-600]="employee.employmentType === 'Daily'">
+                    {{ employee.employmentType === 'Monthly' ? 'รายเดือน' : 'รายวัน' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
         </div>
-        <div class="flex gap-2">
-          <button
-            (click)="previousRecordPage()"
-            [disabled]="currentRecordPage() === 1"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-            ก่อนหน้า
-          </button>
-          <button
-            (click)="nextRecordPage()"
-            [disabled]="currentRecordPage() === getTotalRecordPages()"
-            class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-            ถัดไป
-          </button>
+
+        <div class="mt-2 text-sm text-gray-600">
+          เลือกแล้ว: <span class="font-medium text-gray-900">{{ calculationForm.employeeIds.length }}</span> คน
         </div>
       </div>
-    }
+
+      <!-- Calculate Button -->
+      <div class="flex gap-3">
+        <button
+          (click)="calculatePayroll()"
+          [disabled]="loading() || (calculationForm.employeeIds.length === 0 && calculationForm.branchId === null)"
+          class="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+          @if (loading()) {
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            <span>กำลังคำนวณ...</span>
+          } @else {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+            <span class="font-semibold">คำนวณเงินเดือน</span>
+          }
+        </button>
+      </div>
+    </div>
   }
 </div>
 
-<!-- Period Modal -->
-@if (showPeriodModal()) {
+<!-- Calculation Result Modal -->
+@if (showCalculationResultModal()) {
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-      <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <h2 class="text-xl font-bold text-gray-900">
-          {{ isEditMode() ? 'แก้ไขงวดเงินเดือน' : 'สร้างงวดเงินเดือนใหม่' }}
-        </h2>
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div class="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900">ผลการคำนวณเงินเดือน</h2>
         <button (click)="closeModals()" class="text-gray-400 hover:text-gray-600">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -395,335 +442,66 @@
         </button>
       </div>
 
-      <div class="p-6">
-        <form (ngSubmit)="savePeriod()">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                สาขา <span class="text-red-500">*</span>
-              </label>
-              <select
-                [(ngModel)]="periodForm.branchId"
-                name="branchId"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <option [value]="null">เลือกสาขา</option>
-                @for (branch of branches(); track branch.id) {
-                  <option [value]="branch.id">{{ branch.name }}</option>
-                }
-              </select>
-            </div>
-
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                ชื่องวด <span class="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                [(ngModel)]="periodForm.periodName"
-                name="periodName"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                วันที่เริ่มต้น <span class="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                [(ngModel)]="periodForm.startDate"
-                name="startDate"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                วันที่สิ้นสุด <span class="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                [(ngModel)]="periodForm.endDate"
-                name="endDate"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">สถานะ</label>
-              <select
-                [(ngModel)]="periodForm.status"
-                name="status"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                @for (status of periodStatuses; track status.value) {
-                  <option [value]="status.value">{{ status.label }}</option>
-                }
-              </select>
+      <div class="p-6 overflow-y-auto max-h-[calc(90vh-8rem)]">
+        @if (calculationResult()) {
+          <div class="mb-6">
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div class="flex items-center gap-2 text-green-800">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="font-medium">คำนวณสำเร็จ {{ calculationResult()!.salaryRecords?.length || 0 }} รายการ</span>
+              </div>
             </div>
           </div>
 
-          <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              (click)="closeModals()"
-              class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-              ยกเลิก
-            </button>
-            <button
-              type="submit"
-              class="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              {{ isEditMode() ? 'บันทึก' : 'สร้าง' }}
-            </button>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">พนักงาน</th>
+                  <th class="px-4 py-2 text-right text-xs font-medium text-gray-700 uppercase">รายได้</th>
+                  <th class="px-4 py-2 text-right text-xs font-medium text-gray-700 uppercase">หัก</th>
+                  <th class="px-4 py-2 text-right text-xs font-medium text-gray-700 uppercase">สุทธิ</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                @for (record of calculationResult()!.salaryRecords; track record.id) {
+                  <tr>
+                    <td class="px-4 py-2 text-sm text-gray-900">
+                      <div>{{ record.employeeNameTh }}</div>
+                      <div class="text-xs text-gray-500">{{ record.employeeCode }}</div>
+                    </td>
+                    <td class="px-4 py-2 text-sm text-right text-blue-700">
+                      {{ formatCurrency(record.totalEarnings) }} ฿
+                    </td>
+                    <td class="px-4 py-2 text-sm text-right text-red-700">
+                      {{ formatCurrency(record.totalDeductions) }} ฿
+                    </td>
+                    <td class="px-4 py-2 text-sm text-right font-bold text-green-700">
+                      {{ formatCurrency(record.netSalary) }} ฿
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
-        </form>
+        }
       </div>
-    </div>
-  </div>
-}
 
-<!-- Record Modal -->
-@if (showRecordModal()) {
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-      <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <h2 class="text-xl font-bold text-gray-900">
-          {{ isEditMode() ? 'แก้ไขรายการเงินเดือน' : 'เพิ่มรายการเงินเดือน' }}
-        </h2>
-        <button (click)="closeModals()" class="text-gray-400 hover:text-gray-600">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
+      <div class="border-t border-gray-200 px-6 py-4 flex justify-end gap-3">
+        <button
+          (click)="closeModals(); switchTab('records')"
+          class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+          ดูรายการเงินเดือน
         </button>
       </div>
-
-      <div class="p-6">
-        <form (ngSubmit)="saveRecord()">
-          <!-- Employee Selection -->
-          <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              พนักงาน <span class="text-red-500">*</span>
-            </label>
-            <select
-              [(ngModel)]="recordForm.userId"
-              name="userId"
-              (change)="onEmployeeSelect($any($event.target).value)"
-              required
-              [disabled]="isEditMode()"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100">
-              <option [value]="null">เลือกพนักงาน</option>
-              @for (employee of employees(); track employee.id) {
-                <option [value]="employee.id">{{ employee.firstName }} {{ employee.lastName }} ({{ employee.employeeCode }})</option>
-              }
-            </select>
-          </div>
-
-          <!-- Earnings Section -->
-          <div class="mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-              </svg>
-              รายได้
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-green-50 rounded-lg">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">เงินเดือนฐาน</label>
-                <input
-                  type="number"
-                  [(ngModel)]="recordForm.baseSalary"
-                  name="baseSalary"
-                  min="0"
-                  step="0.01"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">ค่าคอมมิชชั่น</label>
-                <input
-                  type="number"
-                  [(ngModel)]="recordForm.commission"
-                  name="commission"
-                  min="0"
-                  step="0.01"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">ชั่วโมง OT</label>
-                <input
-                  type="number"
-                  [(ngModel)]="recordForm.overtimeHours"
-                  name="overtimeHours"
-                  min="0"
-                  step="0.5"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">ค่า OT</label>
-                <input
-                  type="number"
-                  [(ngModel)]="recordForm.overtimeAmount"
-                  name="overtimeAmount"
-                  min="0"
-                  step="0.01"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">โบนัส</label>
-                <input
-                  type="number"
-                  [(ngModel)]="recordForm.bonus"
-                  name="bonus"
-                  min="0"
-                  step="0.01"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              </div>
-              <div class="flex items-end">
-                <div class="w-full p-3 bg-white rounded-lg border-2 border-green-300">
-                  <p class="text-sm text-gray-600">รายได้รวม</p>
-                  <p class="text-xl font-bold text-green-600">{{ calculateTotalEarnings() | number:'1.2-2' }} ฿</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Deductions Section -->
-          <div class="mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-              </svg>
-              รายการหัก
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-red-50 rounded-lg">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">เบิกล่วงหน้า</label>
-                <input
-                  type="number"
-                  [(ngModel)]="recordForm.advancePayment"
-                  name="advancePayment"
-                  min="0"
-                  step="0.01"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">หนี้คงเหลือ</label>
-                <input
-                  type="number"
-                  [(ngModel)]="recordForm.previousDebt"
-                  name="previousDebt"
-                  min="0"
-                  step="0.01"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">ประกันสังคม</label>
-                <input
-                  type="number"
-                  [(ngModel)]="recordForm.socialSecurity"
-                  name="socialSecurity"
-                  min="0"
-                  step="0.01"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">หนี้รายเดือน</label>
-                <input
-                  type="number"
-                  [(ngModel)]="recordForm.monthlyDebt"
-                  name="monthlyDebt"
-                  min="0"
-                  step="0.01"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">ค่าโทรศัพท์</label>
-                <input
-                  type="number"
-                  [(ngModel)]="recordForm.phoneBill"
-                  name="phoneBill"
-                  min="0"
-                  step="0.01"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">หักอื่นๆ</label>
-                <input
-                  type="number"
-                  [(ngModel)]="recordForm.otherDeductions"
-                  name="otherDeductions"
-                  min="0"
-                  step="0.01"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              </div>
-              <div class="md:col-span-2">
-                <div class="p-3 bg-white rounded-lg border-2 border-red-300">
-                  <p class="text-sm text-gray-600">หักรายการรวม</p>
-                  <p class="text-xl font-bold text-red-600">{{ calculateTotalDeductions() | number:'1.2-2' }} ฿</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Net Salary -->
-          <div class="mb-6">
-            <div class="p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border-2 border-green-300">
-              <p class="text-sm text-gray-600 mb-2">เงินเดือนสุทธิ</p>
-              <p class="text-3xl font-bold text-green-600">{{ calculateNetSalary() | number:'1.2-2' }} ฿</p>
-            </div>
-          </div>
-
-          <!-- Payment Info -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">วันที่จ่าย</label>
-              <input
-                type="date"
-                [(ngModel)]="recordForm.paymentDate"
-                name="paymentDate"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">วิธีชำระ</label>
-              <select
-                [(ngModel)]="recordForm.paymentMethod"
-                name="paymentMethod"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                @for (method of paymentMethods; track method.value) {
-                  <option [value]="method.value">{{ method.label }}</option>
-                }
-              </select>
-            </div>
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">หมายเหตุ</label>
-              <textarea
-                [(ngModel)]="recordForm.notes"
-                name="notes"
-                rows="3"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-            </div>
-          </div>
-
-          <div class="flex gap-3 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              (click)="closeModals()"
-              class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-              ยกเลิก
-            </button>
-            <button
-              type="submit"
-              class="flex-1 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-              {{ isEditMode() ? 'บันทึก' : 'เพิ่ม' }}
-            </button>
-          </div>
-        </form>
-      </div>
     </div>
   </div>
 }
 
-<!-- Delete Period Modal -->
-@if (showDeletePeriodModal()) {
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal()) {
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
       <div class="p-6">
@@ -732,53 +510,19 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
           </svg>
         </div>
-        <h3 class="text-lg font-semibold text-gray-900 text-center mb-2">ยืนยันการลบงวดเงินเดือน</h3>
+        <h3 class="text-lg font-semibold text-gray-900 text-center mb-2">ยืนยันการลบรายการเงินเดือน</h3>
         <p class="text-sm text-gray-600 text-center mb-6">
-          คุณแน่ใจหรือไม่ว่าต้องการลบงวด <span class="font-semibold">{{ selectedPeriodForEdit()?.periodName }}</span>?<br>
-          การดำเนินการนี้จะลบรายการเงินเดือนทั้งหมดในงวดนี้ด้วย
+          คุณแน่ใจหรือไม่ที่จะลบรายการเงินเดือนของ
+          <strong>{{ selectedRecord()?.employeeNameTh }}</strong>
+          ({{ getMonthLabel(selectedRecord()?.month) }} {{ selectedRecord()?.year ? (selectedRecord()!.year! + 543) : '' }})
         </p>
         <div class="flex gap-3">
           <button
-            type="button"
             (click)="closeModals()"
-            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
             ยกเลิก
           </button>
           <button
-            type="button"
-            (click)="deletePeriod()"
-            class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-            ลบ
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-}
-
-<!-- Delete Record Modal -->
-@if (showDeleteRecordModal()) {
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-      <div class="p-6">
-        <div class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
-          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-          </svg>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-900 text-center mb-2">ยืนยันการลบรายการ</h3>
-        <p class="text-sm text-gray-600 text-center mb-6">
-          คุณแน่ใจหรือไม่ว่าต้องการลบรายการเงินเดือนของ <span class="font-semibold">{{ selectedRecord()?.employeeName }}</span>?
-        </p>
-        <div class="flex gap-3">
-          <button
-            type="button"
-            (click)="closeModals()"
-            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-            ยกเลิก
-          </button>
-          <button
-            type="button"
             (click)="deleteRecord()"
             class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
             ลบ

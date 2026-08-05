@@ -1,0 +1,442 @@
+<div class="container mx-auto px-4 py-6">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">จัดการ OT (โอที)</h1>
+    <p class="text-gray-600 mt-2">จัดการและอนุมัติการทำงานล่วงเวลาของพนักงาน</p>
+  </div>
+
+  <!-- Tab Navigation -->
+  <nav class="flex border-b border-gray-200 mb-6 -mb-px">
+    <button
+      (click)="switchTab('records')"
+      [class]="activeTab() === 'records' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+      class="py-4 px-6 border-b-2 font-medium text-sm transition-colors">
+      รายการ OT ทั้งหมด
+    </button>
+    <button
+      (click)="switchTab('pending')"
+      [class]="activeTab() === 'pending' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+      class="py-4 px-6 border-b-2 font-medium text-sm transition-colors">
+      รออนุมัติ
+      @if (pendingRecords().length > 0) {
+        <span class="ml-2 bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded-full">
+          {{ pendingRecords().length }}
+        </span>
+      }
+    </button>
+  </nav>
+
+  <!-- Records Tab -->
+  @if (activeTab() === 'records') {
+    <!-- Filters -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-lg font-semibold mb-4">ตัวกรอง</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">วันที่เริ่มต้น</label>
+          <input
+            type="date"
+            [(ngModel)]="filterForm.startDate"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">วันที่สิ้นสุด</label>
+          <input
+            type="date"
+            [(ngModel)]="filterForm.endDate"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">พนักงาน</label>
+          <select
+            [(ngModel)]="filterForm.employeeId"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option [value]="null">ทั้งหมด</option>
+            @for (employee of employees(); track employee.id) {
+              <option [value]="employee.id">{{ employee.employeeCode }} - {{ employee.fullNameTh }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">สถานะ</label>
+          <select
+            [(ngModel)]="filterForm.status"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="all">ทั้งหมด</option>
+            <option value="pending">รออนุมัติ</option>
+            <option value="approved">อนุมัติแล้ว</option>
+            <option value="rejected">ปฏิเสธ</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-4 flex gap-2">
+        <button
+          (click)="applyFilters()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+          ค้นหา
+        </button>
+        <button
+          (click)="openCreateModal()"
+          class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+          + เพิ่มรายการ OT
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+        <div class="text-sm text-blue-600 mb-1">รายการทั้งหมด</div>
+        <div class="text-2xl font-bold text-blue-900">{{ filteredRecords().length }}</div>
+      </div>
+
+      <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+        <div class="text-sm text-green-600 mb-1">ชั่วโมงรวม</div>
+        <div class="text-2xl font-bold text-green-900">{{ totalHours() }} ชม.</div>
+      </div>
+
+      <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+        <div class="text-sm text-purple-600 mb-1">จำนวนเงินรวม</div>
+        <div class="text-2xl font-bold text-purple-900">{{ formatCurrency(totalAmount()) }} ฿</div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      @if (loading()) {
+        <div class="p-8 text-center text-gray-500">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          กำลังโหลดข้อมูล...
+        </div>
+      } @else if (filteredRecords().length === 0) {
+        <div class="p-8 text-center text-gray-500">
+          ไม่พบข้อมูลรายการ OT
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">พนักงาน</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เวลา</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชั่วโมง</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อัตราคูณ</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">จำนวนเงิน</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">สถานะ</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              @for (record of filteredRecords(); track record.id) {
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ formatDate(record.overtimeDate) }}
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-900">
+                    <div class="font-medium">{{ record.employeeCode }}</div>
+                    <div class="text-gray-500">{{ record.employeeNameTh }}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ formatTime(record.startTime) }} - {{ formatTime(record.endTime) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ record.hours }} ชม.
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ record.rateMultiplier }}x
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {{ formatCurrency(record.amount) }} ฿
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span [class]="'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ' + getStatusClass(record.status)">
+                      {{ getStatusText(record.status) }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                    @if (record.status === 'pending') {
+                      <button
+                        (click)="approveRecord(record)"
+                        class="text-green-600 hover:text-green-900">
+                        อนุมัติ
+                      </button>
+                      <button
+                        (click)="openApprovalModal(record)"
+                        class="text-red-600 hover:text-red-900">
+                        ปฏิเสธ
+                      </button>
+                      <button
+                        (click)="openEditModal(record)"
+                        class="text-blue-600 hover:text-blue-900">
+                        แก้ไข
+                      </button>
+                      <button
+                        (click)="deleteRecord(record)"
+                        class="text-red-600 hover:text-red-900">
+                        ลบ
+                      </button>
+                    } @else if (record.status === 'approved') {
+                      <span class="text-gray-400">อนุมัติแล้ว</span>
+                    } @else {
+                      <button
+                        (click)="deleteRecord(record)"
+                        class="text-red-600 hover:text-red-900">
+                        ลบ
+                      </button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Pending Tab -->
+  @if (activeTab() === 'pending') {
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      @if (loading()) {
+        <div class="p-8 text-center text-gray-500">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          กำลังโหลดข้อมูล...
+        </div>
+      } @else if (pendingRecords().length === 0) {
+        <div class="p-8 text-center text-gray-500">
+          ไม่มีรายการรออนุมัติ
+        </div>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">พนักงาน</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">เวลา</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ชั่วโมง</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">อัตราคูณ</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">จำนวนเงิน</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">หมายเหตุ</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              @for (record of pendingRecords(); track record.id) {
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ formatDate(record.overtimeDate) }}
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-900">
+                    <div class="font-medium">{{ record.employeeCode }}</div>
+                    <div class="text-gray-500">{{ record.employeeNameTh }}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ formatTime(record.startTime) }} - {{ formatTime(record.endTime) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ record.hours }} ชม.
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ record.rateMultiplier }}x
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {{ formatCurrency(record.amount) }} ฿
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-500">
+                    {{ record.notes || '-' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                    <button
+                      (click)="approveRecord(record)"
+                      class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700">
+                      อนุมัติ
+                    </button>
+                    <button
+                      (click)="openApprovalModal(record)"
+                      class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">
+                      ปฏิเสธ
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Form Modal -->
+@if (showFormModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">
+            {{ isEditMode() ? 'แก้ไขรายการ OT' : 'เพิ่มรายการ OT' }}
+          </h2>
+          <button
+            (click)="closeModal()"
+            class="text-gray-400 hover:text-gray-600 text-2xl">
+            ×
+          </button>
+        </div>
+
+        <form (ngSubmit)="saveOvertimeRecord()" #overtimeFormEl="ngForm" class="space-y-4">
+          @if (!isEditMode()) {
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">พนักงาน *</label>
+              <select
+                [(ngModel)]="overtimeForm.employeeId"
+                name="employeeId"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option [value]="null">เลือกพนักงาน</option>
+                @for (employee of employees(); track employee.id) {
+                  <option [value]="employee.id">
+                    {{ employee.employeeCode }} - {{ employee.fullNameTh }}
+                  </option>
+                }
+              </select>
+            </div>
+          }
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">วันที่ทำ OT *</label>
+            <input
+              type="date"
+              [(ngModel)]="overtimeForm.overtimeDate"
+              name="overtimeDate"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">เวลาเริ่มต้น *</label>
+              <input
+                type="time"
+                [(ngModel)]="overtimeForm.startTime"
+                (change)="calculateHours()"
+                name="startTime"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">เวลาสิ้นสุด *</label>
+              <input
+                type="time"
+                [(ngModel)]="overtimeForm.endTime"
+                (change)="calculateHours()"
+                name="endTime"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">จำนวนชั่วโมง *</label>
+              <input
+                type="number"
+                [(ngModel)]="overtimeForm.hours"
+                name="hours"
+                step="0.5"
+                min="0"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">อัตราคูณ</label>
+              <select
+                [(ngModel)]="overtimeForm.rateMultiplier"
+                name="rateMultiplier"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option [value]="1.5">1.5x (วันธรรมดา)</option>
+                <option [value]="2">2x (วันหยุด)</option>
+                <option [value]="3">3x (วันหยุดนักขัตฤกษ์)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">หมายเหตุ</label>
+            <textarea
+              [(ngModel)]="overtimeForm.notes"
+              name="notes"
+              rows="3"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
+
+          <div class="flex justify-end gap-3 mt-6">
+            <button
+              type="button"
+              (click)="closeModal()"
+              class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+              ยกเลิก
+            </button>
+            <button
+              type="submit"
+              [disabled]="loading() || overtimeFormEl.invalid"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              [title]="overtimeFormEl.invalid ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : ''">
+              {{ loading() ? 'กำลังบันทึก...' : 'บันทึก' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Reject Modal -->
+@if (showApprovalModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg max-w-md w-full">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-xl font-bold text-gray-900">ปฏิเสธรายการ OT</h2>
+          <button
+            (click)="closeModal()"
+            class="text-gray-400 hover:text-gray-600 text-2xl">
+            ×
+          </button>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">เหตุผลในการปฏิเสธ *</label>
+          <textarea
+            [(ngModel)]="approvalForm.reason"
+            rows="4"
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="กรุณาระบุเหตุผล..."></textarea>
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button
+            type="button"
+            (click)="closeModal()"
+            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+            ยกเลิก
+          </button>
+          <button
+            (click)="rejectRecord()"
+            [disabled]="loading()"
+            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-400">
+            {{ loading() ? 'กำลังบันทึก...' : 'ยืนยันปฏิเสธ' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

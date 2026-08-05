@@ -11,11 +11,10 @@ import { HttpHeaders }                                       from '@angular/comm
 
 import { Observable }                                        from 'rxjs';
 
-import { ApiResponseDtoOfBoolean } from '../model/models';
-import { ApiResponseDtoOfEmployeeDto } from '../model/models';
-import { ApiResponseDtoOfIEnumerableOfEmployeeDto } from '../model/models';
-import { CreateEmployeeDto } from '../model/models';
-import { UpdateEmployeeDto } from '../model/models';
+import { EmployeeCreateDto } from '../model/models';
+import { EmployeeDetailDto } from '../model/models';
+import { EmployeeListDto } from '../model/models';
+import { EmployeeUpdateDto } from '../model/models';
 
 
 import { Configuration }                                     from '../configuration';
@@ -29,64 +28,116 @@ export interface EmployeesServiceInterface {
     /**
      * 
      * 
-     * @endpoint get /api/erp/employees/active
-     */
-    apiErpEmployeesActiveGet(extraHttpRequestParams?: any): Observable<ApiResponseDtoOfIEnumerableOfEmployeeDto>;
-
-    /**
-     * 
-     * 
-     * @endpoint get /api/erp/employees/branch/{branchId}
+     * @endpoint get /api/employees/branch/{branchId}
      * @param branchId 
      */
-    apiErpEmployeesBranchBranchIdGet(branchId: number, extraHttpRequestParams?: any): Observable<ApiResponseDtoOfIEnumerableOfEmployeeDto>;
+    apiEmployeesBranchBranchIdGet(branchId: number, extraHttpRequestParams?: any): Observable<Array<EmployeeListDto>>;
 
     /**
      * 
      * 
-     * @endpoint get /api/erp/employees/code/{employeeCode}
-     * @param employeeCode 
+     * @endpoint get /api/employees/employment-type/{employmentType}
+     * @param employmentType 
      */
-    apiErpEmployeesCodeEmployeeCodeGet(employeeCode: string, extraHttpRequestParams?: any): Observable<ApiResponseDtoOfEmployeeDto>;
+    apiEmployeesEmploymentTypeEmploymentTypeGet(employmentType: string, extraHttpRequestParams?: any): Observable<Array<EmployeeListDto>>;
 
     /**
      * 
      * 
-     * @endpoint get /api/erp/employees
+     * @endpoint get /api/employees/expiring-work-permits
+     * @param days 
      */
-    apiErpEmployeesGet(extraHttpRequestParams?: any): Observable<ApiResponseDtoOfIEnumerableOfEmployeeDto>;
+    apiEmployeesExpiringWorkPermitsGet(days?: number, extraHttpRequestParams?: any): Observable<Array<EmployeeListDto>>;
 
     /**
      * 
      * 
-     * @endpoint delete /api/erp/employees/{id}
+     * @endpoint get /api/employees
+     */
+    apiEmployeesGet(extraHttpRequestParams?: any): Observable<Array<EmployeeListDto>>;
+
+    /**
+     * 
+     * 
+     * @endpoint delete /api/employees/{id}
      * @param id 
      */
-    apiErpEmployeesIdDelete(id: number, extraHttpRequestParams?: any): Observable<ApiResponseDtoOfBoolean>;
+    apiEmployeesIdDelete(id: number, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * 
      * 
-     * @endpoint get /api/erp/employees/{id}
+     * @endpoint get /api/employees/{id}
      * @param id 
      */
-    apiErpEmployeesIdGet(id: number, extraHttpRequestParams?: any): Observable<ApiResponseDtoOfEmployeeDto>;
+    apiEmployeesIdGet(id: number, extraHttpRequestParams?: any): Observable<EmployeeDetailDto>;
 
     /**
      * 
      * 
-     * @endpoint put /api/erp/employees/{id}
+     * @endpoint delete /api/employees/{id}/photo
      * @param id 
-     * @param updateEmployeeDto 
      */
-    apiErpEmployeesIdPut(id: number, updateEmployeeDto?: UpdateEmployeeDto, extraHttpRequestParams?: any): Observable<ApiResponseDtoOfEmployeeDto>;
+    apiEmployeesIdPhotoDelete(id: number, extraHttpRequestParams?: any): Observable<{}>;
 
     /**
      * 
      * 
-     * @endpoint post /api/erp/employees
-     * @param createEmployeeDto 
+     * @endpoint post /api/employees/{id}/photo
+     * @param id 
+     * @param file 
      */
-    apiErpEmployeesPost(createEmployeeDto?: CreateEmployeeDto, extraHttpRequestParams?: any): Observable<ApiResponseDtoOfEmployeeDto>;
+    apiEmployeesIdPhotoPost(id: number, file?: Blob, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
+     * @endpoint put /api/employees/{id}
+     * @param id 
+     * @param employeeUpdateDto 
+     */
+    apiEmployeesIdPut(id: number, employeeUpdateDto?: EmployeeUpdateDto, extraHttpRequestParams?: any): Observable<EmployeeDetailDto>;
+
+    /**
+     * 
+     * 
+     * @endpoint get /api/employees/nationality/{nationality}
+     * @param nationality 
+     */
+    apiEmployeesNationalityNationalityGet(nationality: string, extraHttpRequestParams?: any): Observable<Array<EmployeeListDto>>;
+
+    /**
+     * 
+     * 
+     * @endpoint post /api/employees
+     * @param employeeCreateDto 
+     */
+    apiEmployeesPost(employeeCreateDto?: EmployeeCreateDto, extraHttpRequestParams?: any): Observable<EmployeeDetailDto>;
+
+    /**
+     * 
+     * 
+     * @endpoint get /api/employees/search
+     * @param q 
+     */
+    apiEmployeesSearchGet(q?: string, extraHttpRequestParams?: any): Observable<Array<EmployeeListDto>>;
+
+    /**
+     * 
+     * 
+     * @endpoint get /api/employees/validate/email
+     * @param email 
+     * @param excludeId 
+     */
+    apiEmployeesValidateEmailGet(email?: string, excludeId?: number, extraHttpRequestParams?: any): Observable<{}>;
+
+    /**
+     * 
+     * 
+     * @endpoint get /api/employees/validate/employee-code
+     * @param code 
+     * @param excludeId 
+     */
+    apiEmployeesValidateEmployeeCodeGet(code?: string, excludeId?: number, extraHttpRequestParams?: any): Observable<{}>;
 
 }

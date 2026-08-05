@@ -21,7 +21,7 @@ export class BranchListAdminComponent implements OnInit {
   branches = signal<BranchDto[]>([]);
   filteredBranches = signal<BranchDto[]>([]);
 
-  loading = signal(true);
+  loading = signal(false);
   error = signal('');
 
   // Filters

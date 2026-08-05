@@ -26,7 +26,7 @@ export class BankingAdminComponent implements OnInit {
   transactions = signal<BankTransactionDto[]>([]);
   filteredTransactions = signal<BankTransactionDto[]>([]);
   branches = signal<BranchDto[]>([]);
-  loading = signal(true);
+  loading = signal(false);
 
   // Active tab
   activeTab = signal<'accounts' | 'transactions'>('accounts');

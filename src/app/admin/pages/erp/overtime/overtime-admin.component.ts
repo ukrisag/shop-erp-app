@@ -1,0 +1,461 @@
+import { Component, OnInit, signal, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { OvertimeService } from '../../../../services/openapi-client/api/overtime.service';
+import { EmployeesService } from '../../../../services/openapi-client/api/employees.service';
+import { NotificationService } from '../../../../services/notification.service';
+import {
+  OvertimeRecordCreateDto,
+  OvertimeRecordUpdateDto,
+  OvertimeApprovalDto,
+  EmployeeListDto
+} from '../../../../services/openapi-client/model/models';
+
+interface OvertimeRecordDto {
+  id: number;
+  employeeId: number;
+  employeeCode?: string;
+  employeeNameTh?: string;
+  employeeNameEn?: string;
+  overtimeDate: string;
+  startTime: string;
+  endTime: string;
+  hours: number;
+  rateMultiplier: number;
+  amount: number;
+  status: 'pending' | 'approved' | 'rejected';
+  approvedBy?: string;
+  approvedAt?: string;
+  rejectedReason?: string;
+  notes?: string;
+  createdAt?: string;
+}
+
+@Component({
+  selector: 'app-overtime-admin',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './overtime-admin.component.html',
+  styleUrls: ['./overtime-admin.component.css']
+})
+export class OvertimeAdminComponent implements OnInit {
+  // State signals
+  activeTab = signal<'records' | 'pending'>('records');
+  overtimeRecords = signal<OvertimeRecordDto[]>([]);
+  pendingRecords = signal<OvertimeRecordDto[]>([]);
+  employees = signal<EmployeeListDto[]>([]);
+  loading = signal(false);
+
+  // Filter state
+  filterForm = {
+    startDate: '',
+    endDate: '',
+    employeeId: null as number | null,
+    status: 'all' as 'all' | 'pending' | 'approved' | 'rejected'
+  };
+
+  // Modal state
+  showFormModal = signal(false);
+  showApprovalModal = signal(false);
+  selectedRecord = signal<OvertimeRecordDto | null>(null);
+  isEditMode = signal(false);
+
+  // Form data
+  overtimeForm: any = {
+    employeeId: null,
+    overtimeDate: '',
+    startTime: '',
+    endTime: '',
+    hours: null,
+    rateMultiplier: 1.5,
+    notes: ''
+  };
+
+  // Approval form
+  approvalForm = {
+    reason: ''
+  };
+
+  // Computed values
+  filteredRecords = computed(() => {
+    let records = this.overtimeRecords();
+
+    // Filter by status
+    if (this.filterForm.status !== 'all') {
+      records = records.filter(r => r.status === this.filterForm.status);
+    }
+
+    // Filter by employee
+    if (this.filterForm.employeeId) {
+      records = records.filter(r => r.employeeId === this.filterForm.employeeId);
+    }
+
+    // Filter by date range
+    if (this.filterForm.startDate && this.filterForm.endDate) {
+      records = records.filter(r => {
+        const recordDate = new Date(r.overtimeDate);
+        const start = new Date(this.filterForm.startDate);
+        const end = new Date(this.filterForm.endDate);
+        return recordDate >= start && recordDate <= end;
+      });
+    }
+
+    return records;
+  });
+
+  totalAmount = computed(() => {
+    return this.filteredRecords().reduce((sum, record) => sum + (record.amount || 0), 0);
+  });
+
+  totalHours = computed(() => {
+    return this.filteredRecords().reduce((sum, record) => sum + (record.hours || 0), 0);
+  });
+
+  constructor(
+    private overtimeService: OvertimeService,
+    private employeesService: EmployeesService,
+    private notificationService: NotificationService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadEmployees();
+    this.loadOvertimeRecords();
+    this.setDefaultDates();
+  }
+
+  setDefaultDates(): void {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    this.filterForm.startDate = firstDay.toISOString().split('T')[0];
+    this.filterForm.endDate = lastDay.toISOString().split('T')[0];
+  }
+
+  loadEmployees(): void {
+    this.employeesService.apiEmployeesGet().subscribe({
+      next: (employees: any[]) => {
+        this.employees.set(employees);
+      },
+      error: (error) => {
+        console.error('Error loading employees:', error);
+        this.notificationService.error('เกิดข้อผิดพลาดในการโหลดข้อมูลพนักงาน');
+      }
+    });
+  }
+
+  loadOvertimeRecords(): void {
+    this.loading.set(true);
+
+    if (this.filterForm.startDate && this.filterForm.endDate) {
+      this.overtimeService.apiOvertimePeriodGet(
+        this.filterForm.startDate,
+        this.filterForm.endDate
+      ).subscribe({
+        next: (records: any[]) => {
+          this.overtimeRecords.set(records);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error('Error loading overtime records:', error);
+          this.notificationService.error('เกิดข้อผิดพลาดในการโหลดข้อมูล OT');
+          this.loading.set(false);
+        }
+      });
+    }
+  }
+
+  loadPendingRecords(): void {
+    this.loading.set(true);
+    this.overtimeService.apiOvertimePendingGet().subscribe({
+      next: (records: any[]) => {
+        this.pendingRecords.set(records);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading pending records:', error);
+        this.notificationService.error('เกิดข้อผิดพลาดในการโหลดรายการรออนุมัติ');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  switchTab(tab: 'records' | 'pending'): void {
+    this.activeTab.set(tab);
+    if (tab === 'pending') {
+      this.loadPendingRecords();
+    }
+  }
+
+  applyFilters(): void {
+    this.loadOvertimeRecords();
+  }
+
+  openCreateModal(): void {
+    this.isEditMode.set(false);
+    this.resetForm();
+    this.loading.set(false);
+    this.showFormModal.set(true);
+  }
+
+  openEditModal(record: OvertimeRecordDto): void {
+    if (record.status !== 'pending') {
+      this.notificationService.error('สามารถแก้ไขได้เฉพาะรายการที่รออนุมัติเท่านั้น');
+      return;
+    }
+
+    this.isEditMode.set(true);
+    this.selectedRecord.set(record);
+    this.overtimeForm = {
+      employeeId: record.employeeId,
+      overtimeDate: record.overtimeDate.split('T')[0],
+      startTime: record.startTime,
+      endTime: record.endTime,
+      hours: record.hours,
+      rateMultiplier: record.rateMultiplier,
+      notes: record.notes || ''
+    };
+    this.loading.set(false);
+    this.showFormModal.set(true);
+  }
+
+  resetForm(): void {
+    this.overtimeForm = {
+      employeeId: null,
+      overtimeDate: '',
+      startTime: '',
+      endTime: '',
+      hours: null,
+      rateMultiplier: 1.5,
+      notes: ''
+    };
+  }
+
+  calculateHours(): void {
+    if (this.overtimeForm.startTime && this.overtimeForm.endTime) {
+      const start = new Date(`2000-01-01T${this.overtimeForm.startTime}`);
+      const end = new Date(`2000-01-01T${this.overtimeForm.endTime}`);
+      const diffMs = end.getTime() - start.getTime();
+      const hours = diffMs / (1000 * 60 * 60);
+      this.overtimeForm.hours = Math.round(hours * 100) / 100;
+    }
+  }
+
+  saveOvertimeRecord(): void {
+    if (!this.validateForm()) {
+      return;
+    }
+
+    this.loading.set(true);
+
+    if (this.isEditMode()) {
+      const updateDto: OvertimeRecordUpdateDto = {
+        overtimeDate: this.overtimeForm.overtimeDate,
+        startTime: this.overtimeForm.startTime,
+        endTime: this.overtimeForm.endTime,
+        hours: this.overtimeForm.hours,
+        rateMultiplier: this.overtimeForm.rateMultiplier,
+        notes: this.overtimeForm.notes
+      };
+
+      this.overtimeService.apiOvertimeIdPut(this.selectedRecord()!.id, updateDto).subscribe({
+        next: () => {
+          this.notificationService.success('แก้ไขข้อมูล OT สำเร็จ');
+          this.loadOvertimeRecords();
+          this.closeModal();
+        },
+        error: (error) => {
+          console.error('Error updating overtime:', error);
+          this.notificationService.error('เกิดข้อผิดพลาดในการแก้ไขข้อมูล');
+          this.loading.set(false);
+        }
+      });
+    } else {
+      const createDto: OvertimeRecordCreateDto = {
+        employeeId: this.overtimeForm.employeeId,
+        overtimeDate: this.overtimeForm.overtimeDate,
+        startTime: this.overtimeForm.startTime,
+        endTime: this.overtimeForm.endTime,
+        hours: this.overtimeForm.hours,
+        rateMultiplier: this.overtimeForm.rateMultiplier,
+        notes: this.overtimeForm.notes
+      };
+
+      this.overtimeService.apiOvertimePost(createDto).subscribe({
+        next: () => {
+          this.notificationService.success('บันทึกข้อมูล OT สำเร็จ');
+          this.loadOvertimeRecords();
+          this.closeModal();
+        },
+        error: (error) => {
+          console.error('Error creating overtime:', error);
+          this.notificationService.error('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+          this.loading.set(false);
+        }
+      });
+    }
+  }
+
+  validateForm(): boolean {
+    if (!this.overtimeForm.employeeId && !this.isEditMode()) {
+      this.notificationService.error('กรุณาเลือกพนักงาน');
+      return false;
+    }
+    if (!this.overtimeForm.overtimeDate) {
+      this.notificationService.error('กรุณาระบุวันที่ทำ OT');
+      return false;
+    }
+    if (!this.overtimeForm.startTime || !this.overtimeForm.endTime) {
+      this.notificationService.error('กรุณาระบุเวลาเริ่มต้นและสิ้นสุด');
+      return false;
+    }
+    if (!this.overtimeForm.hours || this.overtimeForm.hours <= 0) {
+      this.notificationService.error('กรุณาระบุจำนวนชั่วโมง');
+      return false;
+    }
+    return true;
+  }
+
+  openApprovalModal(record: OvertimeRecordDto): void {
+    this.selectedRecord.set(record);
+    this.approvalForm.reason = '';
+    this.showApprovalModal.set(true);
+  }
+
+  approveRecord(record: OvertimeRecordDto): void {
+    this.notificationService.confirm(
+      'ต้องการอนุมัติรายการ OT นี้ใช่หรือไม่?',
+      () => {
+        this.loading.set(true);
+        this.overtimeService.apiOvertimeIdApprovePost(record.id).subscribe({
+          next: () => {
+            this.notificationService.success('อนุมัติรายการ OT สำเร็จ');
+            this.loadOvertimeRecords();
+            if (this.activeTab() === 'pending') {
+              this.loadPendingRecords();
+            }
+          },
+          error: (error) => {
+            console.error('Error approving overtime:', error);
+            this.notificationService.error('เกิดข้อผิดพลาดในการอนุมัติ');
+            this.loading.set(false);
+          }
+        });
+      },
+      undefined,
+      'อนุมัติ',
+      'ยกเลิก',
+      'info'
+    );
+  }
+
+  rejectRecord(): void {
+    if (!this.approvalForm.reason) {
+      this.notificationService.error('กรุณาระบุเหตุผลในการปฏิเสธ');
+      return;
+    }
+
+    const rejectDto: OvertimeApprovalDto = {
+      overtimeId: this.selectedRecord()!.id,
+      isApproved: false,
+      notes: this.approvalForm.reason
+    };
+
+    this.loading.set(true);
+    this.overtimeService.apiOvertimeIdRejectPost(this.selectedRecord()!.id, rejectDto).subscribe({
+      next: () => {
+        this.notificationService.success('ปฏิเสธรายการ OT สำเร็จ');
+        this.closeModal();
+        this.loadOvertimeRecords();
+        if (this.activeTab() === 'pending') {
+          this.loadPendingRecords();
+        }
+      },
+      error: (error) => {
+        console.error('Error rejecting overtime:', error);
+        this.notificationService.error('เกิดข้อผิดพลาดในการปฏิเสธ');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  deleteRecord(record: OvertimeRecordDto): void {
+    if (record.status === 'approved') {
+      this.notificationService.error('ไม่สามารถลบรายการที่อนุมัติแล้ว');
+      return;
+    }
+
+    this.notificationService.confirm(
+      'ต้องการลบรายการ OT นี้ใช่หรือไม่?',
+      () => {
+        this.loading.set(true);
+        this.overtimeService.apiOvertimeIdDelete(record.id).subscribe({
+          next: () => {
+            this.notificationService.success('ลบรายการ OT สำเร็จ');
+            this.loadOvertimeRecords();
+            if (this.activeTab() === 'pending') {
+              this.loadPendingRecords();
+            }
+          },
+          error: (error) => {
+            console.error('Error deleting overtime:', error);
+            this.notificationService.error('เกิดข้อผิดพลาดในการลบรายการ');
+            this.loading.set(false);
+          }
+        });
+      },
+      undefined,
+      'ลบ',
+      'ยกเลิก',
+      'danger'
+    );
+  }
+
+  closeModal(): void {
+    this.showFormModal.set(false);
+    this.showApprovalModal.set(false);
+    this.selectedRecord.set(null);
+    this.resetForm();
+    this.loading.set(false);
+  }
+
+  getStatusText(status: string): string {
+    const statusMap: any = {
+      'pending': 'รออนุมัติ',
+      'approved': 'อนุมัติแล้ว',
+      'rejected': 'ปฏิเสธ'
+    };
+    return statusMap[status] || status;
+  }
+
+  getStatusClass(status: string): string {
+    const classMap: any = {
+      'pending': 'bg-yellow-100 text-yellow-800',
+      'approved': 'bg-green-100 text-green-800',
+      'rejected': 'bg-red-100 text-red-800'
+    };
+    return classMap[status] || '';
+  }
+
+  formatDate(dateString: string): string {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+
+  formatTime(timeString: string): string {
+    if (!timeString) return '-';
+    return timeString.substring(0, 5);
+  }
+
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('th-TH', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
+  }
+}

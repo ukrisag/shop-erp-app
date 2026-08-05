@@ -25,6 +25,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                           urlLower.includes('/employees') ||
                           urlLower.includes('/expenses') ||
                           urlLower.includes('/payroll') ||
+                          urlLower.includes('/overtime') ||
+                          urlLower.includes('/leave') ||
                           urlLower.includes('/deliveries') ||
                           urlLower.includes('/bank-accounts') ||
                           urlLower.includes('/bank-transactions') ||

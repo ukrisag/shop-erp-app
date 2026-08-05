@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeesService, BranchesService } from '../../../../services/openapi-client';
 import {
-  EmployeeDto,
-  ApiResponseDtoOfIEnumerableOfEmployeeDto,
-  CreateEmployeeDto,
-  UpdateEmployeeDto,
+  EmployeeListDto,
+  EmployeeDetailDto,
+  EmployeeCreateDto,
+  EmployeeUpdateDto,
   BranchDto,
   ApiResponseDtoOfIEnumerableOfBranchDto
 } from '../../../../services/openapi-client/model/models';
@@ -20,36 +20,73 @@ import { NotificationService } from '../../../../services/notification.service';
   styleUrls: ['./employee-list-admin.component.css']
 })
 export class EmployeeListAdminComponent implements OnInit {
-  employees = signal<EmployeeDto[]>([]);
-  filteredEmployees = signal<EmployeeDto[]>([]);
+  employees = signal<EmployeeListDto[]>([]);
+  filteredEmployees = signal<EmployeeListDto[]>([]);
   branches = signal<BranchDto[]>([]);
-  loading = signal(true);
+  loading = signal(false);
 
   // Filters
   searchTerm = signal('');
   selectedBranch = signal<string>('');
-  selectedRole = signal<string>('');
+  selectedEmploymentType = signal<string>('');
+  selectedNationality = signal<string>('');
 
   // Modal
   showModal = signal(false);
   showDeleteModal = signal(false);
+  showPhotoModal = signal(false);
   isEditMode = signal(false);
-  selectedEmployee = signal<EmployeeDto | null>(null);
+  selectedEmployee = signal<EmployeeDetailDto | null>(null);
+  selectedPhotoFile: File | null = null;
 
   // Form
   employeeForm: any = {
-    email: '',
-    password: '',
-    role: 'staff', // Default role = Staff
     employeeCode: '',
-    firstName: '',
-    lastName: '',
+    branchId: null,
+    firstNameTh: '',
+    lastNameTh: '',
+    firstNameEn: '',
+    lastNameEn: '',
+    email: '',
     phone: '',
+    dateOfBirth: '',
+    nationality: 'Thai',
+    idCardNumber: '',
+    passportNumber: '',
+    address: '',
     position: '',
-    salary: 0,
-    commissionRate: 0,
-    branchId: null
+    employmentType: 'Monthly',
+    salary: null,
+    dailyRate: null,
+    bankAccountNumber: '',
+    hireDate: '',
+    workPermitStartDate: '',
+    workPermitEndDate: '',
+    hasSocialSecurity: true,
+    status: 'Active'
   };
+
+  // Dropdown options
+  employmentTypes = [
+    { value: 'Monthly', label: 'รายเดือน' },
+    { value: 'Daily', label: 'รายวัน' }
+  ];
+
+  nationalities = [
+    { value: 'Thai', label: 'ไทย' },
+    { value: 'Myanmar', label: 'เมียนมา' },
+    { value: 'Lao', label: 'ลาว' },
+    { value: 'Cambodian', label: 'กัมพูชา' },
+    { value: 'Vietnamese', label: 'เวียดนาม' },
+    { value: 'Other', label: 'อื่นๆ' }
+  ];
+
+  statuses = [
+    { value: 'Active', label: 'ทำงานอยู่' },
+    { value: 'On Leave', label: 'ลาพัก' },
+    { value: 'Resigned', label: 'ลาออก' },
+    { value: 'Terminated', label: 'เลิกจ้าง' }
+  ];
 
   // Pagination
   currentPage = signal(1);
@@ -80,22 +117,15 @@ export class EmployeeListAdminComponent implements OnInit {
 
   loadEmployees(): void {
     this.loading.set(true);
-    this.employeesService.apiErpEmployeesGet().subscribe({
-      next: (response: ApiResponseDtoOfIEnumerableOfEmployeeDto) => {
-        if (response.success && response.data) {
-          let employees = response.data;
-
-          // IMPORTANT: Only show actual employees
-          // Filter to show only those with employee_code
-          employees = employees.filter((e: EmployeeDto) => e.employeeCode);
-
-          this.employees.set(employees);
-          this.applyFilters();
-        }
+    this.employeesService.apiEmployeesGet().subscribe({
+      next: (employees: EmployeeListDto[]) => {
+        this.employees.set(employees);
+        this.applyFilters();
         this.loading.set(false);
       },
       error: (error: any) => {
         console.error('Error loading employees:', error);
+        this.notificationService.error('ไม่สามารถโหลดข้อมูลพนักงานได้');
         this.loading.set(false);
       }
     });
@@ -123,6 +153,8 @@ export class EmployeeListAdminComponent implements OnInit {
       filtered = filtered.filter(emp =>
         emp.email?.toLowerCase().includes(search) ||
         emp.employeeCode?.toLowerCase().includes(search) ||
+        emp.fullNameTh?.toLowerCase().includes(search) ||
+        emp.fullNameEn?.toLowerCase().includes(search) ||
         emp.position?.toLowerCase().includes(search)
       );
     }
@@ -132,9 +164,14 @@ export class EmployeeListAdminComponent implements OnInit {
       filtered = filtered.filter(emp => emp.branchId?.toString() === this.selectedBranch());
     }
 
-    // Role filter
-    if (this.selectedRole()) {
-      filtered = filtered.filter(emp => emp.role === this.selectedRole());
+    // Employment type filter
+    if (this.selectedEmploymentType()) {
+      filtered = filtered.filter(emp => emp.employmentType === this.selectedEmploymentType());
+    }
+
+    // Nationality filter
+    if (this.selectedNationality()) {
+      filtered = filtered.filter(emp => emp.nationality === this.selectedNationality());
     }
 
     this.filteredEmployees.set(filtered);
@@ -151,56 +188,119 @@ export class EmployeeListAdminComponent implements OnInit {
     this.applyFilters();
   }
 
-  onRoleFilterChange(value: string): void {
-    this.selectedRole.set(value);
+  onEmploymentTypeFilterChange(value: string): void {
+    this.selectedEmploymentType.set(value);
+    this.applyFilters();
+  }
+
+  onNationalityFilterChange(value: string): void {
+    this.selectedNationality.set(value);
     this.applyFilters();
   }
 
   openAddModal(): void {
     this.isEditMode.set(false);
     this.selectedEmployee.set(null);
+    const today = new Date().toISOString().split('T')[0];
     this.employeeForm = {
-      email: '',
-      password: '',
-      role: 'sales',
       employeeCode: '',
-      firstName: '',
-      lastName: '',
+      branchId: null,
+      firstNameTh: '',
+      lastNameTh: '',
+      firstNameEn: '',
+      lastNameEn: '',
+      email: '',
       phone: '',
+      dateOfBirth: '',
+      nationality: 'Thai',
+      idCardNumber: '',
+      passportNumber: '',
+      address: '',
       position: '',
-      salary: 0,
-      commissionRate: 0,
-      branchId: null
+      employmentType: 'Monthly',
+      salary: null,
+      dailyRate: null,
+      bankAccountNumber: '',
+      hireDate: today,
+      workPermitStartDate: '',
+      workPermitEndDate: '',
+      hasSocialSecurity: true,
+      status: 'Active'
     };
     this.showModal.set(true);
   }
 
-  openEditModal(employee: EmployeeDto): void {
-    this.isEditMode.set(true);
-    this.selectedEmployee.set(employee);
-    this.employeeForm = {
-      email: employee.email,
-      role: employee.role,
-      employeeCode: employee.employeeCode,
-      firstName: employee.firstName,
-      lastName: employee.lastName,
-      phone: employee.phone,
-      position: employee.position,
-      salary: employee.salary || 0,
-      commissionRate: employee.commissionRate || 0,
-      branchId: employee.branchId
-    };
-    this.showModal.set(true);
+  openEditModal(employeeListItem: EmployeeListDto): void {
+    // Load full employee details
+    this.employeesService.apiEmployeesIdGet(employeeListItem.id!).subscribe({
+      next: (employee: EmployeeDetailDto) => {
+        this.isEditMode.set(true);
+        this.selectedEmployee.set(employee);
+        this.employeeForm = {
+          employeeCode: employee.employeeCode,
+          branchId: employee.branchId,
+          firstNameTh: employee.firstNameTh || '',
+          lastNameTh: employee.lastNameTh || '',
+          firstNameEn: employee.firstNameEn || '',
+          lastNameEn: employee.lastNameEn || '',
+          email: employee.email || '',
+          phone: employee.phone || '',
+          dateOfBirth: employee.dateOfBirth || '',
+          nationality: employee.nationality || 'Thai',
+          idCardNumber: employee.idCardNumber || '',
+          passportNumber: employee.passportNumber || '',
+          address: employee.address || '',
+          position: employee.position || '',
+          employmentType: employee.employmentType || 'Monthly',
+          salary: employee.salary,
+          dailyRate: employee.dailyRate,
+          bankAccountNumber: employee.bankAccountNumber || '',
+          hireDate: employee.hireDate || '',
+          workPermitStartDate: employee.workPermitStartDate || '',
+          workPermitEndDate: employee.workPermitEndDate || '',
+          hasSocialSecurity: employee.hasSocialSecurity ?? true,
+          status: employee.status || 'Active'
+        };
+        this.showModal.set(true);
+      },
+      error: (error: any) => {
+        console.error('Error loading employee details:', error);
+        this.notificationService.error('ไม่สามารถโหลดข้อมูลพนักงานได้');
+      }
+    });
   }
 
-  openDeleteModal(employee: EmployeeDto): void {
-    this.selectedEmployee.set(employee);
-    this.showDeleteModal.set(true);
+  openDeleteModal(employee: EmployeeListDto): void {
+    this.employeesService.apiEmployeesIdGet(employee.id!).subscribe({
+      next: (details: EmployeeDetailDto) => {
+        this.selectedEmployee.set(details);
+        this.showDeleteModal.set(true);
+      },
+      error: (error: any) => {
+        console.error('Error loading employee details:', error);
+        this.notificationService.error('ไม่สามารถโหลดข้อมูลพนักงานได้');
+      }
+    });
+  }
+
+  openPhotoModal(employee: EmployeeListDto): void {
+    this.employeesService.apiEmployeesIdGet(employee.id!).subscribe({
+      next: (details: EmployeeDetailDto) => {
+        this.selectedEmployee.set(details);
+        this.selectedPhotoFile = null;
+        this.showPhotoModal.set(true);
+      },
+      error: (error: any) => {
+        console.error('Error loading employee details:', error);
+        this.notificationService.error('ไม่สามารถโหลดข้อมูลพนักงานได้');
+      }
+    });
   }
 
   closeModal(): void {
     this.showModal.set(false);
     this.showDeleteModal.set(false);
+    this.showPhotoModal.set(false);
   }
 
   saveEmployee(): void {
@@ -212,26 +312,37 @@ export class EmployeeListAdminComponent implements OnInit {
   }
 
   createEmployee(): void {
-    const dto: CreateEmployeeDto = {
-      email: this.employeeForm.email,
-      password: this.employeeForm.password,
-      role: this.employeeForm.role,
+    const dto: EmployeeCreateDto = {
       employeeCode: this.employeeForm.employeeCode,
-      firstName: this.employeeForm.firstName,
-      lastName: this.employeeForm.lastName,
-      phone: this.employeeForm.phone,
-      position: this.employeeForm.position,
-      salary: this.employeeForm.salary,
-      commissionRate: this.employeeForm.commissionRate,
-      branchId: this.employeeForm.branchId
+      branchId: this.employeeForm.branchId,
+      firstNameTh: this.employeeForm.firstNameTh,
+      lastNameTh: this.employeeForm.lastNameTh,
+      firstNameEn: this.employeeForm.firstNameEn,
+      lastNameEn: this.employeeForm.lastNameEn,
+      email: this.employeeForm.email || undefined,
+      phone: this.employeeForm.phone || undefined,
+      dateOfBirth: this.employeeForm.dateOfBirth || undefined,
+      nationality: this.employeeForm.nationality || undefined,
+      idCardNumber: this.employeeForm.idCardNumber || undefined,
+      passportNumber: this.employeeForm.passportNumber || undefined,
+      address: this.employeeForm.address || undefined,
+      position: this.employeeForm.position || undefined,
+      employmentType: this.employeeForm.employmentType || undefined,
+      salary: this.employeeForm.salary || undefined,
+      dailyRate: this.employeeForm.dailyRate || undefined,
+      bankAccountNumber: this.employeeForm.bankAccountNumber || undefined,
+      hireDate: this.employeeForm.hireDate || undefined,
+      workPermitStartDate: this.employeeForm.workPermitStartDate || undefined,
+      workPermitEndDate: this.employeeForm.workPermitEndDate || undefined,
+      hasSocialSecurity: this.employeeForm.hasSocialSecurity,
+      status: this.employeeForm.status || undefined
     };
 
-    this.employeesService.apiErpEmployeesPost(dto).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          this.loadEmployees();
-          this.closeModal();
-        }
+    this.employeesService.apiEmployeesPost(dto).subscribe({
+      next: (created: EmployeeDetailDto) => {
+        this.notificationService.success('สร้างพนักงานสำเร็จ');
+        this.loadEmployees();
+        this.closeModal();
       },
       error: (error: any) => {
         console.error('Error creating employee:', error);
@@ -244,24 +355,37 @@ export class EmployeeListAdminComponent implements OnInit {
     const employee = this.selectedEmployee();
     if (!employee) return;
 
-    const dto: UpdateEmployeeDto = {
-      email: this.employeeForm.email,
-      role: this.employeeForm.role,
-      firstName: this.employeeForm.firstName,
-      lastName: this.employeeForm.lastName,
-      phone: this.employeeForm.phone,
-      position: this.employeeForm.position,
-      salary: this.employeeForm.salary,
-      commissionRate: this.employeeForm.commissionRate,
-      branchId: this.employeeForm.branchId
+    const dto: EmployeeUpdateDto = {
+      employeeCode: this.employeeForm.employeeCode,
+      branchId: this.employeeForm.branchId,
+      firstNameTh: this.employeeForm.firstNameTh || undefined,
+      lastNameTh: this.employeeForm.lastNameTh || undefined,
+      firstNameEn: this.employeeForm.firstNameEn || undefined,
+      lastNameEn: this.employeeForm.lastNameEn || undefined,
+      email: this.employeeForm.email || undefined,
+      phone: this.employeeForm.phone || undefined,
+      dateOfBirth: this.employeeForm.dateOfBirth || undefined,
+      nationality: this.employeeForm.nationality || undefined,
+      idCardNumber: this.employeeForm.idCardNumber || undefined,
+      passportNumber: this.employeeForm.passportNumber || undefined,
+      address: this.employeeForm.address || undefined,
+      position: this.employeeForm.position || undefined,
+      employmentType: this.employeeForm.employmentType || undefined,
+      salary: this.employeeForm.salary || undefined,
+      dailyRate: this.employeeForm.dailyRate || undefined,
+      bankAccountNumber: this.employeeForm.bankAccountNumber || undefined,
+      hireDate: this.employeeForm.hireDate || undefined,
+      workPermitStartDate: this.employeeForm.workPermitStartDate || undefined,
+      workPermitEndDate: this.employeeForm.workPermitEndDate || undefined,
+      hasSocialSecurity: this.employeeForm.hasSocialSecurity,
+      status: this.employeeForm.status || undefined
     };
 
-    this.employeesService.apiErpEmployeesIdPut(employee.id!, dto).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          this.loadEmployees();
-          this.closeModal();
-        }
+    this.employeesService.apiEmployeesIdPut(employee.id!, dto).subscribe({
+      next: (updated: EmployeeDetailDto) => {
+        this.notificationService.success('อัปเดตข้อมูลพนักงานสำเร็จ');
+        this.loadEmployees();
+        this.closeModal();
       },
       error: (error: any) => {
         console.error('Error updating employee:', error);
@@ -274,12 +398,11 @@ export class EmployeeListAdminComponent implements OnInit {
     const employee = this.selectedEmployee();
     if (!employee) return;
 
-    this.employeesService.apiErpEmployeesIdDelete(employee.id!).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          this.loadEmployees();
-          this.closeModal();
-        }
+    this.employeesService.apiEmployeesIdDelete(employee.id!).subscribe({
+      next: () => {
+        this.notificationService.success('ลบพนักงานสำเร็จ');
+        this.loadEmployees();
+        this.closeModal();
       },
       error: (error: any) => {
         console.error('Error deleting employee:', error);
@@ -288,7 +411,49 @@ export class EmployeeListAdminComponent implements OnInit {
     });
   }
 
-  getPaginatedEmployees(): EmployeeDto[] {
+  // Photo upload methods
+  onPhotoFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedPhotoFile = file;
+    }
+  }
+
+  uploadPhoto(): void {
+    const employee = this.selectedEmployee();
+    if (!employee || !this.selectedPhotoFile) return;
+
+    this.employeesService.apiEmployeesIdPhotoPost(employee.id!, this.selectedPhotoFile).subscribe({
+      next: (response: any) => {
+        this.notificationService.success('อัปโหลดรูปภาพสำเร็จ');
+        this.loadEmployees();
+        this.closeModal();
+      },
+      error: (error: any) => {
+        console.error('Error uploading photo:', error);
+        this.notificationService.error(error.error?.message || 'เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ');
+      }
+    });
+  }
+
+  deletePhoto(): void {
+    const employee = this.selectedEmployee();
+    if (!employee) return;
+
+    this.employeesService.apiEmployeesIdPhotoDelete(employee.id!).subscribe({
+      next: () => {
+        this.notificationService.success('ลบรูปภาพสำเร็จ');
+        this.loadEmployees();
+        this.closeModal();
+      },
+      error: (error: any) => {
+        console.error('Error deleting photo:', error);
+        this.notificationService.error(error.error?.message || 'เกิดข้อผิดพลาดในการลบรูปภาพ');
+      }
+    });
+  }
+
+  getPaginatedEmployees(): EmployeeListDto[] {
     const start = (this.currentPage() - 1) * this.itemsPerPage();
     const end = start + this.itemsPerPage();
     return this.filteredEmployees().slice(start, end);
@@ -310,14 +475,50 @@ export class EmployeeListAdminComponent implements OnInit {
     }
   }
 
-  getRoleLabel(role: string | null | undefined): string {
-    const found = this.roles.find(r => r.value === role);
-    return found ? found.label : role || '-';
+  getEmploymentTypeLabel(type: string | null | undefined): string {
+    const found = this.employmentTypes.find(t => t.value === type);
+    return found ? found.label : type || '-';
+  }
+
+  getNationalityLabel(nationality: string | null | undefined): string {
+    const found = this.nationalities.find(n => n.value === nationality);
+    return found ? found.label : nationality || '-';
+  }
+
+  getStatusLabel(status: string | null | undefined): string {
+    const found = this.statuses.find(s => s.value === status);
+    return found ? found.label : status || '-';
   }
 
   getBranchName(branchId: number | undefined): string {
     if (!branchId) return '-';
     const branch = this.branches().find(b => b.id === branchId);
     return branch?.name || '-';
+  }
+
+  formatDate(date: string | null | undefined): string {
+    if (!date) return '-';
+    return new Date(date).toLocaleDateString('th-TH');
+  }
+
+  calculateAge(dateOfBirth: string | null | undefined): number | null {
+    if (!dateOfBirth) return null;
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  }
+
+  onEmploymentTypeChange(value: string): void {
+    // Reset salary fields when changing employment type
+    if (value === 'Monthly') {
+      this.employeeForm.dailyRate = null;
+    } else if (value === 'Daily') {
+      this.employeeForm.salary = null;
+    }
   }
 }

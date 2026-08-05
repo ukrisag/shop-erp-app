@@ -121,6 +121,14 @@ export interface ReportsServiceInterface {
     /**
      * 
      * 
+     * @endpoint get /api/reports/payroll/salary-records/{id}/pay-slip
+     * @param id 
+     */
+    apiReportsPayrollSalaryRecordsIdPaySlipGet(id: number, extraHttpRequestParams?: any): Observable<Blob>;
+
+    /**
+     * 
+     * 
      * @endpoint get /api/reports/products/excel
      * @param categoryId 
      * @param brandId 

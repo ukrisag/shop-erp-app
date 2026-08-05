@@ -409,7 +409,7 @@
               <select [(ngModel)]="deliveryForm.driverId" name="driverId" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <option [value]="null">เลือกพนักงาน</option>
                 @for (driver of drivers(); track driver.id) {
-                  <option [value]="driver.id">{{ driver.firstName }} {{ driver.lastName }}</option>
+                  <option [value]="driver.id">{{ driver.fullNameTh }}</option>
                 }
               </select>
             </div>

@@ -23,7 +23,7 @@ export class ExpenseListAdminComponent implements OnInit {
   filteredExpenses = signal<ExpenseDto[]>([]);
   categories = signal<ExpenseCategoryDto[]>([]);
   branches = signal<BranchDto[]>([]);
-  loading = signal(true);
+  loading = signal(false);
 
   // Active tab
   activeTab = signal<'expenses' | 'categories'>('expenses');

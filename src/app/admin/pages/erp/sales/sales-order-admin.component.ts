@@ -30,7 +30,7 @@ export class SalesOrderAdminComponent implements OnInit {
   branches = signal<BranchDto[]>([]);
   products = signal<ProductDto[]>([]);
   selectedOrder = signal<ErpSalesOrderDto | null>(null);
-  loading = signal(true);
+  loading = signal(false);
   loadingProducts = signal(false);
   uploadingSlip = signal(false);
 

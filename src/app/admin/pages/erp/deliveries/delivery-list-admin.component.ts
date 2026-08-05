@@ -7,7 +7,7 @@ import {
   CreateDeliveryDto,
   UpdateDeliveryDto,
   BranchDto,
-  EmployeeDto
+  EmployeeListDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
 
@@ -22,8 +22,8 @@ export class DeliveryListAdminComponent implements OnInit {
   deliveries = signal<DeliveryDto[]>([]);
   filteredDeliveries = signal<DeliveryDto[]>([]);
   branches = signal<BranchDto[]>([]);
-  drivers = signal<EmployeeDto[]>([]);
-  loading = signal(true);
+  drivers = signal<EmployeeListDto[]>([]);
+  loading = signal(false);
 
   searchTerm = signal('');
   selectedBranch = signal<string>('');
@@ -107,7 +107,7 @@ export class DeliveryListAdminComponent implements OnInit {
   }
 
   loadDrivers(): void {
-    this.employeesService.apiErpEmployeesGet().subscribe({
+    this.employeesService.apiEmployeesGet().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.drivers.set(response.data);

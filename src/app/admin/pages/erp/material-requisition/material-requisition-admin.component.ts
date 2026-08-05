@@ -7,7 +7,7 @@ import {
   CreateMaterialRequisitionDto,
   UpdateMaterialRequisitionDto,
   BranchDto,
-  EmployeeDto
+  EmployeeListDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
 
@@ -22,8 +22,8 @@ export class MaterialRequisitionAdminComponent implements OnInit {
   requisitions = signal<MaterialRequisitionDto[]>([]);
   filteredRequisitions = signal<MaterialRequisitionDto[]>([]);
   branches = signal<BranchDto[]>([]);
-  employees = signal<EmployeeDto[]>([]);
-  loading = signal(true);
+  employees = signal<EmployeeListDto[]>([]);
+  loading = signal(false);
 
   searchTerm = signal('');
   selectedBranch = signal<string>('');
@@ -98,7 +98,7 @@ export class MaterialRequisitionAdminComponent implements OnInit {
   }
 
   loadEmployees(): void {
-    this.employeesService.apiErpEmployeesGet().subscribe({
+    this.employeesService.apiEmployeesGet().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.employees.set(response.data);
