@@ -11,6 +11,7 @@ import {
   ApiResponseDtoOfIEnumerableOfBranchDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-employee-list-admin',
@@ -239,7 +240,7 @@ export class EmployeeListAdminComponent implements OnInit {
         this.isEditMode.set(true);
         this.selectedEmployee.set(employee);
         this.selectedPhotoFile = null;
-        this.photoPreviewUrl.set(employee.photoUrl || null);
+        this.photoPreviewUrl.set(this.getPhotoUrl(employee.photoUrl));
         this.employeeForm = {
           employeeCode: employee.employeeCode,
           branchId: employee.branchId,
@@ -453,7 +454,7 @@ export class EmployeeListAdminComponent implements OnInit {
     this.selectedPhotoFile = null;
     this.photoPreviewUrl.set(
       this.isEditMode() && this.selectedEmployee()?.photoUrl
-        ? this.selectedEmployee()!.photoUrl!
+        ? this.getPhotoUrl(this.selectedEmployee()!.photoUrl!)
         : null
     );
   }
@@ -525,5 +526,16 @@ export class EmployeeListAdminComponent implements OnInit {
     } else if (value === 'Daily') {
       this.employeeForm.salary = null;
     }
+  }
+
+  getPhotoUrl(photoUrl: string | null | undefined): string | null {
+    if (!photoUrl) return null;
+    // If photoUrl is already an absolute URL, return as is
+    if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
+      return photoUrl;
+    }
+    // Otherwise, prepend the API base URL
+    const baseUrl = environment.apiUrl.replace('/api', ''); // Remove /api suffix if exists
+    return `${baseUrl}${photoUrl.startsWith('/') ? '' : '/'}${photoUrl}`;
   }
 }
