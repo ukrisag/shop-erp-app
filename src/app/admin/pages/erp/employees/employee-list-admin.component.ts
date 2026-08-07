@@ -34,10 +34,10 @@ export class EmployeeListAdminComponent implements OnInit {
   // Modal
   showModal = signal(false);
   showDeleteModal = signal(false);
-  showPhotoModal = signal(false);
   isEditMode = signal(false);
   selectedEmployee = signal<EmployeeDetailDto | null>(null);
   selectedPhotoFile: File | null = null;
+  photoPreviewUrl = signal<string | null>(null);
 
   // Form
   employeeForm: any = {
@@ -201,6 +201,8 @@ export class EmployeeListAdminComponent implements OnInit {
   openAddModal(): void {
     this.isEditMode.set(false);
     this.selectedEmployee.set(null);
+    this.selectedPhotoFile = null;
+    this.photoPreviewUrl.set(null);
     const today = new Date().toISOString().split('T')[0];
     this.employeeForm = {
       employeeCode: '',
@@ -236,6 +238,8 @@ export class EmployeeListAdminComponent implements OnInit {
       next: (employee: EmployeeDetailDto) => {
         this.isEditMode.set(true);
         this.selectedEmployee.set(employee);
+        this.selectedPhotoFile = null;
+        this.photoPreviewUrl.set(employee.photoUrl || null);
         this.employeeForm = {
           employeeCode: employee.employeeCode,
           branchId: employee.branchId,
@@ -283,24 +287,10 @@ export class EmployeeListAdminComponent implements OnInit {
     });
   }
 
-  openPhotoModal(employee: EmployeeListDto): void {
-    this.employeesService.apiEmployeesIdGet(employee.id!).subscribe({
-      next: (details: EmployeeDetailDto) => {
-        this.selectedEmployee.set(details);
-        this.selectedPhotoFile = null;
-        this.showPhotoModal.set(true);
-      },
-      error: (error: any) => {
-        console.error('Error loading employee details:', error);
-        this.notificationService.error('ไม่สามารถโหลดข้อมูลพนักงานได้');
-      }
-    });
-  }
 
   closeModal(): void {
     this.showModal.set(false);
     this.showDeleteModal.set(false);
-    this.showPhotoModal.set(false);
   }
 
   saveEmployee(): void {
@@ -340,9 +330,26 @@ export class EmployeeListAdminComponent implements OnInit {
 
     this.employeesService.apiEmployeesPost(dto).subscribe({
       next: (created: EmployeeDetailDto) => {
-        this.notificationService.success('สร้างพนักงานสำเร็จ');
-        this.loadEmployees();
-        this.closeModal();
+        // Upload photo if selected
+        if (this.selectedPhotoFile && created.id) {
+          this.employeesService.apiEmployeesIdPhotoPost(created.id, this.selectedPhotoFile).subscribe({
+            next: () => {
+              this.notificationService.success('สร้างพนักงานและอัปโหลดรูปภาพสำเร็จ');
+              this.loadEmployees();
+              this.closeModal();
+            },
+            error: (error: any) => {
+              console.error('Error uploading photo:', error);
+              this.notificationService.success('สร้างพนักงานสำเร็จ แต่อัปโหลดรูปภาพล้มเหลว');
+              this.loadEmployees();
+              this.closeModal();
+            }
+          });
+        } else {
+          this.notificationService.success('สร้างพนักงานสำเร็จ');
+          this.loadEmployees();
+          this.closeModal();
+        }
       },
       error: (error: any) => {
         console.error('Error creating employee:', error);
@@ -383,9 +390,26 @@ export class EmployeeListAdminComponent implements OnInit {
 
     this.employeesService.apiEmployeesIdPut(employee.id!, dto).subscribe({
       next: (updated: EmployeeDetailDto) => {
-        this.notificationService.success('อัปเดตข้อมูลพนักงานสำเร็จ');
-        this.loadEmployees();
-        this.closeModal();
+        // Upload photo if selected
+        if (this.selectedPhotoFile && employee.id) {
+          this.employeesService.apiEmployeesIdPhotoPost(employee.id, this.selectedPhotoFile).subscribe({
+            next: () => {
+              this.notificationService.success('อัปเดตข้อมูลพนักงานและรูปภาพสำเร็จ');
+              this.loadEmployees();
+              this.closeModal();
+            },
+            error: (error: any) => {
+              console.error('Error uploading photo:', error);
+              this.notificationService.success('อัปเดตข้อมูลพนักงานสำเร็จ แต่อัปโหลดรูปภาพล้มเหลว');
+              this.loadEmployees();
+              this.closeModal();
+            }
+          });
+        } else {
+          this.notificationService.success('อัปเดตข้อมูลพนักงานสำเร็จ');
+          this.loadEmployees();
+          this.closeModal();
+        }
       },
       error: (error: any) => {
         console.error('Error updating employee:', error);
@@ -412,45 +436,26 @@ export class EmployeeListAdminComponent implements OnInit {
   }
 
   // Photo upload methods
-  onPhotoFileSelected(event: any): void {
+  onFormPhotoFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
       this.selectedPhotoFile = file;
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.photoPreviewUrl.set(e.target.result);
+      };
+      reader.readAsDataURL(file);
     }
   }
 
-  uploadPhoto(): void {
-    const employee = this.selectedEmployee();
-    if (!employee || !this.selectedPhotoFile) return;
-
-    this.employeesService.apiEmployeesIdPhotoPost(employee.id!, this.selectedPhotoFile).subscribe({
-      next: (response: any) => {
-        this.notificationService.success('อัปโหลดรูปภาพสำเร็จ');
-        this.loadEmployees();
-        this.closeModal();
-      },
-      error: (error: any) => {
-        console.error('Error uploading photo:', error);
-        this.notificationService.error(error.error?.message || 'เกิดข้อผิดพลาดในการอัปโหลดรูปภาพ');
-      }
-    });
-  }
-
-  deletePhoto(): void {
-    const employee = this.selectedEmployee();
-    if (!employee) return;
-
-    this.employeesService.apiEmployeesIdPhotoDelete(employee.id!).subscribe({
-      next: () => {
-        this.notificationService.success('ลบรูปภาพสำเร็จ');
-        this.loadEmployees();
-        this.closeModal();
-      },
-      error: (error: any) => {
-        console.error('Error deleting photo:', error);
-        this.notificationService.error(error.error?.message || 'เกิดข้อผิดพลาดในการลบรูปภาพ');
-      }
-    });
+  removeFormPhoto(): void {
+    this.selectedPhotoFile = null;
+    this.photoPreviewUrl.set(
+      this.isEditMode() && this.selectedEmployee()?.photoUrl
+        ? this.selectedEmployee()!.photoUrl!
+        : null
+    );
   }
 
   getPaginatedEmployees(): EmployeeListDto[] {
