@@ -1,6 +1,11 @@
 export const environment = {
-  production: true,
-  apiUrl: 'https://shop-erp-api-production.up.railway.app', // Railway production API
-  appName: 'ร้านเครื่องครัวแสงทอง/ใจกล้า',
-  version: '1.0.0',
+  production: false,
+  // Point straight at the HTTPS port. The backend's UseHttpsRedirection() would
+  // otherwise 307-redirect http://localhost:5259 -> https://localhost:7148, and
+  // browsers strip the Authorization header when a fetch/XHR follows a redirect
+  // across origins (scheme+port change counts) - so calling :5259 directly silently
+  // drops the auth token on every request. Calling :7148 avoids the redirect entirely.
+  apiUrl: 'https://localhost:7148',
+  appName: 'ร้านเครื่องครัวแสงทอง/ใจกล้า (Dev)',
+  version: '1.0.0-dev'
 };
