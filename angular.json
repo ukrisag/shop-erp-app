@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "paint-depot-app": {
+    "shop-erp-app": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -35,8 +35,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.development.ts",
-                  "with": "src/environments/environment.ts"
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
                 }
               ],
               "budgets": [
@@ -65,6 +65,24 @@
               "namedChunks": false,
               "aot": true
             },
+            "sit": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.sit.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "uat": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.uat.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
             "development": {
               "optimization": false,
               "extractLicenses": false,
@@ -77,10 +95,16 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "paint-depot-app:build:production"
+              "buildTarget": "shop-erp-app:build:production"
+            },
+            "sit": {
+              "buildTarget": "shop-erp-app:build:sit"
+            },
+            "uat": {
+              "buildTarget": "shop-erp-app:build:uat"
             },
             "development": {
-              "buildTarget": "paint-depot-app:build:development"
+              "buildTarget": "shop-erp-app:build:development"
             }
           },
           "defaultConfiguration": "development"

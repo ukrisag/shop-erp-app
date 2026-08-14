@@ -22,7 +22,7 @@ FROM nginx:alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built files from builder
-COPY --from=builder /app/dist/paint-depot-app/browser /usr/share/nginx/html
+COPY --from=builder /app/dist/shop-erp-app/browser /usr/share/nginx/html
 
 # Expose port
 EXPOSE 80
