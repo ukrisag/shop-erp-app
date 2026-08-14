@@ -51,12 +51,12 @@ export class EmployeeListAdminComponent implements OnInit {
     email: '',
     phone: '',
     dateOfBirth: '',
-    nationality: 'Thai',
+    nationality: 'thai',
     idCardNumber: '',
     passportNumber: '',
     address: '',
     position: '',
-    employmentType: 'Monthly',
+    employmentType: 'monthly',
     salary: null,
     dailyRate: null,
     bankAccountNumber: '',
@@ -64,29 +64,29 @@ export class EmployeeListAdminComponent implements OnInit {
     workPermitStartDate: '',
     workPermitEndDate: '',
     hasSocialSecurity: true,
-    status: 'Active'
+    status: 'active'
   };
 
   // Dropdown options
   employmentTypes = [
-    { value: 'Monthly', label: 'รายเดือน' },
-    { value: 'Daily', label: 'รายวัน' }
+    { value: 'monthly', label: 'รายเดือน' },
+    { value: 'daily', label: 'รายวัน' }
   ];
 
   nationalities = [
-    { value: 'Thai', label: 'ไทย' },
-    { value: 'Myanmar', label: 'เมียนมา' },
-    { value: 'Lao', label: 'ลาว' },
-    { value: 'Cambodian', label: 'กัมพูชา' },
-    { value: 'Vietnamese', label: 'เวียดนาม' },
-    { value: 'Other', label: 'อื่นๆ' }
+    { value: 'thai', label: 'ไทย' },
+    { value: 'myanmar', label: 'เมียนมา' },
+    { value: 'lao', label: 'ลาว' },
+    { value: 'cambodian', label: 'กัมพูชา' },
+    { value: 'vietnamese', label: 'เวียดนาม' },
+    { value: 'other', label: 'อื่นๆ' }
   ];
 
   statuses = [
-    { value: 'Active', label: 'ทำงานอยู่' },
-    { value: 'On Leave', label: 'ลาพัก' },
-    { value: 'Resigned', label: 'ลาออก' },
-    { value: 'Terminated', label: 'เลิกจ้าง' }
+    { value: 'active', label: 'ทำงานอยู่' },
+    { value: 'on leave', label: 'ลาพัก' },
+    { value: 'resigned', label: 'ลาออก' },
+    { value: 'terminated', label: 'เลิกจ้าง' }
   ];
 
   // Pagination
@@ -215,12 +215,12 @@ export class EmployeeListAdminComponent implements OnInit {
       email: '',
       phone: '',
       dateOfBirth: '',
-      nationality: 'Thai',
+      nationality: 'thai',
       idCardNumber: '',
       passportNumber: '',
       address: '',
       position: '',
-      employmentType: 'Monthly',
+      employmentType: 'monthly',
       salary: null,
       dailyRate: null,
       bankAccountNumber: '',
@@ -228,7 +228,7 @@ export class EmployeeListAdminComponent implements OnInit {
       workPermitStartDate: '',
       workPermitEndDate: '',
       hasSocialSecurity: true,
-      status: 'Active'
+      status: 'active'
     };
     this.showModal.set(true);
   }
@@ -251,12 +251,12 @@ export class EmployeeListAdminComponent implements OnInit {
           email: employee.email || '',
           phone: employee.phone || '',
           dateOfBirth: employee.dateOfBirth || '',
-          nationality: employee.nationality || 'Thai',
+          nationality: employee.nationality || 'thai',
           idCardNumber: employee.idCardNumber || '',
           passportNumber: employee.passportNumber || '',
           address: employee.address || '',
           position: employee.position || '',
-          employmentType: employee.employmentType || 'Monthly',
+          employmentType: employee.employmentType || 'monthly',
           salary: employee.salary,
           dailyRate: employee.dailyRate,
           bankAccountNumber: employee.bankAccountNumber || '',
@@ -264,7 +264,7 @@ export class EmployeeListAdminComponent implements OnInit {
           workPermitStartDate: employee.workPermitStartDate || '',
           workPermitEndDate: employee.workPermitEndDate || '',
           hasSocialSecurity: employee.hasSocialSecurity ?? true,
-          status: employee.status || 'Active'
+          status: employee.status || 'active'
         };
         this.showModal.set(true);
       },
@@ -521,9 +521,9 @@ export class EmployeeListAdminComponent implements OnInit {
 
   onEmploymentTypeChange(value: string): void {
     // Reset salary fields when changing employment type
-    if (value === 'Monthly') {
+    if (value === 'monthly') {
       this.employeeForm.dailyRate = null;
-    } else if (value === 'Daily') {
+    } else if (value === 'daily') {
       this.employeeForm.salary = null;
     }
   }

@@ -1,7 +1,7 @@
 {
-  "name": "Paint Depot - ร้านสีออนไลน์",
-  "short_name": "Paint Depot",
-  "description": "ร้านขายสีออนไลน์คุณภาพ",
+  "name": "ร้านเครื่องครัวแสงทอง/ใจกล้า",
+  "short_name": "แสงทอง/ใจกล้า",
+  "description": "ร้านเครื่องครัวออนไลน์คุณภาพ",
   "theme_color": "#f97316",
   "background_color": "#ffffff",
   "display": "standalone",

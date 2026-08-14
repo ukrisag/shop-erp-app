@@ -35,9 +35,9 @@ export class UserDetailAdminComponent implements OnInit {
 
   // Available roles
   roles = [
-    { value: 'Customer', label: 'Customer' },
-    { value: 'Admin', label: 'Admin' },
-    { value: 'Super_Admin', label: 'Super Admin' }
+    { value: 'customer', label: 'Customer' },
+    { value: 'admin', label: 'Admin' },
+    { value: 'super_admin', label: 'Super Admin' }
   ];
 
   // Stats
@@ -166,7 +166,7 @@ export class UserDetailAdminComponent implements OnInit {
   }
 
   onToggleStatusClick(): void {
-    this.toggleAction.set(this.user()?.status === 'Active' ? 'ban' : 'activate');
+    this.toggleAction.set(this.user()?.status === 'active' ? 'ban' : 'activate');
     this.showToggleConfirm.set(true);
   }
 
@@ -174,7 +174,7 @@ export class UserDetailAdminComponent implements OnInit {
     if (!this.userId()) return;
 
     this.updating.set(true);
-    const newStatus = this.toggleAction() === 'ban' ? 'Banned' : 'Active';
+    const newStatus = this.toggleAction() === 'ban' ? 'banned' : 'active';
 
     this.adminUserService.updateUserStatus(this.userId()!, newStatus).subscribe({
       next: (response) => {
@@ -217,9 +217,9 @@ export class UserDetailAdminComponent implements OnInit {
 
   getStatusClass(status: string | null | undefined): string {
     switch (status) {
-      case 'Active':
+      case 'active':
         return 'px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800';
-      case 'Banned':
+      case 'banned':
         return 'px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800';
       default:
         return 'px-3 py-1 text-sm font-semibold rounded-full bg-gray-100 text-gray-800';
@@ -228,17 +228,17 @@ export class UserDetailAdminComponent implements OnInit {
 
   getOrderStatusClass(status: string | null | undefined): string {
     switch (status) {
-      case 'Pending':
+      case 'pending':
         return 'px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800';
-      case 'Confirmed':
+      case 'confirmed':
         return 'px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800';
-      case 'Processing':
+      case 'processing':
         return 'px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800';
-      case 'Shipped':
+      case 'shipped':
         return 'px-2 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800';
-      case 'Delivered':
+      case 'delivered':
         return 'px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800';
-      case 'Cancelled':
+      case 'cancelled':
         return 'px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800';
       default:
         return 'px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800';

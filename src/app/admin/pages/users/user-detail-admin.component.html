@@ -147,11 +147,11 @@
         <button
           (click)="onToggleStatusClick()"
           [disabled]="updating()"
-          [class]="user()?.status === 'Active'
+          [class]="user()?.status === 'active'
             ? 'px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400'
             : 'px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400'"
         >
-          {{ user()?.status === 'Active' ? 'Ban User' : 'Activate User' }}
+          {{ user()?.status === 'active' ? 'Ban User' : 'Activate User' }}
         </button>
       </div>
     </div>

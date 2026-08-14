@@ -152,10 +152,10 @@
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <span class="px-2 py-1 text-xs font-medium rounded-full"
-                    [class.bg-blue-100]="employee.employmentType === 'Monthly'"
-                    [class.text-blue-800]="employee.employmentType === 'Monthly'"
-                    [class.bg-green-100]="employee.employmentType === 'Daily'"
-                    [class.text-green-800]="employee.employmentType === 'Daily'">
+                    [class.bg-blue-100]="employee.employmentType === 'monthly'"
+                    [class.text-blue-800]="employee.employmentType === 'monthly'"
+                    [class.bg-green-100]="employee.employmentType === 'daily'"
+                    [class.text-green-800]="employee.employmentType === 'daily'">
                     {{ getEmploymentTypeLabel(employee.employmentType) }}
                   </span>
                 </td>
@@ -167,14 +167,14 @@
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <span class="px-2 py-1 text-xs font-medium rounded-full"
-                    [class.bg-green-100]="employee.status === 'Active'"
-                    [class.text-green-800]="employee.status === 'Active'"
-                    [class.bg-yellow-100]="employee.status === 'On Leave'"
-                    [class.text-yellow-800]="employee.status === 'On Leave'"
-                    [class.bg-gray-100]="employee.status === 'Resigned'"
-                    [class.text-gray-800]="employee.status === 'Resigned'"
-                    [class.bg-red-100]="employee.status === 'Terminated'"
-                    [class.text-red-800]="employee.status === 'Terminated'">
+                    [class.bg-green-100]="employee.status === 'active'"
+                    [class.text-green-800]="employee.status === 'active'"
+                    [class.bg-yellow-100]="employee.status === 'on leave'"
+                    [class.text-yellow-800]="employee.status === 'on leave'"
+                    [class.bg-gray-100]="employee.status === 'resigned'"
+                    [class.text-gray-800]="employee.status === 'resigned'"
+                    [class.bg-red-100]="employee.status === 'terminated'"
+                    [class.text-red-800]="employee.status === 'terminated'">
                     {{ getStatusLabel(employee.status) }}
                   </span>
                 </td>
@@ -222,17 +222,17 @@
             </div>
             <div class="flex flex-col gap-1 items-end">
               <span class="px-2 py-1 text-xs font-medium rounded-full"
-                [class.bg-blue-100]="employee.employmentType === 'Monthly'"
-                [class.text-blue-800]="employee.employmentType === 'Monthly'"
-                [class.bg-green-100]="employee.employmentType === 'Daily'"
-                [class.text-green-800]="employee.employmentType === 'Daily'">
+                [class.bg-blue-100]="employee.employmentType === 'monthly'"
+                [class.text-blue-800]="employee.employmentType === 'monthly'"
+                [class.bg-green-100]="employee.employmentType === 'daily'"
+                [class.text-green-800]="employee.employmentType === 'daily'">
                 {{ getEmploymentTypeLabel(employee.employmentType) }}
               </span>
               <span class="px-2 py-1 text-xs font-medium rounded-full"
-                [class.bg-green-100]="employee.status === 'Active'"
-                [class.text-green-800]="employee.status === 'Active'"
-                [class.bg-yellow-100]="employee.status === 'On Leave'"
-                [class.text-yellow-800]="employee.status === 'On Leave'">
+                [class.bg-green-100]="employee.status === 'active'"
+                [class.text-green-800]="employee.status === 'active'"
+                [class.bg-yellow-100]="employee.status === 'on leave'"
+                [class.text-yellow-800]="employee.status === 'on leave'">
                 {{ getStatusLabel(employee.status) }}
               </span>
             </div>
@@ -552,7 +552,7 @@
                 </select>
               </div>
 
-              @if (employeeForm.employmentType === 'Monthly') {
+              @if (employeeForm.employmentType === 'monthly') {
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">เงินเดือน (บาท/เดือน)</label>
                   <input
@@ -565,7 +565,7 @@
                 </div>
               }
 
-              @if (employeeForm.employmentType === 'Daily') {
+              @if (employeeForm.employmentType === 'daily') {
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">ค่าแรงรายวัน (บาท/วัน)</label>
                   <input
@@ -616,7 +616,7 @@
           </div>
 
           <!-- Work Permit (for foreign workers) -->
-          @if (employeeForm.nationality !== 'Thai') {
+          @if (employeeForm.nationality !== 'thai') {
             <div class="mb-6">
               <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

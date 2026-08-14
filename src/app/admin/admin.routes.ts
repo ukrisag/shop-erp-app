@@ -50,7 +50,7 @@ export const ADMIN_ROUTES: Routes = [
         canActivate: [permissionGuard],
         data: { permission: Permission.VIEW_GALLERY }
       },
-      // E-commerce Orders (คำสั่งซื้อออนไลน์จาก Paint Depot)
+      // E-commerce Orders (คำสั่งซื้อออนไลน์จากร้านเครื่องครัวแสงทอง/ใจกล้า)
       {
         path: 'orders',
         loadComponent: () => import('./pages/orders/order-list-admin.component').then(m => m.OrderListAdminComponent),
@@ -63,7 +63,7 @@ export const ADMIN_ROUTES: Routes = [
         canActivate: [permissionGuard],
         data: { permission: Permission.VIEW_ORDERS }
       },
-      // E-commerce Customers (ลูกค้าออนไลน์ Paint Depot)
+      // E-commerce Customers (ลูกค้าออนไลน์ ร้านเครื่องครัวแสงทอง/ใจกล้า)
       {
         path: 'customers',
         loadComponent: () => import('./pages/users/user-list-admin.component').then(m => m.UserListAdminComponent),

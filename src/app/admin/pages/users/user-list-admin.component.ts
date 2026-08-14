@@ -38,15 +38,15 @@ export class UserListAdminComponent implements OnInit {
 
   // Available roles (E-commerce specific)
   roles = [
-    { value: 'Customer', label: 'ลูกค้าทั่วไป' },
-    { value: 'Admin', label: 'ผู้ดูแล E-Commerce' },
-    { value: 'Super_Admin', label: 'ผู้ดูแลระบบสูงสุด' }
+    { value: 'customer', label: 'ลูกค้าทั่วไป' },
+    { value: 'admin', label: 'ผู้ดูแล E-Commerce' },
+    { value: 'super_admin', label: 'ผู้ดูแลระบบสูงสุด' }
   ];
 
   // Available statuses
   statuses = [
-    { value: 'Active', label: 'ใช้งานได้' },
-    { value: 'Banned', label: 'ถูกระงับ' }
+    { value: 'active', label: 'ใช้งานได้' },
+    { value: 'banned', label: 'ถูกระงับ' }
   ];
 
   constructor(
@@ -79,8 +79,7 @@ export class UserListAdminComponent implements OnInit {
           // Exclude anyone with employee_code (they're staff, not customers)
           const hasEmployeeCode = (u as any).employeeCode;
           return !hasEmployeeCode &&
-                 (u.role === 'Customer' || u.role === 'customer' ||
-                  u.role === 'Admin' || u.role === 'Super_Admin');
+                 (u.role === 'customer' || u.role === 'admin' || u.role === 'super_admin');
         });
 
         // Apply additional filters
@@ -138,14 +137,14 @@ export class UserListAdminComponent implements OnInit {
 
   onToggleStatusClick(user: UserDto): void {
     this.userToToggle.set(user);
-    this.toggleAction.set(user.status === 'Active' ? 'ban' : 'activate');
+    this.toggleAction.set(user.status === 'active' ? 'ban' : 'activate');
     this.showToggleConfirm.set(true);
   }
 
   onConfirmToggleStatus(): void {
     if (!this.userToToggle()?.id) return;
 
-    const newStatus = this.toggleAction() === 'ban' ? 'Banned' : 'Active';
+    const newStatus = this.toggleAction() === 'ban' ? 'banned' : 'active';
 
     this.adminUserService.updateUserStatus(this.userToToggle()!.id!, newStatus).subscribe({
       next: (response) => {
@@ -189,9 +188,9 @@ export class UserListAdminComponent implements OnInit {
 
   getStatusClass(status: string | null | undefined): string {
     switch (status) {
-      case 'Active':
+      case 'active':
         return 'px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800';
-      case 'Banned':
+      case 'banned':
         return 'px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800';
       default:
         return 'px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800';

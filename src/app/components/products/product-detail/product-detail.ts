@@ -268,6 +268,6 @@ export class ProductDetailComponent implements OnInit {
     const body = prod ? `สวัสดีครับ/ค่ะ\n\nต้องการสอบถามเกี่ยวกับสินค้า: ${prod.name}\nลิงก์: ${window.location.href}\n\n` : '';
 
     // Open email client
-    window.location.href = `mailto:support@paintdepot.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:support@shoperp.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 }

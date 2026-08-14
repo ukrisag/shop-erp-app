@@ -394,8 +394,8 @@
                 <div class="font-medium text-gray-900">{{ employee.fullNameTh || employee.fullNameEn }}</div>
                 <div class="text-sm text-gray-600">
                   {{ employee.employeeCode }} • {{ employee.branchName || '-' }} •
-                  <span [class.text-blue-600]="employee.employmentType === 'Monthly'" [class.text-green-600]="employee.employmentType === 'Daily'">
-                    {{ employee.employmentType === 'Monthly' ? 'รายเดือน' : 'รายวัน' }}
+                  <span [class.text-blue-600]="employee.employmentType === 'monthly'" [class.text-green-600]="employee.employmentType === 'daily'">
+                    {{ employee.employmentType === 'monthly' ? 'รายเดือน' : 'รายวัน' }}
                   </span>
                 </div>
               </div>

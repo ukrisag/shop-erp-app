@@ -169,7 +169,7 @@ export class PayrollAdminComponent implements OnInit {
   loadEmployees(): void {
     this.employeesService.apiEmployeesGet().subscribe({
       next: (employees: EmployeeListDto[]) => {
-        this.employees.set(employees.filter(e => e.status === 'Active'));
+        this.employees.set(employees.filter(e => e.status === 'active'));
       },
       error: (error: any) => {
         console.error('Error loading employees:', error);
@@ -458,10 +458,10 @@ export class PayrollAdminComponent implements OnInit {
       this.recordForm.branchId = employee.branchId || null;
 
       // Set base salary based on employment type
-      if (employee.employmentType === 'Monthly') {
+      if (employee.employmentType === 'monthly') {
         this.recordForm.baseSalary = employee.salary || 0;
         this.recordForm.daysWorked = 0; // Not applicable for monthly
-      } else if (employee.employmentType === 'Daily') {
+      } else if (employee.employmentType === 'daily') {
         this.recordForm.baseSalary = employee.dailyRate || 0;
         this.recordForm.daysWorked = 0; // User should input
       }
