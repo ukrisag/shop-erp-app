@@ -10,41 +10,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const employeeAuthService = inject(EmployeeAuthService);
   const router = inject(Router);
 
-  // Check if this is an admin/employee endpoint
-  // Support both PascalCase and kebab-case URLs
-  const urlLower = req.url.toLowerCase();
-
-  // Check if request is coming from admin area by checking the current URL
-  const isInAdminArea = router.url.startsWith('/admin');
-
-  const isAdminEndpoint = urlLower.includes('/admin') ||      // Matches /api/admin, /api/gallery/admin, etc.
-                          urlLower.includes('/employee-auth') ||
-                          urlLower.includes('/employeeauth') ||
-                          urlLower.includes('/erp') ||
-                          urlLower.includes('/branches') ||
-                          urlLower.includes('/employees') ||
-                          urlLower.includes('/expenses') ||
-                          urlLower.includes('/payroll') ||
-                          urlLower.includes('/overtime') ||
-                          urlLower.includes('/leave') ||
-                          urlLower.includes('/deliveries') ||
-                          urlLower.includes('/bank-accounts') ||
-                          urlLower.includes('/bank-transactions') ||
-                          urlLower.includes('/material-requisitions') ||
-                          urlLower.includes('/sales-orders') ||
-                          urlLower.includes('/sales-payments') ||
-                          // Add categories, brands, products, coupons, reviews, orders, upload when accessed from admin
-                          (isInAdminArea && (
-                            urlLower.includes('/categories') ||
-                            urlLower.includes('/brands') ||
-                            urlLower.includes('/products') ||
-                            urlLower.includes('/coupons') ||
-                            urlLower.includes('/reviews') ||
-                            urlLower.includes('/orders') ||
-                            urlLower.includes('/gallery') ||
-                            urlLower.includes('/users') ||
-                            urlLower.includes('/upload')
-                          ));
+  // Every admin/ERP page lives under /admin/*, and every request they fire needs
+  // the employee token; every public storefront page needs the customer token.
+  // (Previously this matched on a hardcoded list of URL keywords, which silently
+  // dropped the Authorization header for any endpoint whose path wasn't on the
+  // list - e.g. new ERP modules, or a singular/plural mismatch.)
+  const isAdminEndpoint = router.url.startsWith('/admin');
 
   // Use the appropriate auth service based on the endpoint
   const token = isAdminEndpoint ? employeeAuthService.getToken() : authService.getToken();
