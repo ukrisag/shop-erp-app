@@ -14,7 +14,7 @@ export class WishlistService {
   constructor(private apiWishlistService: ApiWishlistService) {}
 
   loadWishlist(): void {
-    this.apiWishlistService.apiWishlistGet().subscribe({
+    this.apiWishlistService.wishlistGetWishlist().subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.wishlistItemsSubject.next(response.data);
@@ -27,7 +27,7 @@ export class WishlistService {
   }
 
   getWishlist(): Observable<WishlistDto[]> {
-    return this.apiWishlistService.apiWishlistGet().pipe(
+    return this.apiWishlistService.wishlistGetWishlist().pipe(
       map(response => {
         if (response.success && response.data) {
           this.wishlistItemsSubject.next(response.data);
@@ -55,7 +55,7 @@ export class WishlistService {
     };
     this.wishlistItemsSubject.next([...currentItems, tempItem]);
 
-    return this.apiWishlistService.apiWishlistItemsPost({ productId }).pipe(
+    return this.apiWishlistService.wishlistAddToWishlist({ productId }).pipe(
       tap((response: any) => {
         if (response.success && response.data) {
           // Update with real data from server
@@ -91,7 +91,7 @@ export class WishlistService {
     const updatedItems = currentItems.filter(item => item.productId !== productId);
     this.wishlistItemsSubject.next(updatedItems);
 
-    return this.apiWishlistService.apiWishlistItemsProductIdDelete(productId).pipe(
+    return this.apiWishlistService.wishlistRemoveFromWishlist(productId).pipe(
       map((response: any) => {
         if (!response.success) {
           // Revert optimistic update on error

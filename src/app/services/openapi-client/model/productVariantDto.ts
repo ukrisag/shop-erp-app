@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -11,8 +11,8 @@
 
 export interface ProductVariantDto { 
     id?: number;
-    sku?: string | null;
-    name?: string | null;
+    sku?: string;
+    name?: string;
     colorName?: string | null;
     colorCode?: string | null;
     sizeValue?: number | null;

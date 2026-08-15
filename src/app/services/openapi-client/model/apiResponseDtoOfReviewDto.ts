@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { ReviewDto } from './reviewDto';
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfReviewDto { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
-    data?: ReviewDto;
+    /**
+     * Response data
+     */
+    data?: ReviewDto | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

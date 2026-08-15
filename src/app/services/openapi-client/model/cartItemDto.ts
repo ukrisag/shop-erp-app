@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,13 +9,16 @@
  */
 
 
+/**
+ * DTO for cart item
+ */
 export interface CartItemDto { 
     id?: number;
     productVariantId?: number;
     productId?: number;
-    productName?: string | null;
-    variantName?: string | null;
-    sku?: string | null;
+    productName?: string;
+    variantName?: string;
+    sku?: string;
     imageUrl?: string | null;
     price?: number;
     quantity?: number;

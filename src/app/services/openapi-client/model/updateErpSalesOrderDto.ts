@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -17,7 +17,7 @@ export interface UpdateErpSalesOrderDto {
     customerAddress?: string | null;
     customerTaxId?: string | null;
     orderDate: string;
-    status?: string | null;
+    status?: string;
     discountPercentage?: number | null;
     discountAmount?: number | null;
     vatEnabled?: boolean;

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -11,7 +11,7 @@
 
 export interface ProductImageDto { 
     id?: number;
-    imageUrl?: string | null;
+    imageUrl?: string;
     altText?: string | null;
     isPrimary?: boolean;
     displayOrder?: number;

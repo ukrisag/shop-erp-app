@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -21,8 +21,6 @@ import { ApproveRequest } from '../model/approveRequest';
 // @ts-ignore
 import { CreateMaterialRequisitionDto } from '../model/createMaterialRequisitionDto';
 // @ts-ignore
-import { MaterialRequisitionDto } from '../model/materialRequisitionDto';
-// @ts-ignore
 import { RejectRequest } from '../model/rejectRequest';
 // @ts-ignore
 import { UpdateIssuedQuantityDto } from '../model/updateIssuedQuantityDto';
@@ -33,129 +31,16 @@ import { UpdateMaterialRequisitionDto } from '../model/updateMaterialRequisition
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 import { BaseService } from '../api.base.service';
-import {
-    MaterialRequisitionsServiceInterface
-} from './materialRequisitions.serviceInterface';
 
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class MaterialRequisitionsService extends BaseService implements MaterialRequisitionsServiceInterface {
+export class MaterialRequisitionsService extends BaseService {
 
     constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string|string[], @Optional() configuration?: Configuration) {
         super(basePath, configuration);
-    }
-
-    /**
-     * @endpoint get /api/erp/material-requisitions/branch/{branchId}
-     * @param branchId 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     * @param options additional options
-     */
-    public apiErpMaterialRequisitionsBranchBranchIdGet(branchId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsBranchBranchIdGet(branchId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<MaterialRequisitionDto>>>;
-    public apiErpMaterialRequisitionsBranchBranchIdGet(branchId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<MaterialRequisitionDto>>>;
-    public apiErpMaterialRequisitionsBranchBranchIdGet(branchId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (branchId === null || branchId === undefined) {
-            throw new Error('Required parameter branchId was null or undefined when calling apiErpMaterialRequisitionsBranchBranchIdGet.');
-        }
-
-        let localVarHeaders = this.defaultHeaders;
-
-        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
-        ]);
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-        const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-
-        let responseType_: 'text' | 'json' | 'blob' = 'json';
-        if (localVarHttpHeaderAcceptSelected) {
-            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-                responseType_ = 'text';
-            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-                responseType_ = 'json';
-            } else {
-                responseType_ = 'blob';
-            }
-        }
-
-        let localVarPath = `/api/erp/material-requisitions/branch/${this.configuration.encodeParam({name: "branchId", value: branchId, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Array<MaterialRequisitionDto>>('get', `${basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
-                headers: localVarHeaders,
-                observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * @endpoint get /api/erp/material-requisitions
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     * @param options additional options
-     */
-    public apiErpMaterialRequisitionsGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<MaterialRequisitionDto>>>;
-    public apiErpMaterialRequisitionsGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<MaterialRequisitionDto>>>;
-    public apiErpMaterialRequisitionsGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-
-        let localVarHeaders = this.defaultHeaders;
-
-        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
-        ]);
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-        const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-
-        let responseType_: 'text' | 'json' | 'blob' = 'json';
-        if (localVarHttpHeaderAcceptSelected) {
-            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-                responseType_ = 'text';
-            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-                responseType_ = 'json';
-            } else {
-                responseType_ = 'blob';
-            }
-        }
-
-        let localVarPath = `/api/erp/material-requisitions`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Array<MaterialRequisitionDto>>('get', `${basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
-                headers: localVarHeaders,
-                observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-                reportProgress: reportProgress
-            }
-        );
     }
 
     /**
@@ -166,20 +51,20 @@ export class MaterialRequisitionsService extends BaseService implements Material
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiErpMaterialRequisitionsIdApprovePost(id: number, approveRequest?: ApproveRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<MaterialRequisitionDto>;
-    public apiErpMaterialRequisitionsIdApprovePost(id: number, approveRequest?: ApproveRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsIdApprovePost(id: number, approveRequest?: ApproveRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsIdApprovePost(id: number, approveRequest?: ApproveRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public materialRequisitionsApprove(id: number, approveRequest: ApproveRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public materialRequisitionsApprove(id: number, approveRequest: ApproveRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public materialRequisitionsApprove(id: number, approveRequest: ApproveRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public materialRequisitionsApprove(id: number, approveRequest: ApproveRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiErpMaterialRequisitionsIdApprovePost.');
+            throw new Error('Required parameter id was null or undefined when calling materialRequisitionsApprove.');
+        }
+        if (approveRequest === null || approveRequest === undefined) {
+            throw new Error('Required parameter approveRequest was null or undefined when calling materialRequisitionsApprove.');
         }
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -214,7 +99,7 @@ export class MaterialRequisitionsService extends BaseService implements Material
 
         let localVarPath = `/api/erp/material-requisitions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/approve`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<MaterialRequisitionDto>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: approveRequest,
@@ -235,20 +120,17 @@ export class MaterialRequisitionsService extends BaseService implements Material
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiErpMaterialRequisitionsIdCompletePost(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<MaterialRequisitionDto>;
-    public apiErpMaterialRequisitionsIdCompletePost(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsIdCompletePost(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsIdCompletePost(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public materialRequisitionsComplete(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public materialRequisitionsComplete(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public materialRequisitionsComplete(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public materialRequisitionsComplete(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiErpMaterialRequisitionsIdCompletePost.');
+            throw new Error('Required parameter id was null or undefined when calling materialRequisitionsComplete.');
         }
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -272,9 +154,75 @@ export class MaterialRequisitionsService extends BaseService implements Material
 
         let localVarPath = `/api/erp/material-requisitions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/complete`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<MaterialRequisitionDto>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @endpoint post /api/erp/material-requisitions
+     * @param createMaterialRequisitionDto 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public materialRequisitionsCreate(createMaterialRequisitionDto: CreateMaterialRequisitionDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public materialRequisitionsCreate(createMaterialRequisitionDto: CreateMaterialRequisitionDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public materialRequisitionsCreate(createMaterialRequisitionDto: CreateMaterialRequisitionDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public materialRequisitionsCreate(createMaterialRequisitionDto: CreateMaterialRequisitionDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (createMaterialRequisitionDto === null || createMaterialRequisitionDto === undefined) {
+            throw new Error('Required parameter createMaterialRequisitionDto was null or undefined when calling materialRequisitionsCreate.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/erp/material-requisitions`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                body: createMaterialRequisitionDto,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
@@ -292,12 +240,12 @@ export class MaterialRequisitionsService extends BaseService implements Material
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiErpMaterialRequisitionsIdDelete(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public apiErpMaterialRequisitionsIdDelete(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public apiErpMaterialRequisitionsIdDelete(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public apiErpMaterialRequisitionsIdDelete(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public materialRequisitionsDelete(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public materialRequisitionsDelete(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public materialRequisitionsDelete(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public materialRequisitionsDelete(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiErpMaterialRequisitionsIdDelete.');
+            throw new Error('Required parameter id was null or undefined when calling materialRequisitionsDelete.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -340,26 +288,127 @@ export class MaterialRequisitionsService extends BaseService implements Material
     }
 
     /**
+     * @endpoint get /api/erp/material-requisitions
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public materialRequisitionsGetAll(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public materialRequisitionsGetAll(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public materialRequisitionsGetAll(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public materialRequisitionsGetAll(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/erp/material-requisitions`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @endpoint get /api/erp/material-requisitions/branch/{branchId}
+     * @param branchId 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public materialRequisitionsGetByBranch(branchId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public materialRequisitionsGetByBranch(branchId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public materialRequisitionsGetByBranch(branchId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public materialRequisitionsGetByBranch(branchId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (branchId === null || branchId === undefined) {
+            throw new Error('Required parameter branchId was null or undefined when calling materialRequisitionsGetByBranch.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/erp/material-requisitions/branch/${this.configuration.encodeParam({name: "branchId", value: branchId, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * @endpoint get /api/erp/material-requisitions/{id}
      * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiErpMaterialRequisitionsIdGet(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<MaterialRequisitionDto>;
-    public apiErpMaterialRequisitionsIdGet(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsIdGet(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsIdGet(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public materialRequisitionsGetById(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public materialRequisitionsGetById(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public materialRequisitionsGetById(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public materialRequisitionsGetById(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiErpMaterialRequisitionsIdGet.');
+            throw new Error('Required parameter id was null or undefined when calling materialRequisitionsGetById.');
         }
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -383,7 +432,7 @@ export class MaterialRequisitionsService extends BaseService implements Material
 
         let localVarPath = `/api/erp/material-requisitions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<MaterialRequisitionDto>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -397,27 +446,23 @@ export class MaterialRequisitionsService extends BaseService implements Material
     }
 
     /**
-     * @endpoint put /api/erp/material-requisitions/{id}/issued-quantities
-     * @param id 
-     * @param updateIssuedQuantityDto 
+     * @endpoint get /api/erp/material-requisitions/sales-order/{salesOrderId}
+     * @param salesOrderId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiErpMaterialRequisitionsIdIssuedQuantitiesPut(id: number, updateIssuedQuantityDto?: UpdateIssuedQuantityDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<MaterialRequisitionDto>;
-    public apiErpMaterialRequisitionsIdIssuedQuantitiesPut(id: number, updateIssuedQuantityDto?: UpdateIssuedQuantityDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsIdIssuedQuantitiesPut(id: number, updateIssuedQuantityDto?: UpdateIssuedQuantityDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsIdIssuedQuantitiesPut(id: number, updateIssuedQuantityDto?: UpdateIssuedQuantityDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiErpMaterialRequisitionsIdIssuedQuantitiesPut.');
+    public materialRequisitionsGetBySalesOrder(salesOrderId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public materialRequisitionsGetBySalesOrder(salesOrderId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public materialRequisitionsGetBySalesOrder(salesOrderId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public materialRequisitionsGetBySalesOrder(salesOrderId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (salesOrderId === null || salesOrderId === undefined) {
+            throw new Error('Required parameter salesOrderId was null or undefined when calling materialRequisitionsGetBySalesOrder.');
         }
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -427,17 +472,6 @@ export class MaterialRequisitionsService extends BaseService implements Material
 
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json',
-            'text/json',
-            'application/*+json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-        }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
@@ -450,12 +484,11 @@ export class MaterialRequisitionsService extends BaseService implements Material
             }
         }
 
-        let localVarPath = `/api/erp/material-requisitions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/issued-quantities`;
+        let localVarPath = `/api/erp/material-requisitions/sales-order/${this.configuration.encodeParam({name: "salesOrderId", value: salesOrderId, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<MaterialRequisitionDto>('put', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: updateIssuedQuantityDto,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
@@ -467,27 +500,23 @@ export class MaterialRequisitionsService extends BaseService implements Material
     }
 
     /**
-     * @endpoint put /api/erp/material-requisitions/{id}
-     * @param id 
-     * @param updateMaterialRequisitionDto 
+     * @endpoint get /api/erp/material-requisitions/status/{status}
+     * @param status 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiErpMaterialRequisitionsIdPut(id: number, updateMaterialRequisitionDto?: UpdateMaterialRequisitionDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<MaterialRequisitionDto>;
-    public apiErpMaterialRequisitionsIdPut(id: number, updateMaterialRequisitionDto?: UpdateMaterialRequisitionDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsIdPut(id: number, updateMaterialRequisitionDto?: UpdateMaterialRequisitionDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsIdPut(id: number, updateMaterialRequisitionDto?: UpdateMaterialRequisitionDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiErpMaterialRequisitionsIdPut.');
+    public materialRequisitionsGetByStatus(status: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public materialRequisitionsGetByStatus(status: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public materialRequisitionsGetByStatus(status: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public materialRequisitionsGetByStatus(status: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (status === null || status === undefined) {
+            throw new Error('Required parameter status was null or undefined when calling materialRequisitionsGetByStatus.');
         }
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -497,17 +526,6 @@ export class MaterialRequisitionsService extends BaseService implements Material
 
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json',
-            'text/json',
-            'application/*+json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-        }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
@@ -520,12 +538,11 @@ export class MaterialRequisitionsService extends BaseService implements Material
             }
         }
 
-        let localVarPath = `/api/erp/material-requisitions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}`;
+        let localVarPath = `/api/erp/material-requisitions/status/${this.configuration.encodeParam({name: "status", value: status, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<MaterialRequisitionDto>('put', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: updateMaterialRequisitionDto,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
@@ -544,20 +561,20 @@ export class MaterialRequisitionsService extends BaseService implements Material
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiErpMaterialRequisitionsIdRejectPost(id: number, rejectRequest?: RejectRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<MaterialRequisitionDto>;
-    public apiErpMaterialRequisitionsIdRejectPost(id: number, rejectRequest?: RejectRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsIdRejectPost(id: number, rejectRequest?: RejectRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsIdRejectPost(id: number, rejectRequest?: RejectRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public materialRequisitionsReject(id: number, rejectRequest: RejectRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public materialRequisitionsReject(id: number, rejectRequest: RejectRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public materialRequisitionsReject(id: number, rejectRequest: RejectRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public materialRequisitionsReject(id: number, rejectRequest: RejectRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiErpMaterialRequisitionsIdRejectPost.');
+            throw new Error('Required parameter id was null or undefined when calling materialRequisitionsReject.');
+        }
+        if (rejectRequest === null || rejectRequest === undefined) {
+            throw new Error('Required parameter rejectRequest was null or undefined when calling materialRequisitionsReject.');
         }
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -592,7 +609,7 @@ export class MaterialRequisitionsService extends BaseService implements Material
 
         let localVarPath = `/api/erp/material-requisitions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/reject`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<MaterialRequisitionDto>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: rejectRequest,
@@ -607,23 +624,27 @@ export class MaterialRequisitionsService extends BaseService implements Material
     }
 
     /**
-     * @endpoint post /api/erp/material-requisitions
-     * @param createMaterialRequisitionDto 
+     * @endpoint put /api/erp/material-requisitions/{id}
+     * @param id 
+     * @param updateMaterialRequisitionDto 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiErpMaterialRequisitionsPost(createMaterialRequisitionDto?: CreateMaterialRequisitionDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<MaterialRequisitionDto>;
-    public apiErpMaterialRequisitionsPost(createMaterialRequisitionDto?: CreateMaterialRequisitionDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsPost(createMaterialRequisitionDto?: CreateMaterialRequisitionDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsPost(createMaterialRequisitionDto?: CreateMaterialRequisitionDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public materialRequisitionsUpdate(id: number, updateMaterialRequisitionDto: UpdateMaterialRequisitionDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public materialRequisitionsUpdate(id: number, updateMaterialRequisitionDto: UpdateMaterialRequisitionDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public materialRequisitionsUpdate(id: number, updateMaterialRequisitionDto: UpdateMaterialRequisitionDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public materialRequisitionsUpdate(id: number, updateMaterialRequisitionDto: UpdateMaterialRequisitionDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling materialRequisitionsUpdate.');
+        }
+        if (updateMaterialRequisitionDto === null || updateMaterialRequisitionDto === undefined) {
+            throw new Error('Required parameter updateMaterialRequisitionDto was null or undefined when calling materialRequisitionsUpdate.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -656,12 +677,12 @@ export class MaterialRequisitionsService extends BaseService implements Material
             }
         }
 
-        let localVarPath = `/api/erp/material-requisitions`;
+        let localVarPath = `/api/erp/material-requisitions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<MaterialRequisitionDto>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('put', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: createMaterialRequisitionDto,
+                body: updateMaterialRequisitionDto,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
@@ -673,26 +694,27 @@ export class MaterialRequisitionsService extends BaseService implements Material
     }
 
     /**
-     * @endpoint get /api/erp/material-requisitions/sales-order/{salesOrderId}
-     * @param salesOrderId 
+     * @endpoint put /api/erp/material-requisitions/{id}/issued-quantities
+     * @param id 
+     * @param updateIssuedQuantityDto 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiErpMaterialRequisitionsSalesOrderSalesOrderIdGet(salesOrderId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsSalesOrderSalesOrderIdGet(salesOrderId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<MaterialRequisitionDto>>>;
-    public apiErpMaterialRequisitionsSalesOrderSalesOrderIdGet(salesOrderId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<MaterialRequisitionDto>>>;
-    public apiErpMaterialRequisitionsSalesOrderSalesOrderIdGet(salesOrderId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (salesOrderId === null || salesOrderId === undefined) {
-            throw new Error('Required parameter salesOrderId was null or undefined when calling apiErpMaterialRequisitionsSalesOrderSalesOrderIdGet.');
+    public materialRequisitionsUpdateIssuedQuantities(id: number, updateIssuedQuantityDto: UpdateIssuedQuantityDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public materialRequisitionsUpdateIssuedQuantities(id: number, updateIssuedQuantityDto: UpdateIssuedQuantityDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public materialRequisitionsUpdateIssuedQuantities(id: number, updateIssuedQuantityDto: UpdateIssuedQuantityDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public materialRequisitionsUpdateIssuedQuantities(id: number, updateIssuedQuantityDto: UpdateIssuedQuantityDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling materialRequisitionsUpdateIssuedQuantities.');
+        }
+        if (updateIssuedQuantityDto === null || updateIssuedQuantityDto === undefined) {
+            throw new Error('Required parameter updateIssuedQuantityDto was null or undefined when calling materialRequisitionsUpdateIssuedQuantities.');
         }
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -702,6 +724,17 @@ export class MaterialRequisitionsService extends BaseService implements Material
 
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
@@ -714,68 +747,12 @@ export class MaterialRequisitionsService extends BaseService implements Material
             }
         }
 
-        let localVarPath = `/api/erp/material-requisitions/sales-order/${this.configuration.encodeParam({name: "salesOrderId", value: salesOrderId, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}`;
+        let localVarPath = `/api/erp/material-requisitions/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/issued-quantities`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Array<MaterialRequisitionDto>>('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('put', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
-                headers: localVarHeaders,
-                observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * @endpoint get /api/erp/material-requisitions/status/{status}
-     * @param status 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     * @param options additional options
-     */
-    public apiErpMaterialRequisitionsStatusStatusGet(status: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<MaterialRequisitionDto>>;
-    public apiErpMaterialRequisitionsStatusStatusGet(status: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<MaterialRequisitionDto>>>;
-    public apiErpMaterialRequisitionsStatusStatusGet(status: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<MaterialRequisitionDto>>>;
-    public apiErpMaterialRequisitionsStatusStatusGet(status: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (status === null || status === undefined) {
-            throw new Error('Required parameter status was null or undefined when calling apiErpMaterialRequisitionsStatusStatusGet.');
-        }
-
-        let localVarHeaders = this.defaultHeaders;
-
-        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
-        ]);
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-        const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-
-        let responseType_: 'text' | 'json' | 'blob' = 'json';
-        if (localVarHttpHeaderAcceptSelected) {
-            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-                responseType_ = 'text';
-            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-                responseType_ = 'json';
-            } else {
-                responseType_ = 'blob';
-            }
-        }
-
-        let localVarPath = `/api/erp/material-requisitions/status/${this.configuration.encodeParam({name: "status", value: status, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<Array<MaterialRequisitionDto>>('get', `${basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
+                body: updateIssuedQuantityDto,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,

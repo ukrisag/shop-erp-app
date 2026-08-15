@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO for adding item to cart
+ */
 export interface AddToCartDto { 
     productVariantId: number;
     quantity: number;

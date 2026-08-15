@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { LoginResponseDto } from './loginResponseDto';
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfLoginResponseDto { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
-    data?: LoginResponseDto;
+    /**
+     * Response data
+     */
+    data?: LoginResponseDto | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

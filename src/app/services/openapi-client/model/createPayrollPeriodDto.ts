@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -16,6 +16,6 @@ export interface CreatePayrollPeriodDto {
     year: number;
     startDate: string;
     endDate: string;
-    status?: string | null;
+    status?: string;
 }
 

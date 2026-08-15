@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,8 +9,11 @@
  */
 
 
+/**
+ * DTO for image upload result
+ */
 export interface ImageUploadResultDto { 
-    imageUrl?: string | null;
-    fileName?: string | null;
+    imageUrl?: string;
+    fileName?: string;
 }
 

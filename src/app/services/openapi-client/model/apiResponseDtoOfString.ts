@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,10 +9,25 @@
  */
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfString { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
+    /**
+     * Response data
+     */
     data?: string | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

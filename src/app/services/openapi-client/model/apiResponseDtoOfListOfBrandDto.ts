@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { BrandDto } from './brandDto';
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfListOfBrandDto { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
+    /**
+     * Response data
+     */
     data?: Array<BrandDto> | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

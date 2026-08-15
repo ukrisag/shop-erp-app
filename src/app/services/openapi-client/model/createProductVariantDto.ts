@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO for creating a new product variant
+ */
 export interface CreateProductVariantDto { 
     sku: string;
     name: string;

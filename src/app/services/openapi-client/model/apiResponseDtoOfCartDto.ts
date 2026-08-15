@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { CartDto } from './cartDto';
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfCartDto { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
-    data?: CartDto;
+    /**
+     * Response data
+     */
+    data?: CartDto | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

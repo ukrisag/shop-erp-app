@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO for approving review
+ */
 export interface ApproveReviewDto { 
     adminResponse?: string | null;
 }

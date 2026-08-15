@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,10 +9,13 @@
  */
 
 
+/**
+ * DTO สำหรับแสดงรายการพนักงาน (สำหรับ list/grid)
+ */
 export interface EmployeeListDto { 
     id?: number;
-    employeeCode?: string | null;
-    email?: string | null;
+    employeeCode?: string;
+    email?: string;
     fullNameTh?: string | null;
     fullNameEn?: string | null;
     phone?: string | null;

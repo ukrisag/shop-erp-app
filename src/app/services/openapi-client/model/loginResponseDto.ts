@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { UserDto } from './userDto';
 
 
+/**
+ * DTO for login response
+ */
 export interface LoginResponseDto { 
-    token?: string | null;
+    /**
+     * JWT access token
+     */
+    token?: string;
+    /**
+     * Token expiration time
+     */
     expiresAt?: string;
-    refreshToken?: string | null;
+    /**
+     * Refresh token
+     */
+    refreshToken?: string;
+    /**
+     * User information
+     */
     user?: UserDto;
 }
 

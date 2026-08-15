@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,6 +10,6 @@
 
 
 export interface UpdateOrderStatusRequest { 
-    status?: string | null;
+    status?: string;
 }
 

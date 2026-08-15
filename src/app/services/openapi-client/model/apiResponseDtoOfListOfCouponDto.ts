@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { CouponDto } from './couponDto';
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfListOfCouponDto { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
+    /**
+     * Response data
+     */
     data?: Array<CouponDto> | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

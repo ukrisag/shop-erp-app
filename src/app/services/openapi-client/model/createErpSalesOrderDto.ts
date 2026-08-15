@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -19,7 +19,7 @@ export interface CreateErpSalesOrderDto {
     customerTaxId?: string | null;
     orderDate: string;
     orderType: string;
-    status?: string | null;
+    status?: string;
     discountPercentage?: number | null;
     discountAmount?: number | null;
     vatEnabled?: boolean;

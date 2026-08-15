@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,10 +9,13 @@
  */
 
 
+/**
+ * DTO for brand
+ */
 export interface BrandDto { 
     id?: number;
-    name?: string | null;
-    slug?: string | null;
+    name?: string;
+    slug?: string;
     logoUrl?: string | null;
     description?: string | null;
     websiteUrl?: string | null;

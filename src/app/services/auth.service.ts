@@ -58,7 +58,7 @@ export class AuthService {
   }
 
   login(credentials: LoginDto): Observable<LoginResponseDto> {
-    return this.apiAuthService.apiAuthLoginPost(credentials).pipe(
+    return this.apiAuthService.authLogin(credentials).pipe(
       map(response => {
         if (response.success && response.data) {
           this.setSession(response.data);
@@ -73,7 +73,7 @@ export class AuthService {
   }
 
   register(userData: RegisterDto): Observable<UserDto> {
-    return this.apiAuthService.apiAuthRegisterPost(userData).pipe(
+    return this.apiAuthService.authRegister(userData).pipe(
       map(response => {
         if (response.success && response.data) {
           return response.data;
@@ -132,7 +132,7 @@ export class AuthService {
     }
 
     const request: RefreshTokenRequestDto = { refreshToken };
-    return this.apiAuthService.apiAuthRefreshTokenPost(request).pipe(
+    return this.apiAuthService.authRefreshToken(request).pipe(
       map(response => {
         if (response.success && response.data) {
           this.setSession(response.data);
@@ -207,7 +207,7 @@ export class AuthService {
 
   forgotPassword(email: string): Observable<any> {
     const request: ForgotPasswordDto = { email };
-    return this.apiAuthService.apiAuthForgotPasswordPost(request).pipe(
+    return this.apiAuthService.authForgotPassword(request).pipe(
       map(response => {
         if (response.success) {
           return response;
@@ -222,7 +222,7 @@ export class AuthService {
 
   resetPassword(email: string, token: string, newPassword: string): Observable<any> {
     const request: ResetPasswordDto = { email, token, newPassword };
-    return this.apiAuthService.apiAuthResetPasswordPost(request).pipe(
+    return this.apiAuthService.authResetPassword(request).pipe(
       map(response => {
         if (response.success) {
           return response;

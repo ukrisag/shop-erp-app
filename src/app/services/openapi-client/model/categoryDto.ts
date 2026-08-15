@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,11 +9,14 @@
  */
 
 
+/**
+ * DTO for category
+ */
 export interface CategoryDto { 
     id?: number;
     parentId?: number | null;
-    name?: string | null;
-    slug?: string | null;
+    name?: string;
+    slug?: string;
     description?: string | null;
     imageUrl?: string | null;
     displayOrder?: number;

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -15,7 +15,7 @@ export interface BankTransactionDto {
     bankName?: string | null;
     accountNumber?: string | null;
     transactionDate?: string;
-    transactionType?: string | null;
+    transactionType?: string;
     amount?: number;
     description?: string | null;
     erpSalesPaymentId?: number | null;

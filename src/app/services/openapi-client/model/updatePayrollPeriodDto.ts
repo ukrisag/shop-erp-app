@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -13,6 +13,6 @@ export interface UpdatePayrollPeriodDto {
     periodName?: string | null;
     startDate: string;
     endDate: string;
-    status?: string | null;
+    status?: string;
 }
 

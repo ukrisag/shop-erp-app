@@ -3,13 +3,43 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExpensesService, ExpenseCategoriesService, BranchesService } from '../../../../services/openapi-client';
 import {
-  ExpenseDto,
   CreateExpenseDto,
-  UpdateExpenseDto,
-  ExpenseCategoryDto,
-  BranchDto
+  UpdateExpenseDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
+
+// The generated ExpensesController/ExpenseCategoriesController/BranchesController actions
+// return untyped IActionResult on the backend, so openapi-generator does not emit typed
+// ExpenseDto / ExpenseCategoryDto / BranchDto models. Define the shapes locally.
+interface ExpenseDto {
+  id?: number;
+  branchId?: number;
+  branchName?: string | null;
+  categoryId?: number;
+  categoryName?: string | null;
+  categoryCode?: string | null;
+  amount?: number;
+  expenseDate?: string | null;
+  description?: string | null;
+  reference?: string | null;
+  paymentMethod?: string | null;
+  userId?: number | null;
+  userName?: string | null;
+  receiptUrl?: string | null;
+  createdAt?: string | null;
+}
+
+interface ExpenseCategoryDto {
+  id?: number;
+  name?: string | null;
+  code?: string | null;
+}
+
+interface BranchDto {
+  id?: number;
+  name?: string | null;
+  code?: string | null;
+}
 
 @Component({
   selector: 'app-expense-list-admin',
@@ -90,7 +120,7 @@ export class ExpenseListAdminComponent implements OnInit {
 
   loadExpenses(): void {
     this.loading.set(true);
-    this.expensesService.apiErpExpensesGet().subscribe({
+    this.expensesService.expensesGetAll().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.expenses.set(response.data);
@@ -106,7 +136,7 @@ export class ExpenseListAdminComponent implements OnInit {
   }
 
   loadCategories(): void {
-    this.categoriesService.apiErpExpenseCategoriesGet().subscribe({
+    this.categoriesService.expenseCategoriesGetAll().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.categories.set(response.data);
@@ -119,7 +149,7 @@ export class ExpenseListAdminComponent implements OnInit {
   }
 
   loadBranches(): void {
-    this.branchesService.apiErpBranchesGet().subscribe({
+    this.branchesService.branchesGetAll().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.branches.set(response.data);
@@ -270,7 +300,7 @@ export class ExpenseListAdminComponent implements OnInit {
       receiptUrl: this.expenseForm.receiptUrl?.trim() || null
     };
 
-    this.expensesService.apiErpExpensesPost(dto).subscribe({
+    this.expensesService.expensesCreate(dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadExpenses();
@@ -300,7 +330,7 @@ export class ExpenseListAdminComponent implements OnInit {
       receiptUrl: this.expenseForm.receiptUrl?.trim() || null
     };
 
-    this.expensesService.apiErpExpensesIdPut(expense.id!, dto).subscribe({
+    this.expensesService.expensesUpdate(expense.id!, dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadExpenses();
@@ -320,7 +350,7 @@ export class ExpenseListAdminComponent implements OnInit {
     const expense = this.selectedExpense();
     if (!expense) return;
 
-    this.expensesService.apiErpExpensesIdDelete(expense.id!).subscribe({
+    this.expensesService.expensesDelete(expense.id!).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadExpenses();

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO for sales analytics
+ */
 export interface SalesAnalyticsDto { 
     totalOrders?: number;
     totalRevenue?: number;

@@ -22,7 +22,7 @@ export class AdminOrderService {
     page: number;
     pageSize: number;
   }> {
-    return this.adminOrdersService.apiAdminOrdersGet(pageNumber, pageSize).pipe(
+    return this.adminOrdersService.adminOrdersGetAllOrders(pageNumber, pageSize).pipe(
       map(response => {
         const data = response.data;
         return {
@@ -39,8 +39,8 @@ export class AdminOrderService {
    * Get order by ID
    */
   getOrderById(id: number): Observable<OrderDetailDto | undefined> {
-    return this.adminOrdersService.apiAdminOrdersIdGet(id).pipe(
-      map(response => response.data)
+    return this.adminOrdersService.adminOrdersGetOrderById(id).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -48,8 +48,8 @@ export class AdminOrderService {
    * Update order status
    */
   updateOrderStatus(id: number, statusDto: UpdateOrderStatusDto): Observable<OrderDetailDto | undefined> {
-    return this.adminOrdersService.apiAdminOrdersIdStatusPut(id, statusDto).pipe(
-      map(response => response.data)
+    return this.adminOrdersService.adminOrdersUpdateOrderStatus(id, statusDto).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -57,8 +57,8 @@ export class AdminOrderService {
    * Get sales analytics
    */
   getSalesAnalytics(startDate?: string, endDate?: string): Observable<any> {
-    return this.adminOrdersService.apiAdminOrdersAnalyticsSalesGet(startDate, endDate).pipe(
-      map(response => response.data)
+    return this.adminOrdersService.adminOrdersGetSalesAnalytics(startDate, endDate).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 }

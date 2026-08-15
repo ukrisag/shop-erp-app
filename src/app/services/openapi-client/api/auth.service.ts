@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -37,32 +37,33 @@ import { ResetPasswordDto } from '../model/resetPasswordDto';
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 import { BaseService } from '../api.base.service';
-import {
-    AuthServiceInterface
-} from './auth.serviceInterface';
 
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService extends BaseService implements AuthServiceInterface {
+export class AuthService extends BaseService {
 
     constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string|string[], @Optional() configuration?: Configuration) {
         super(basePath, configuration);
     }
 
     /**
+     * Request password reset
      * @endpoint post /api/auth/forgot-password
-     * @param forgotPasswordDto 
+     * @param forgotPasswordDto Email for password reset
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiAuthForgotPasswordPost(forgotPasswordDto?: ForgotPasswordDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfObject>;
-    public apiAuthForgotPasswordPost(forgotPasswordDto?: ForgotPasswordDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfObject>>;
-    public apiAuthForgotPasswordPost(forgotPasswordDto?: ForgotPasswordDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfObject>>;
-    public apiAuthForgotPasswordPost(forgotPasswordDto?: ForgotPasswordDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public authForgotPassword(forgotPasswordDto: ForgotPasswordDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfObject>;
+    public authForgotPassword(forgotPasswordDto: ForgotPasswordDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfObject>>;
+    public authForgotPassword(forgotPasswordDto: ForgotPasswordDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfObject>>;
+    public authForgotPassword(forgotPasswordDto: ForgotPasswordDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (forgotPasswordDto === null || forgotPasswordDto === undefined) {
+            throw new Error('Required parameter forgotPasswordDto was null or undefined when calling authForgotPassword.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -117,16 +118,20 @@ export class AuthService extends BaseService implements AuthServiceInterface {
     }
 
     /**
+     * Login user
      * @endpoint post /api/auth/login
-     * @param loginDto 
+     * @param loginDto Login credentials
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiAuthLoginPost(loginDto?: LoginDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfLoginResponseDto>;
-    public apiAuthLoginPost(loginDto?: LoginDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfLoginResponseDto>>;
-    public apiAuthLoginPost(loginDto?: LoginDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfLoginResponseDto>>;
-    public apiAuthLoginPost(loginDto?: LoginDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public authLogin(loginDto: LoginDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfLoginResponseDto>;
+    public authLogin(loginDto: LoginDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfLoginResponseDto>>;
+    public authLogin(loginDto: LoginDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfLoginResponseDto>>;
+    public authLogin(loginDto: LoginDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (loginDto === null || loginDto === undefined) {
+            throw new Error('Required parameter loginDto was null or undefined when calling authLogin.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -181,16 +186,20 @@ export class AuthService extends BaseService implements AuthServiceInterface {
     }
 
     /**
+     * Refresh access token using refresh token
      * @endpoint post /api/auth/refresh-token
-     * @param refreshTokenRequestDto 
+     * @param refreshTokenRequestDto Refresh token request
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiAuthRefreshTokenPost(refreshTokenRequestDto?: RefreshTokenRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfLoginResponseDto>;
-    public apiAuthRefreshTokenPost(refreshTokenRequestDto?: RefreshTokenRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfLoginResponseDto>>;
-    public apiAuthRefreshTokenPost(refreshTokenRequestDto?: RefreshTokenRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfLoginResponseDto>>;
-    public apiAuthRefreshTokenPost(refreshTokenRequestDto?: RefreshTokenRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public authRefreshToken(refreshTokenRequestDto: RefreshTokenRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfLoginResponseDto>;
+    public authRefreshToken(refreshTokenRequestDto: RefreshTokenRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfLoginResponseDto>>;
+    public authRefreshToken(refreshTokenRequestDto: RefreshTokenRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfLoginResponseDto>>;
+    public authRefreshToken(refreshTokenRequestDto: RefreshTokenRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (refreshTokenRequestDto === null || refreshTokenRequestDto === undefined) {
+            throw new Error('Required parameter refreshTokenRequestDto was null or undefined when calling authRefreshToken.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -245,16 +254,20 @@ export class AuthService extends BaseService implements AuthServiceInterface {
     }
 
     /**
+     * Register a new user
      * @endpoint post /api/auth/register
-     * @param registerDto 
+     * @param registerDto Registration data
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiAuthRegisterPost(registerDto?: RegisterDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfUserDto>;
-    public apiAuthRegisterPost(registerDto?: RegisterDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfUserDto>>;
-    public apiAuthRegisterPost(registerDto?: RegisterDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfUserDto>>;
-    public apiAuthRegisterPost(registerDto?: RegisterDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public authRegister(registerDto: RegisterDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfUserDto>;
+    public authRegister(registerDto: RegisterDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfUserDto>>;
+    public authRegister(registerDto: RegisterDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfUserDto>>;
+    public authRegister(registerDto: RegisterDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (registerDto === null || registerDto === undefined) {
+            throw new Error('Required parameter registerDto was null or undefined when calling authRegister.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -309,16 +322,20 @@ export class AuthService extends BaseService implements AuthServiceInterface {
     }
 
     /**
+     * Reset password using token
      * @endpoint post /api/auth/reset-password
-     * @param resetPasswordDto 
+     * @param resetPasswordDto Reset password data
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiAuthResetPasswordPost(resetPasswordDto?: ResetPasswordDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfObject>;
-    public apiAuthResetPasswordPost(resetPasswordDto?: ResetPasswordDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfObject>>;
-    public apiAuthResetPasswordPost(resetPasswordDto?: ResetPasswordDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfObject>>;
-    public apiAuthResetPasswordPost(resetPasswordDto?: ResetPasswordDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public authResetPassword(resetPasswordDto: ResetPasswordDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfObject>;
+    public authResetPassword(resetPasswordDto: ResetPasswordDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfObject>>;
+    public authResetPassword(resetPasswordDto: ResetPasswordDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfObject>>;
+    public authResetPassword(resetPasswordDto: ResetPasswordDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (resetPasswordDto === null || resetPasswordDto === undefined) {
+            throw new Error('Required parameter resetPasswordDto was null or undefined when calling authResetPassword.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -373,16 +390,20 @@ export class AuthService extends BaseService implements AuthServiceInterface {
     }
 
     /**
+     * Revoke refresh token
      * @endpoint post /api/auth/revoke-token
-     * @param refreshTokenRequestDto 
+     * @param refreshTokenRequestDto Refresh token to revoke
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiAuthRevokeTokenPost(refreshTokenRequestDto?: RefreshTokenRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfObject>;
-    public apiAuthRevokeTokenPost(refreshTokenRequestDto?: RefreshTokenRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfObject>>;
-    public apiAuthRevokeTokenPost(refreshTokenRequestDto?: RefreshTokenRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfObject>>;
-    public apiAuthRevokeTokenPost(refreshTokenRequestDto?: RefreshTokenRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public authRevokeToken(refreshTokenRequestDto: RefreshTokenRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfObject>;
+    public authRevokeToken(refreshTokenRequestDto: RefreshTokenRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfObject>>;
+    public authRevokeToken(refreshTokenRequestDto: RefreshTokenRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfObject>>;
+    public authRevokeToken(refreshTokenRequestDto: RefreshTokenRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (refreshTokenRequestDto === null || refreshTokenRequestDto === undefined) {
+            throw new Error('Required parameter refreshTokenRequestDto was null or undefined when calling authRevokeToken.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 

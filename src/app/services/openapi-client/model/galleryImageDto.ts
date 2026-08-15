@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -11,9 +11,9 @@
 
 export interface GalleryImageDto { 
     id?: number;
-    title?: string | null;
+    title?: string;
     description?: string | null;
-    imageUrl?: string | null;
+    imageUrl?: string;
     thumbnailUrl?: string | null;
     altText?: string | null;
     category?: string | null;

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO สำหรับสร้าง/แก้ไขเงินเดือนแบบ manual
+ */
 export interface SalaryRecordCreateDto { 
     employeeId: number;
     branchId?: number | null;

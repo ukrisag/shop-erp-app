@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,7 +9,10 @@
  */
 
 
+/**
+ * DTO for updating user status
+ */
 export interface UpdateUserStatusDto { 
-    status?: string | null;
+    status?: string;
 }
 

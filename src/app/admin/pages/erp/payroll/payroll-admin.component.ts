@@ -14,10 +14,17 @@ import {
   PayrollCalculationResponseDto,
   SalaryRecordDto,
   SalaryRecordCreateDto,
-  EmployeeListDto,
-  BranchDto
+  EmployeeListDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
+
+// The generated BranchesController actions return untyped IActionResult on the backend,
+// so openapi-generator does not emit a typed BranchDto model. Define the shape locally.
+interface BranchDto {
+  id?: number;
+  name?: string | null;
+  code?: string | null;
+}
 
 @Component({
   selector: 'app-payroll-admin',
@@ -136,7 +143,7 @@ export class PayrollAdminComponent implements OnInit {
 
   loadSalaryRecords(): void {
     this.loading.set(true);
-    this.payrollService.apiPayrollSalaryRecordsGet().subscribe({
+    this.payrollService.payrollGetAllSalaryRecords().subscribe({
       next: (records: SalaryRecordDto[]) => {
         this.salaryRecords.set(records);
         this.applyFilters();
@@ -152,7 +159,7 @@ export class PayrollAdminComponent implements OnInit {
 
   loadSalaryRecordsByPeriod(year: number, month: number): void {
     this.loading.set(true);
-    this.payrollService.apiPayrollSalaryRecordsPeriodYearMonthGet(year, month).subscribe({
+    this.payrollService.payrollGetSalaryRecordsByPeriod(year, month).subscribe({
       next: (records: SalaryRecordDto[]) => {
         this.salaryRecords.set(records);
         this.applyFilters();
@@ -167,7 +174,7 @@ export class PayrollAdminComponent implements OnInit {
   }
 
   loadEmployees(): void {
-    this.employeesService.apiEmployeesGet().subscribe({
+    this.employeesService.employeesGetAllEmployees().subscribe({
       next: (employees: EmployeeListDto[]) => {
         this.employees.set(employees.filter(e => e.status === 'active'));
       },
@@ -178,7 +185,7 @@ export class PayrollAdminComponent implements OnInit {
   }
 
   loadBranches(): void {
-    this.branchesService.apiErpBranchesGet().subscribe({
+    this.branchesService.branchesGetAll().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.branches.set(response.data);
@@ -264,7 +271,7 @@ export class PayrollAdminComponent implements OnInit {
 
     console.log('Calculating payroll with request:', request);
     this.loading.set(true);
-    this.payrollService.apiPayrollCalculatePost(request).subscribe({
+    this.payrollService.payrollCalculatePayroll(request).subscribe({
       next: (result: PayrollCalculationResponseDto) => {
         console.log('Payroll calculation result:', result);
 
@@ -388,7 +395,7 @@ export class PayrollAdminComponent implements OnInit {
       notes: this.recordForm.notes
     };
 
-    this.payrollService.apiPayrollSalaryRecordsPost(dto).subscribe({
+    this.payrollService.payrollCreateSalaryRecord(dto).subscribe({
       next: (created: SalaryRecordDto) => {
         this.notificationService.success('สร้างรายการเงินเดือนสำเร็จ');
         this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth());
@@ -405,7 +412,7 @@ export class PayrollAdminComponent implements OnInit {
     const record = this.selectedRecord();
     if (!record) return;
 
-    this.payrollService.apiPayrollSalaryRecordsIdDelete(record.id!).subscribe({
+    this.payrollService.payrollDeleteSalaryRecord(record.id!).subscribe({
       next: () => {
         this.notificationService.success('ลบรายการเงินเดือนสำเร็จ');
         this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth());
@@ -419,7 +426,7 @@ export class PayrollAdminComponent implements OnInit {
   }
 
   approveRecord(record: SalaryRecordDto): void {
-    this.payrollService.apiPayrollSalaryRecordsIdApprovePost(record.id!).subscribe({
+    this.payrollService.payrollApproveSalaryRecord(record.id!).subscribe({
       next: (updated: SalaryRecordDto) => {
         this.notificationService.success('อนุมัติรายการเงินเดือนสำเร็จ');
         this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth());
@@ -432,7 +439,7 @@ export class PayrollAdminComponent implements OnInit {
   }
 
   markAsPaid(record: SalaryRecordDto): void {
-    this.payrollService.apiPayrollSalaryRecordsIdMarkPaidPost(record.id!).subscribe({
+    this.payrollService.payrollMarkSalaryRecordAsPaid(record.id!).subscribe({
       next: (updated: SalaryRecordDto) => {
         this.notificationService.success('ทำเครื่องหมายจ่ายเงินแล้วสำเร็จ');
         this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth());
@@ -581,9 +588,14 @@ export class PayrollAdminComponent implements OnInit {
 
     const recordId = record.id; // Store in variable for type safety
 
-    // Call backend API using OpenAPI-generated service
-    this.reportsService.apiReportsPayrollSalaryRecordsIdPaySlipGet(recordId).subscribe({
-      next: (blob: Blob) => {
+    // Call backend API using OpenAPI-generated service.
+    // The generated method is typed as returning FileContentResult (openapi-generator picks
+    // the JSON-shaped "produces" type for its overload signature), but since we explicitly
+    // request the 'application/pdf' Accept header the HttpClient call is made with
+    // responseType: 'blob' under the hood, so the value delivered at runtime is a real Blob.
+    this.reportsService.reportsDownloadPaySlip(recordId, 'body', false, { httpHeaderAccept: 'application/pdf' }).subscribe({
+      next: (result) => {
+        const blob = result as unknown as Blob;
         // Create download link
         const downloadUrl = window.URL.createObjectURL(blob);
         const link = document.createElement('a');

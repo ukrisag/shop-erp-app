@@ -7,10 +7,24 @@ import {
   BankAccountDto,
   CreateBankAccountDto,
   BankTransactionDto,
-  CreateBankTransactionDto,
-  BranchDto
+  CreateBankTransactionDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
+
+// The generated BranchesController actions return untyped IActionResult on the backend,
+// so openapi-generator does not emit a typed BranchDto model. Define the shape locally.
+interface BranchDto {
+  id?: number;
+  name?: string | null;
+  code?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  isMain?: boolean | null;
+  isActive?: boolean | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
 
 @Component({
   selector: 'app-banking-admin',
@@ -127,7 +141,7 @@ export class BankingAdminComponent implements OnInit {
 
   loadAccounts(): void {
     this.loading.set(true);
-    this.accountsService.apiErpBankAccountsGet().subscribe({
+    this.accountsService.bankAccountsGetAllAccounts().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.accounts.set(response.data);
@@ -143,7 +157,7 @@ export class BankingAdminComponent implements OnInit {
   }
 
   loadTransactions(): void {
-    this.transactionsService.apiErpBankTransactionsGet().subscribe({
+    this.transactionsService.bankTransactionsGetAllTransactions().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.transactions.set(response.data);
@@ -157,7 +171,7 @@ export class BankingAdminComponent implements OnInit {
   }
 
   loadBranches(): void {
-    this.branchesService.apiErpBranchesGet().subscribe({
+    this.branchesService.branchesGetAll().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.branches.set(response.data);
@@ -311,7 +325,7 @@ export class BankingAdminComponent implements OnInit {
   createAccount(): void {
     const dto: CreateBankAccountDto = this.accountForm;
 
-    this.accountsService.apiErpBankAccountsPost(dto).subscribe({
+    this.accountsService.bankAccountsCreateAccount(dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadAccounts();
@@ -340,7 +354,7 @@ export class BankingAdminComponent implements OnInit {
       initialBalance: account.balance  // Keep existing balance, don't allow editing
     };
 
-    this.accountsService.apiErpBankAccountsIdPut(account.id!, dto).subscribe({
+    this.accountsService.bankAccountsUpdateAccount(account.id!, dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadAccounts();
@@ -359,7 +373,7 @@ export class BankingAdminComponent implements OnInit {
     const account = this.selectedAccount();
     if (!account) return;
 
-    this.accountsService.apiErpBankAccountsIdDelete(account.id!).subscribe({
+    this.accountsService.bankAccountsDeleteAccount(account.id!).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadAccounts();
@@ -399,7 +413,7 @@ export class BankingAdminComponent implements OnInit {
   createTransaction(): void {
     const dto: CreateBankTransactionDto = this.transactionForm;
 
-    this.transactionsService.apiErpBankTransactionsPost(dto).subscribe({
+    this.transactionsService.bankTransactionsCreateTransaction(dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadTransactions();
@@ -418,7 +432,7 @@ export class BankingAdminComponent implements OnInit {
     const transaction = this.selectedTransaction();
     if (!transaction) return;
 
-    this.transactionsService.apiErpBankTransactionsIdDelete(transaction.id!).subscribe({
+    this.transactionsService.bankTransactionsDeleteTransaction(transaction.id!).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadTransactions();

@@ -3,13 +3,50 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MaterialRequisitionsService, BranchesService, EmployeesService } from '../../../../services/openapi-client';
 import {
-  MaterialRequisitionDto,
   CreateMaterialRequisitionDto,
   UpdateMaterialRequisitionDto,
-  BranchDto,
   EmployeeListDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
+
+// The generated MaterialRequisitionsController/BranchesController actions return untyped
+// IActionResult on the backend, so openapi-generator does not emit typed
+// MaterialRequisitionDto / BranchDto models. Define the shapes locally.
+interface MaterialRequisitionItemDto {
+  id?: number;
+  materialRequisitionId?: number;
+  productId?: number;
+  productName?: string | null;
+  quantity?: number;
+  unit?: string | null;
+  issuedQuantity?: number | null;
+}
+
+interface MaterialRequisitionDto {
+  id?: number;
+  requisitionNumber?: string | null;
+  branchId?: number;
+  branchName?: string | null;
+  requestedBy?: number;
+  requestedByName?: string | null;
+  requisitionDate?: string | null;
+  purpose?: string | null;
+  salesOrderId?: number | null;
+  salesOrderNumber?: string | null;
+  status?: string | null;
+  approvedBy?: number | null;
+  approvedByName?: string | null;
+  approvedAt?: string | null;
+  notes?: string | null;
+  createdAt?: string | null;
+  items?: MaterialRequisitionItemDto[];
+}
+
+interface BranchDto {
+  id?: number;
+  name?: string | null;
+  code?: string | null;
+}
 
 @Component({
   selector: 'app-material-requisition-admin',
@@ -71,7 +108,7 @@ export class MaterialRequisitionAdminComponent implements OnInit {
 
   loadRequisitions(): void {
     this.loading.set(true);
-    this.requisitionsService.apiErpMaterialRequisitionsGet().subscribe({
+    this.requisitionsService.materialRequisitionsGetAll().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.requisitions.set(response.data);
@@ -87,7 +124,7 @@ export class MaterialRequisitionAdminComponent implements OnInit {
   }
 
   loadBranches(): void {
-    this.branchesService.apiErpBranchesGet().subscribe({
+    this.branchesService.branchesGetAll().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.branches.set(response.data);
@@ -98,7 +135,7 @@ export class MaterialRequisitionAdminComponent implements OnInit {
   }
 
   loadEmployees(): void {
-    this.employeesService.apiEmployeesGet().subscribe({
+    this.employeesService.employeesGetAllEmployees().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.employees.set(response.data);
@@ -192,7 +229,7 @@ export class MaterialRequisitionAdminComponent implements OnInit {
 
   create(): void {
     const dto: CreateMaterialRequisitionDto = this.requisitionForm;
-    this.requisitionsService.apiErpMaterialRequisitionsPost(dto).subscribe({
+    this.requisitionsService.materialRequisitionsCreate(dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadRequisitions();
@@ -211,7 +248,7 @@ export class MaterialRequisitionAdminComponent implements OnInit {
     if (!req) return;
 
     const dto: UpdateMaterialRequisitionDto = this.requisitionForm;
-    this.requisitionsService.apiErpMaterialRequisitionsIdPut(req.id!, dto).subscribe({
+    this.requisitionsService.materialRequisitionsUpdate(req.id!, dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadRequisitions();
@@ -229,7 +266,7 @@ export class MaterialRequisitionAdminComponent implements OnInit {
     const req = this.selectedRequisition();
     if (!req) return;
 
-    this.requisitionsService.apiErpMaterialRequisitionsIdDelete(req.id!).subscribe({
+    this.requisitionsService.materialRequisitionsDelete(req.id!).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadRequisitions();

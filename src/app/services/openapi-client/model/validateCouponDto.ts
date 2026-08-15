@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO for validating coupon
+ */
 export interface ValidateCouponDto { 
     code: string;
     subtotal?: number;

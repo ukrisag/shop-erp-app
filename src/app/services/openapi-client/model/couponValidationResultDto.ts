@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,13 @@
 import { CouponDto } from './couponDto';
 
 
+/**
+ * DTO for coupon validation result
+ */
 export interface CouponValidationResultDto { 
     isValid?: boolean;
-    message?: string | null;
+    message?: string;
     discountAmount?: number | null;
-    coupon?: CouponDto;
+    coupon?: CouponDto | null;
 }
 

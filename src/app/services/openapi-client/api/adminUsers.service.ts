@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -31,32 +31,33 @@ import { UpdateUserStatusDto } from '../model/updateUserStatusDto';
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 import { BaseService } from '../api.base.service';
-import {
-    AdminUsersServiceInterface
-} from './adminUsers.serviceInterface';
 
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class AdminUsersService extends BaseService implements AdminUsersServiceInterface {
+export class AdminUsersService extends BaseService {
 
     constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string|string[], @Optional() configuration?: Configuration) {
         super(basePath, configuration);
     }
 
     /**
+     * Create employee or admin user (Admin only)
      * @endpoint post /api/admin/users/employees
      * @param createEmployeeUserDto 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiAdminUsersEmployeesPost(createEmployeeUserDto?: CreateEmployeeUserDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfUserDto>;
-    public apiAdminUsersEmployeesPost(createEmployeeUserDto?: CreateEmployeeUserDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfUserDto>>;
-    public apiAdminUsersEmployeesPost(createEmployeeUserDto?: CreateEmployeeUserDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfUserDto>>;
-    public apiAdminUsersEmployeesPost(createEmployeeUserDto?: CreateEmployeeUserDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public adminUsersCreateEmployee(createEmployeeUserDto: CreateEmployeeUserDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfUserDto>;
+    public adminUsersCreateEmployee(createEmployeeUserDto: CreateEmployeeUserDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfUserDto>>;
+    public adminUsersCreateEmployee(createEmployeeUserDto: CreateEmployeeUserDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfUserDto>>;
+    public adminUsersCreateEmployee(createEmployeeUserDto: CreateEmployeeUserDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (createEmployeeUserDto === null || createEmployeeUserDto === undefined) {
+            throw new Error('Required parameter createEmployeeUserDto was null or undefined when calling adminUsersCreateEmployee.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -113,6 +114,7 @@ export class AdminUsersService extends BaseService implements AdminUsersServiceI
     }
 
     /**
+     * Get all users (Admin)
      * @endpoint get /api/admin/users
      * @param pageNumber 
      * @param pageSize 
@@ -121,10 +123,10 @@ export class AdminUsersService extends BaseService implements AdminUsersServiceI
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiAdminUsersGet(pageNumber?: number, pageSize?: number, search?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfListOfUserDto>;
-    public apiAdminUsersGet(pageNumber?: number, pageSize?: number, search?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfListOfUserDto>>;
-    public apiAdminUsersGet(pageNumber?: number, pageSize?: number, search?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfListOfUserDto>>;
-    public apiAdminUsersGet(pageNumber?: number, pageSize?: number, search?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public adminUsersGetAllUsers(pageNumber?: number, pageSize?: number, search?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfListOfUserDto>;
+    public adminUsersGetAllUsers(pageNumber?: number, pageSize?: number, search?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfListOfUserDto>>;
+    public adminUsersGetAllUsers(pageNumber?: number, pageSize?: number, search?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfListOfUserDto>>;
+    public adminUsersGetAllUsers(pageNumber?: number, pageSize?: number, search?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -199,18 +201,19 @@ export class AdminUsersService extends BaseService implements AdminUsersServiceI
     }
 
     /**
+     * Get user by ID (Admin)
      * @endpoint get /api/admin/users/{id}
      * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiAdminUsersIdGet(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfUserDto>;
-    public apiAdminUsersIdGet(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfUserDto>>;
-    public apiAdminUsersIdGet(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfUserDto>>;
-    public apiAdminUsersIdGet(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public adminUsersGetUserById(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfUserDto>;
+    public adminUsersGetUserById(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfUserDto>>;
+    public adminUsersGetUserById(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfUserDto>>;
+    public adminUsersGetUserById(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiAdminUsersIdGet.');
+            throw new Error('Required parameter id was null or undefined when calling adminUsersGetUserById.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -256,6 +259,7 @@ export class AdminUsersService extends BaseService implements AdminUsersServiceI
     }
 
     /**
+     * Update user role (Admin only)
      * @endpoint put /api/admin/users/{id}/role
      * @param id 
      * @param updateUserRoleDto 
@@ -263,12 +267,15 @@ export class AdminUsersService extends BaseService implements AdminUsersServiceI
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiAdminUsersIdRolePut(id: number, updateUserRoleDto?: UpdateUserRoleDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfUserDto>;
-    public apiAdminUsersIdRolePut(id: number, updateUserRoleDto?: UpdateUserRoleDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfUserDto>>;
-    public apiAdminUsersIdRolePut(id: number, updateUserRoleDto?: UpdateUserRoleDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfUserDto>>;
-    public apiAdminUsersIdRolePut(id: number, updateUserRoleDto?: UpdateUserRoleDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public adminUsersUpdateUserRole(id: number, updateUserRoleDto: UpdateUserRoleDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfUserDto>;
+    public adminUsersUpdateUserRole(id: number, updateUserRoleDto: UpdateUserRoleDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfUserDto>>;
+    public adminUsersUpdateUserRole(id: number, updateUserRoleDto: UpdateUserRoleDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfUserDto>>;
+    public adminUsersUpdateUserRole(id: number, updateUserRoleDto: UpdateUserRoleDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiAdminUsersIdRolePut.');
+            throw new Error('Required parameter id was null or undefined when calling adminUsersUpdateUserRole.');
+        }
+        if (updateUserRoleDto === null || updateUserRoleDto === undefined) {
+            throw new Error('Required parameter updateUserRoleDto was null or undefined when calling adminUsersUpdateUserRole.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -326,6 +333,7 @@ export class AdminUsersService extends BaseService implements AdminUsersServiceI
     }
 
     /**
+     * Update user status (Admin) - ban/unban
      * @endpoint put /api/admin/users/{id}/status
      * @param id 
      * @param updateUserStatusDto 
@@ -333,12 +341,15 @@ export class AdminUsersService extends BaseService implements AdminUsersServiceI
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiAdminUsersIdStatusPut(id: number, updateUserStatusDto?: UpdateUserStatusDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfUserDto>;
-    public apiAdminUsersIdStatusPut(id: number, updateUserStatusDto?: UpdateUserStatusDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfUserDto>>;
-    public apiAdminUsersIdStatusPut(id: number, updateUserStatusDto?: UpdateUserStatusDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfUserDto>>;
-    public apiAdminUsersIdStatusPut(id: number, updateUserStatusDto?: UpdateUserStatusDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public adminUsersUpdateUserStatus(id: number, updateUserStatusDto: UpdateUserStatusDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<ApiResponseDtoOfUserDto>;
+    public adminUsersUpdateUserStatus(id: number, updateUserStatusDto: UpdateUserStatusDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<ApiResponseDtoOfUserDto>>;
+    public adminUsersUpdateUserStatus(id: number, updateUserStatusDto: UpdateUserStatusDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<ApiResponseDtoOfUserDto>>;
+    public adminUsersUpdateUserStatus(id: number, updateUserStatusDto: UpdateUserStatusDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiAdminUsersIdStatusPut.');
+            throw new Error('Required parameter id was null or undefined when calling adminUsersUpdateUserStatus.');
+        }
+        if (updateUserStatusDto === null || updateUserStatusDto === undefined) {
+            throw new Error('Required parameter updateUserStatusDto was null or undefined when calling adminUsersUpdateUserStatus.');
         }
 
         let localVarHeaders = this.defaultHeaders;

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { ProductDetailDto } from './productDetailDto';
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfProductDetailDto { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
-    data?: ProductDetailDto;
+    /**
+     * Response data
+     */
+    data?: ProductDetailDto | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO for updating order status
+ */
 export interface UpdateOrderStatusDto { 
     status: string;
     trackingNumber?: string | null;

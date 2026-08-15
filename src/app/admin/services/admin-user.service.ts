@@ -21,7 +21,7 @@ export class AdminUserService {
     page: number;
     pageSize: number;
   }> {
-    return this.adminUsersService.apiAdminUsersGet(pageNumber, pageSize, search).pipe(
+    return this.adminUsersService.adminUsersGetAllUsers(pageNumber, pageSize, search).pipe(
       map(response => {
         const data = response.data;
         return {
@@ -38,7 +38,7 @@ export class AdminUserService {
    * Get all users (simple version)
    */
   getAllUsers(): Observable<{ success: boolean; data?: UserDto[] }> {
-    return this.adminUsersService.apiAdminUsersGet(1, 1000).pipe(
+    return this.adminUsersService.adminUsersGetAllUsers(1, 1000).pipe(
       map(response => ({
         success: response.success || false,
         data: response.data ?? undefined
@@ -50,8 +50,8 @@ export class AdminUserService {
    * Get user by ID
    */
   getUserById(id: number): Observable<UserDto | undefined> {
-    return this.adminUsersService.apiAdminUsersIdGet(id).pipe(
-      map(response => response.data)
+    return this.adminUsersService.adminUsersGetUserById(id).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -60,10 +60,10 @@ export class AdminUserService {
    */
   updateUserStatus(id: number, status: string): Observable<{ success: boolean; data?: UserDto }> {
     const statusDto: UpdateUserStatusDto = { status };
-    return this.adminUsersService.apiAdminUsersIdStatusPut(id, statusDto).pipe(
+    return this.adminUsersService.adminUsersUpdateUserStatus(id, statusDto).pipe(
       map(response => ({
         success: response.success || false,
-        data: response.data
+        data: response.data ?? undefined
       }))
     );
   }
@@ -74,7 +74,7 @@ export class AdminUserService {
   createEmployee(employeeDto: any): Observable<{ success: boolean; message?: string; data?: UserDto }> {
     // Note: This will need the OpenAPI client to be regenerated with the new endpoint
     // For now, we'll use a direct HTTP call or wait for API client update
-    return this.adminUsersService.apiAdminUsersEmployeesPost(employeeDto).pipe(
+    return this.adminUsersService.adminUsersCreateEmployee(employeeDto).pipe(
       map(response => ({
         success: response.success || false,
         message: response.message ?? undefined,
@@ -88,10 +88,10 @@ export class AdminUserService {
    */
   updateUserRole(id: number, role: string): Observable<{ success: boolean; data?: UserDto }> {
     const roleDto = { role };
-    return this.adminUsersService.apiAdminUsersIdRolePut(id, roleDto).pipe(
+    return this.adminUsersService.adminUsersUpdateUserRole(id, roleDto).pipe(
       map(response => ({
         success: response.success || false,
-        data: response.data
+        data: response.data ?? undefined
       }))
     );
   }

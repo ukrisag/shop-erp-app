@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { PaginatedResponseDtoOfProductDto } from './paginatedResponseDtoOfProductDto';
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfPaginatedResponseDtoOfProductDto { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
-    data?: PaginatedResponseDtoOfProductDto;
+    /**
+     * Response data
+     */
+    data?: PaginatedResponseDtoOfProductDto | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

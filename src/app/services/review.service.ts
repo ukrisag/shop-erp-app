@@ -17,7 +17,7 @@ export class ReviewService {
   getProductReviews(
     productId: number
   ): Observable<ReviewDto[]> {
-    return this.apiReviewsService.apiProductsProductIdReviewsGet(productId).pipe(
+    return this.apiReviewsService.reviewsGetProductReviews(productId).pipe(
       map((response: any) => {
         if (response.success && response.data) {
           return response.data;
@@ -28,7 +28,7 @@ export class ReviewService {
   }
 
   createReview(productId: number, reviewData: CreateReviewDto): Observable<ReviewDto> {
-    return this.apiReviewsService.apiProductsProductIdReviewsPost(productId, reviewData).pipe(
+    return this.apiReviewsService.reviewsCreateReview(productId, reviewData).pipe(
       map((response: any) => {
         if (response.success && response.data) {
           return response.data;
@@ -39,7 +39,7 @@ export class ReviewService {
   }
 
   updateReview(id: number, reviewData: UpdateReviewDto): Observable<ReviewDto> {
-    return this.apiReviewsService.apiReviewsIdPut(id, reviewData).pipe(
+    return this.apiReviewsService.reviewsUpdateReview(id, reviewData).pipe(
       map((response: any) => {
         if (response.success && response.data) {
           return response.data;
@@ -50,7 +50,7 @@ export class ReviewService {
   }
 
   deleteReview(id: number): Observable<void> {
-    return this.apiReviewsService.apiReviewsIdDelete(id).pipe(
+    return this.apiReviewsService.reviewsDeleteReview(id).pipe(
       map((response: any) => {
         if (!response.success) {
           throw new Error(response.message || 'Failed to delete review');

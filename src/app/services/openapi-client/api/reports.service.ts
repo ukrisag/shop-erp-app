@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -17,42 +17,45 @@ import { Observable }                                        from 'rxjs';
 import { OpenApiHttpParams, QueryParamStyle } from '../query.params';
 
 // @ts-ignore
+import { FileContentResult } from '../model/fileContentResult';
+// @ts-ignore
 import { ProblemDetails } from '../model/problemDetails';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 import { BaseService } from '../api.base.service';
-import {
-    ReportsServiceInterface
-} from './reports.serviceInterface';
 
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class ReportsService extends BaseService implements ReportsServiceInterface {
+export class ReportsService extends BaseService {
 
     constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string|string[], @Optional() configuration?: Configuration) {
         super(basePath, configuration);
     }
 
     /**
+     * Download brands report as Excel (Admin only)
      * @endpoint get /api/reports/brands/excel
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsBrandsExcelGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsBrandsExcelGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsBrandsExcelGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsBrandsExcelGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadBrandsExcel(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadBrandsExcel(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadBrandsExcel(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadBrandsExcel(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -63,12 +66,23 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/brands/excel`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -79,20 +93,24 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download brands report as PDF (Admin only)
      * @endpoint get /api/reports/brands/pdf
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsBrandsPdfGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsBrandsPdfGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsBrandsPdfGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsBrandsPdfGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadBrandsPdf(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadBrandsPdf(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadBrandsPdf(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadBrandsPdf(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/pdf'
+            'application/pdf',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -103,12 +121,23 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/brands/pdf`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -119,20 +148,24 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download categories report as Excel (Admin only)
      * @endpoint get /api/reports/categories/excel
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsCategoriesExcelGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsCategoriesExcelGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsCategoriesExcelGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsCategoriesExcelGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadCategoriesExcel(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadCategoriesExcel(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadCategoriesExcel(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadCategoriesExcel(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -143,12 +176,23 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/categories/excel`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -159,20 +203,24 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download categories report as PDF (Admin only)
      * @endpoint get /api/reports/categories/pdf
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsCategoriesPdfGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsCategoriesPdfGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsCategoriesPdfGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsCategoriesPdfGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadCategoriesPdf(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadCategoriesPdf(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadCategoriesPdf(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadCategoriesPdf(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/pdf'
+            'application/pdf',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -183,12 +231,23 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/categories/pdf`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -199,16 +258,17 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download coupons report as Excel (Admin only)
      * @endpoint get /api/reports/coupons/excel
      * @param activeOnly 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsCouponsExcelGet(activeOnly?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsCouponsExcelGet(activeOnly?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsCouponsExcelGet(activeOnly?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsCouponsExcelGet(activeOnly?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadCouponsExcel(activeOnly?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadCouponsExcel(activeOnly?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadCouponsExcel(activeOnly?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadCouponsExcel(activeOnly?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -224,7 +284,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -235,13 +298,24 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/coupons/excel`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters.toHttpParams(),
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -252,16 +326,17 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download coupons report as PDF (Admin only)
      * @endpoint get /api/reports/coupons/pdf
      * @param activeOnly 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsCouponsPdfGet(activeOnly?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsCouponsPdfGet(activeOnly?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsCouponsPdfGet(activeOnly?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsCouponsPdfGet(activeOnly?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadCouponsPdf(activeOnly?: boolean, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadCouponsPdf(activeOnly?: boolean, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadCouponsPdf(activeOnly?: boolean, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadCouponsPdf(activeOnly?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -277,7 +352,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/pdf'
+            'application/pdf',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -288,13 +366,24 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/coupons/pdf`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters.toHttpParams(),
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -305,6 +394,243 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download order invoice as PDF (Default: A4 for customers)
+     * @endpoint get /api/reports/orders/{id}/invoice
+     * @param id 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public reportsDownloadInvoice(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadInvoice(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadInvoice(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadInvoice(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling reportsDownloadInvoice.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/pdf',
+            'text/plain',
+            'application/json',
+            'text/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/reports/orders/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/invoice`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Download order invoice as PDF (Thermal Receipt 80mm - for admin/POS)
+     * @endpoint get /api/reports/orders/{id}/invoice/thermal
+     * @param id 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public reportsDownloadInvoiceThermal(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadInvoiceThermal(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadInvoiceThermal(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadInvoiceThermal(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling reportsDownloadInvoiceThermal.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/pdf',
+            'text/plain',
+            'application/json',
+            'text/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/reports/orders/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/invoice/thermal`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Download order details as PDF (Default: A4 for customers)
+     * @endpoint get /api/reports/orders/{id}/pdf
+     * @param id 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public reportsDownloadOrderPdf(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadOrderPdf(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadOrderPdf(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadOrderPdf(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling reportsDownloadOrderPdf.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/pdf',
+            'text/plain',
+            'application/json',
+            'text/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/reports/orders/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/pdf`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Download order details as PDF (Thermal Receipt 80mm - for admin/POS)
+     * @endpoint get /api/reports/orders/{id}/pdf/thermal
+     * @param id 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public reportsDownloadOrderPdfThermal(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadOrderPdfThermal(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadOrderPdfThermal(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadOrderPdfThermal(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling reportsDownloadOrderPdfThermal.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
+            'application/pdf',
+            'text/plain',
+            'application/json',
+            'text/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/reports/orders/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/pdf/thermal`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Download orders report as Excel (Admin only)
      * @endpoint get /api/reports/orders/excel
      * @param startDate 
      * @param endDate 
@@ -313,10 +639,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsOrdersExcelGet(startDate?: string, endDate?: string, status?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsOrdersExcelGet(startDate?: string, endDate?: string, status?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsOrdersExcelGet(startDate?: string, endDate?: string, status?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsOrdersExcelGet(startDate?: string, endDate?: string, status?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadOrdersExcel(startDate?: string, endDate?: string, status?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadOrdersExcel(startDate?: string, endDate?: string, status?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadOrdersExcel(startDate?: string, endDate?: string, status?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadOrdersExcel(startDate?: string, endDate?: string, status?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -350,7 +676,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -360,14 +689,25 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
 
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
 
         let localVarPath = `/api/reports/orders/excel`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters.toHttpParams(),
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -378,182 +718,7 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
-     * @endpoint get /api/reports/orders/{id}/invoice
-     * @param id 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     * @param options additional options
-     */
-    public apiReportsOrdersIdInvoiceGet(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsOrdersIdInvoiceGet(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsOrdersIdInvoiceGet(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsOrdersIdInvoiceGet(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiReportsOrdersIdInvoiceGet.');
-        }
-
-        let localVarHeaders = this.defaultHeaders;
-
-        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/pdf'
-        ]);
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-        const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-
-        let localVarPath = `/api/reports/orders/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/invoice`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                responseType: "blob",
-                ...(withCredentials ? { withCredentials } : {}),
-                headers: localVarHeaders,
-                observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * @endpoint get /api/reports/orders/{id}/invoice/thermal
-     * @param id 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     * @param options additional options
-     */
-    public apiReportsOrdersIdInvoiceThermalGet(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsOrdersIdInvoiceThermalGet(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsOrdersIdInvoiceThermalGet(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsOrdersIdInvoiceThermalGet(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiReportsOrdersIdInvoiceThermalGet.');
-        }
-
-        let localVarHeaders = this.defaultHeaders;
-
-        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/pdf'
-        ]);
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-        const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-
-        let localVarPath = `/api/reports/orders/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/invoice/thermal`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                responseType: "blob",
-                ...(withCredentials ? { withCredentials } : {}),
-                headers: localVarHeaders,
-                observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * @endpoint get /api/reports/orders/{id}/pdf
-     * @param id 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     * @param options additional options
-     */
-    public apiReportsOrdersIdPdfGet(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsOrdersIdPdfGet(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsOrdersIdPdfGet(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsOrdersIdPdfGet(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiReportsOrdersIdPdfGet.');
-        }
-
-        let localVarHeaders = this.defaultHeaders;
-
-        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/pdf'
-        ]);
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-        const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-
-        let localVarPath = `/api/reports/orders/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/pdf`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                responseType: "blob",
-                ...(withCredentials ? { withCredentials } : {}),
-                headers: localVarHeaders,
-                observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * @endpoint get /api/reports/orders/{id}/pdf/thermal
-     * @param id 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     * @param options additional options
-     */
-    public apiReportsOrdersIdPdfThermalGet(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsOrdersIdPdfThermalGet(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsOrdersIdPdfThermalGet(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsOrdersIdPdfThermalGet(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiReportsOrdersIdPdfThermalGet.');
-        }
-
-        let localVarHeaders = this.defaultHeaders;
-
-        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/pdf'
-        ]);
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-        const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-
-        let localVarPath = `/api/reports/orders/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/pdf/thermal`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                responseType: "blob",
-                ...(withCredentials ? { withCredentials } : {}),
-                headers: localVarHeaders,
-                observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
+     * Download orders report as PDF (Admin only)
      * @endpoint get /api/reports/orders/pdf
      * @param startDate 
      * @param endDate 
@@ -562,10 +727,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsOrdersPdfGet(startDate?: string, endDate?: string, status?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsOrdersPdfGet(startDate?: string, endDate?: string, status?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsOrdersPdfGet(startDate?: string, endDate?: string, status?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsOrdersPdfGet(startDate?: string, endDate?: string, status?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadOrdersPdf(startDate?: string, endDate?: string, status?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadOrdersPdf(startDate?: string, endDate?: string, status?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadOrdersPdf(startDate?: string, endDate?: string, status?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadOrdersPdf(startDate?: string, endDate?: string, status?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -599,7 +764,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/pdf'
+            'application/pdf',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -610,13 +778,24 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/orders/pdf`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters.toHttpParams(),
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -627,24 +806,28 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download employee pay slip as PDF (Admin only)
      * @endpoint get /api/reports/payroll/salary-records/{id}/pay-slip
      * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsPayrollSalaryRecordsIdPaySlipGet(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsPayrollSalaryRecordsIdPaySlipGet(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsPayrollSalaryRecordsIdPaySlipGet(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsPayrollSalaryRecordsIdPaySlipGet(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadPaySlip(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadPaySlip(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadPaySlip(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadPaySlip(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiReportsPayrollSalaryRecordsIdPaySlipGet.');
+            throw new Error('Required parameter id was null or undefined when calling reportsDownloadPaySlip.');
         }
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/pdf'
+            'application/pdf',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -655,12 +838,23 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/payroll/salary-records/${this.configuration.encodeParam({name: "id", value: id, in: "path", style: "simple", explode: false, dataType: "number", dataFormat: "int64"})}/pay-slip`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -671,6 +865,7 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download products report as Excel (Admin only)
      * @endpoint get /api/reports/products/excel
      * @param categoryId 
      * @param brandId 
@@ -678,10 +873,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsProductsExcelGet(categoryId?: number, brandId?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsProductsExcelGet(categoryId?: number, brandId?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsProductsExcelGet(categoryId?: number, brandId?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsProductsExcelGet(categoryId?: number, brandId?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadProductsExcel(categoryId?: number, brandId?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadProductsExcel(categoryId?: number, brandId?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadProductsExcel(categoryId?: number, brandId?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadProductsExcel(categoryId?: number, brandId?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -706,7 +901,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -717,13 +915,24 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/products/excel`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters.toHttpParams(),
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -734,6 +943,7 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download products report as PDF (Admin only)
      * @endpoint get /api/reports/products/pdf
      * @param categoryId 
      * @param brandId 
@@ -741,10 +951,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsProductsPdfGet(categoryId?: number, brandId?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsProductsPdfGet(categoryId?: number, brandId?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsProductsPdfGet(categoryId?: number, brandId?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsProductsPdfGet(categoryId?: number, brandId?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadProductsPdf(categoryId?: number, brandId?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadProductsPdf(categoryId?: number, brandId?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadProductsPdf(categoryId?: number, brandId?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadProductsPdf(categoryId?: number, brandId?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -769,7 +979,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/pdf'
+            'application/pdf',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -780,13 +993,24 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/products/pdf`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters.toHttpParams(),
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -797,6 +1021,7 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download reviews report as Excel (Admin only)
      * @endpoint get /api/reports/reviews/excel
      * @param minRating 
      * @param maxRating 
@@ -804,10 +1029,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsReviewsExcelGet(minRating?: number, maxRating?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsReviewsExcelGet(minRating?: number, maxRating?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsReviewsExcelGet(minRating?: number, maxRating?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsReviewsExcelGet(minRating?: number, maxRating?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadReviewsExcel(minRating?: number, maxRating?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadReviewsExcel(minRating?: number, maxRating?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadReviewsExcel(minRating?: number, maxRating?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadReviewsExcel(minRating?: number, maxRating?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -832,7 +1057,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -843,13 +1071,24 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/reviews/excel`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters.toHttpParams(),
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -860,6 +1099,7 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download reviews report as PDF (Admin only)
      * @endpoint get /api/reports/reviews/pdf
      * @param minRating 
      * @param maxRating 
@@ -867,10 +1107,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsReviewsPdfGet(minRating?: number, maxRating?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsReviewsPdfGet(minRating?: number, maxRating?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsReviewsPdfGet(minRating?: number, maxRating?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsReviewsPdfGet(minRating?: number, maxRating?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadReviewsPdf(minRating?: number, maxRating?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadReviewsPdf(minRating?: number, maxRating?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadReviewsPdf(minRating?: number, maxRating?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadReviewsPdf(minRating?: number, maxRating?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -895,7 +1135,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/pdf'
+            'application/pdf',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -906,13 +1149,24 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/reviews/pdf`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters.toHttpParams(),
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -923,16 +1177,17 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download users report as Excel (Admin only)
      * @endpoint get /api/reports/users/excel
      * @param role 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsUsersExcelGet(role?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsUsersExcelGet(role?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsUsersExcelGet(role?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsUsersExcelGet(role?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadUsersExcel(role?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadUsersExcel(role?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadUsersExcel(role?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadUsersExcel(role?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -948,7 +1203,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -959,13 +1217,24 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/users/excel`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters.toHttpParams(),
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
@@ -976,16 +1245,17 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
     }
 
     /**
+     * Download users report as PDF (Admin only)
      * @endpoint get /api/reports/users/pdf
      * @param role 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiReportsUsersPdfGet(role?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
-    public apiReportsUsersPdfGet(role?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
-    public apiReportsUsersPdfGet(role?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Blob>>;
-    public apiReportsUsersPdfGet(role?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public reportsDownloadUsersPdf(role?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<FileContentResult>;
+    public reportsDownloadUsersPdf(role?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<FileContentResult>>;
+    public reportsDownloadUsersPdf(role?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<FileContentResult>>;
+    public reportsDownloadUsersPdf(role?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/pdf' | 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
 
@@ -1001,7 +1271,10 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'application/pdf'
+            'application/pdf',
+            'text/plain',
+            'application/json',
+            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -1012,13 +1285,24 @@ export class ReportsService extends BaseService implements ReportsServiceInterfa
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
 
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
         let localVarPath = `/api/reports/users/pdf`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request('get', `${basePath}${localVarPath}`,
+        return this.httpClient.request<FileContentResult>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters.toHttpParams(),
-                responseType: "blob",
+                responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,

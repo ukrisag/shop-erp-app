@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,12 +9,33 @@
  */
 
 
+/**
+ * DTO for user registration
+ */
 export interface RegisterDto { 
+    /**
+     * User\'s email address
+     */
     email: string;
+    /**
+     * User\'s password
+     */
     password: string;
+    /**
+     * Password confirmation
+     */
     confirmPassword: string;
+    /**
+     * User\'s first name
+     */
     firstName?: string | null;
+    /**
+     * User\'s last name
+     */
     lastName?: string | null;
+    /**
+     * User\'s phone number
+     */
     phone?: string | null;
 }
 

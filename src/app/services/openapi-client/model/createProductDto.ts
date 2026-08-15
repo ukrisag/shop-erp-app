@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,6 +10,9 @@
 import { CreateProductVariantDto } from './createProductVariantDto';
 
 
+/**
+ * DTO for creating a new product
+ */
 export interface CreateProductDto { 
     categoryId?: number | null;
     brandId?: number | null;

@@ -40,7 +40,7 @@ export class AdminProductService {
     page: number;
     pageSize: number;
   }> {
-    return this.adminProductsService.apiAdminProductsGet(
+    return this.adminProductsService.adminProductsGetProducts(
       pageNumber,
       pageSize,
       search,
@@ -67,8 +67,8 @@ export class AdminProductService {
    * Get product by ID
    */
   getProductById(id: number): Observable<ProductDetailDto | undefined> {
-    return this.productsService.apiProductsIdGet(id).pipe(
-      map(response => response.data)
+    return this.productsService.productsGetProduct(id).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -76,8 +76,8 @@ export class AdminProductService {
    * Create new product
    */
   createProduct(productDto: CreateProductDto): Observable<ProductDetailDto | undefined> {
-    return this.adminProductsService.apiAdminProductsPost(productDto).pipe(
-      map(response => response.data)
+    return this.adminProductsService.adminProductsCreateProduct(productDto).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -85,8 +85,8 @@ export class AdminProductService {
    * Update product
    */
   updateProduct(id: number, productDto: UpdateProductDto): Observable<ProductDetailDto | undefined> {
-    return this.adminProductsService.apiAdminProductsIdPut(id, productDto).pipe(
-      map(response => response.data)
+    return this.adminProductsService.adminProductsUpdateProduct(id, productDto).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -94,8 +94,8 @@ export class AdminProductService {
    * Delete product
    */
   deleteProduct(id: number): Observable<any> {
-    return this.adminProductsService.apiAdminProductsIdDelete(id).pipe(
-      map(response => response.data)
+    return this.adminProductsService.adminProductsDeleteProduct(id).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -110,7 +110,7 @@ export class AdminProductService {
    * Get all categories
    */
   getCategories(): Observable<CategoryDto[]> {
-    return this.categoriesService.apiCategoriesGet().pipe(
+    return this.categoriesService.categoriesGetCategories().pipe(
       map(response => response.data || [])
     );
   }
@@ -119,7 +119,7 @@ export class AdminProductService {
    * Get all brands
    */
   getBrands(): Observable<BrandDto[]> {
-    return this.brandsService.apiBrandsGet().pipe(
+    return this.brandsService.brandsGetBrands().pipe(
       map(response => response.data || [])
     );
   }
@@ -147,7 +147,7 @@ export class AdminProductService {
    * Upload product image
    */
   uploadProductImage(productId: number, imageUrl: string, isPrimary: boolean, altText: string, displayOrder: number): Observable<any> {
-    return this.adminProductsService.apiAdminProductsIdImagesPost(productId, {
+    return this.adminProductsService.adminProductsUploadProductImage(productId, {
       imageUrl,
       isPrimary,
       altText,
@@ -161,7 +161,7 @@ export class AdminProductService {
    * Update product image
    */
   updateProductImage(productId: number, imageId: number, imageUrl: string, isPrimary: boolean, altText: string, displayOrder: number): Observable<any> {
-    return this.adminProductsService.apiAdminProductsIdImagesImageIdPut(productId, imageId, {
+    return this.adminProductsService.adminProductsUpdateProductImage(productId, imageId, {
       imageUrl,
       isPrimary,
       altText,
@@ -175,7 +175,7 @@ export class AdminProductService {
    * Delete product image
    */
   deleteProductImage(productId: number, imageId: number): Observable<any> {
-    return this.adminProductsService.apiAdminProductsIdImagesImageIdDelete(productId, imageId).pipe(
+    return this.adminProductsService.adminProductsDeleteProductImage(productId, imageId).pipe(
       map((response: any) => response.data)
     );
   }
@@ -184,7 +184,7 @@ export class AdminProductService {
    * Add product variant
    */
   addProductVariant(productId: number, variant: any): Observable<any> {
-    return this.adminProductsService.apiAdminProductsIdVariantsPost(productId, variant).pipe(
+    return this.adminProductsService.adminProductsAddProductVariant(productId, variant).pipe(
       map((response: any) => response.data)
     );
   }
@@ -193,7 +193,7 @@ export class AdminProductService {
    * Update product variant
    */
   updateProductVariant(productId: number, variantId: number, variant: any): Observable<any> {
-    return this.adminProductsService.apiAdminProductsIdVariantsVariantIdPut(productId, variantId, variant).pipe(
+    return this.adminProductsService.adminProductsUpdateProductVariant(productId, variantId, variant).pipe(
       map((response: any) => response.data)
     );
   }
@@ -202,7 +202,7 @@ export class AdminProductService {
    * Delete product variant
    */
   deleteProductVariant(productId: number, variantId: number): Observable<any> {
-    return this.adminProductsService.apiAdminProductsIdVariantsVariantIdDelete(productId, variantId).pipe(
+    return this.adminProductsService.adminProductsDeleteProductVariant(productId, variantId).pipe(
       map((response: any) => response.data)
     );
   }

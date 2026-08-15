@@ -133,7 +133,7 @@ export class OvertimeAdminComponent implements OnInit {
   }
 
   loadEmployees(): void {
-    this.employeesService.apiEmployeesGet().subscribe({
+    this.employeesService.employeesGetAllEmployees().subscribe({
       next: (employees: any[]) => {
         this.employees.set(employees);
       },
@@ -148,7 +148,7 @@ export class OvertimeAdminComponent implements OnInit {
     this.loading.set(true);
 
     if (this.filterForm.startDate && this.filterForm.endDate) {
-      this.overtimeService.apiOvertimePeriodGet(
+      this.overtimeService.overtimeGetOvertimeRecordsByPeriod(
         this.filterForm.startDate,
         this.filterForm.endDate
       ).subscribe({
@@ -167,7 +167,7 @@ export class OvertimeAdminComponent implements OnInit {
 
   loadPendingRecords(): void {
     this.loading.set(true);
-    this.overtimeService.apiOvertimePendingGet().subscribe({
+    this.overtimeService.overtimeGetPendingOvertimeRecords().subscribe({
       next: (records: any[]) => {
         this.pendingRecords.set(records);
         this.loading.set(false);
@@ -258,7 +258,7 @@ export class OvertimeAdminComponent implements OnInit {
         notes: this.overtimeForm.notes
       };
 
-      this.overtimeService.apiOvertimeIdPut(this.selectedRecord()!.id, updateDto).subscribe({
+      this.overtimeService.overtimeUpdateOvertimeRecord(this.selectedRecord()!.id, updateDto).subscribe({
         next: () => {
           this.notificationService.success('แก้ไขข้อมูล OT สำเร็จ');
           this.loadOvertimeRecords();
@@ -281,7 +281,7 @@ export class OvertimeAdminComponent implements OnInit {
         notes: this.overtimeForm.notes
       };
 
-      this.overtimeService.apiOvertimePost(createDto).subscribe({
+      this.overtimeService.overtimeCreateOvertimeRecord(createDto).subscribe({
         next: () => {
           this.notificationService.success('บันทึกข้อมูล OT สำเร็จ');
           this.loadOvertimeRecords();
@@ -327,7 +327,7 @@ export class OvertimeAdminComponent implements OnInit {
       'ต้องการอนุมัติรายการ OT นี้ใช่หรือไม่?',
       () => {
         this.loading.set(true);
-        this.overtimeService.apiOvertimeIdApprovePost(record.id).subscribe({
+        this.overtimeService.overtimeApproveOvertimeRecord(record.id).subscribe({
           next: () => {
             this.notificationService.success('อนุมัติรายการ OT สำเร็จ');
             this.loadOvertimeRecords();
@@ -362,7 +362,7 @@ export class OvertimeAdminComponent implements OnInit {
     };
 
     this.loading.set(true);
-    this.overtimeService.apiOvertimeIdRejectPost(this.selectedRecord()!.id, rejectDto).subscribe({
+    this.overtimeService.overtimeRejectOvertimeRecord(this.selectedRecord()!.id, rejectDto).subscribe({
       next: () => {
         this.notificationService.success('ปฏิเสธรายการ OT สำเร็จ');
         this.closeModal();
@@ -389,7 +389,7 @@ export class OvertimeAdminComponent implements OnInit {
       'ต้องการลบรายการ OT นี้ใช่หรือไม่?',
       () => {
         this.loading.set(true);
-        this.overtimeService.apiOvertimeIdDelete(record.id).subscribe({
+        this.overtimeService.overtimeDeleteOvertimeRecord(record.id).subscribe({
           next: () => {
             this.notificationService.success('ลบรายการ OT สำเร็จ');
             this.loadOvertimeRecords();

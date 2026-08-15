@@ -2,8 +2,16 @@ import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { EmployeeAuthDto, EmployeeAuthResponseDto, LoginDto, RefreshTokenRequestDto } from './openapi-client';
+import { LoginDto, RefreshTokenRequestDto } from './openapi-client';
 import { EmployeeAuthService as GeneratedEmployeeAuthService } from './openapi-client';
+// The generated openapi-client no longer exports EmployeeAuthDto/EmployeeAuthResponseDto
+// because the backend EmployeeAuthController's login/refresh-token actions don't declare a
+// [ProducesResponseType], so the OpenAPI spec has no schema for their response body.
+// Use the hand-maintained equivalents instead (kept in sync with
+// ShopErpApi/DTOs/Employee/EmployeeAuthDto.cs and EmployeeAuthResponseDto.cs).
+import { EmployeeAuthDto, EmployeeAuthResponseDto } from '../models/employee.model';
+
+export type { EmployeeAuthDto, EmployeeAuthResponseDto };
 
 const EMPLOYEE_TOKEN_KEY = 'employee_auth_token';
 const EMPLOYEE_USER_KEY = 'employee_auth_user';
@@ -50,7 +58,8 @@ export class EmployeeAuthService {
   }
 
   login(credentials: LoginDto): Observable<EmployeeAuthResponseDto> {
-    return this.generatedAuthService.apiEmployeeAuthLoginPost(credentials).pipe(
+    return this.generatedAuthService.employeeAuthLogin(credentials).pipe(
+      map(response => response as EmployeeAuthResponseDto),
       tap(response => {
         this.setSession(response);
       }),
@@ -111,7 +120,8 @@ export class EmployeeAuthService {
     }
 
     const request: RefreshTokenRequestDto = { refreshToken };
-    return this.generatedAuthService.apiEmployeeAuthRefreshTokenPost(request).pipe(
+    return this.generatedAuthService.employeeAuthRefreshToken(request).pipe(
+      map(response => response as EmployeeAuthResponseDto),
       tap(response => {
         this.setSession(response);
       }),

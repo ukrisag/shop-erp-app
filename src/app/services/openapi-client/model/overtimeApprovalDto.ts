@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO สำหรับอนุมัติ/ปฏิเสธ OT
+ */
 export interface OvertimeApprovalDto { 
     overtimeId: number;
     isApproved: boolean;

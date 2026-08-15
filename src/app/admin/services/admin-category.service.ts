@@ -18,7 +18,7 @@ export class AdminCategoryService {
    * Get all categories (including inactive)
    */
   getCategories(includeInactive: boolean = true): Observable<CategoryDto[]> {
-    return this.categoriesService.apiCategoriesGet(includeInactive).pipe(
+    return this.categoriesService.categoriesGetCategories(includeInactive).pipe(
       map(response => response.data || [])
     );
   }
@@ -27,8 +27,8 @@ export class AdminCategoryService {
    * Get category by ID
    */
   getCategoryById(id: number): Observable<CategoryDto | undefined> {
-    return this.categoriesService.apiCategoriesIdGet(id).pipe(
-      map(response => response.data)
+    return this.categoriesService.categoriesGetCategory(id).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -36,8 +36,8 @@ export class AdminCategoryService {
    * Create new category
    */
   createCategory(categoryDto: CreateCategoryDto): Observable<CategoryDto | undefined> {
-    return this.categoriesService.apiCategoriesPost(categoryDto).pipe(
-      map(response => response.data)
+    return this.categoriesService.categoriesCreateCategory(categoryDto).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -45,8 +45,8 @@ export class AdminCategoryService {
    * Update category
    */
   updateCategory(id: number, categoryDto: CreateCategoryDto): Observable<CategoryDto | undefined> {
-    return this.categoriesService.apiCategoriesIdPut(id, categoryDto).pipe(
-      map(response => response.data)
+    return this.categoriesService.categoriesUpdateCategory(id, categoryDto).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -54,8 +54,8 @@ export class AdminCategoryService {
    * Delete category
    */
   deleteCategory(id: number): Observable<any> {
-    return this.categoriesService.apiCategoriesIdDelete(id).pipe(
-      map(response => response.data)
+    return this.categoriesService.categoriesDeleteCategory(id).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 

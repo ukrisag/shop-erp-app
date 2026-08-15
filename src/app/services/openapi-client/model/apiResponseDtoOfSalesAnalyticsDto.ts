@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { SalesAnalyticsDto } from './salesAnalyticsDto';
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfSalesAnalyticsDto { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
-    data?: SalesAnalyticsDto;
+    /**
+     * Response data
+     */
+    data?: SalesAnalyticsDto | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

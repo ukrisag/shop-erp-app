@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,13 @@
 import { CartItemDto } from './cartItemDto';
 
 
+/**
+ * DTO for shopping cart
+ */
 export interface CartDto { 
     id?: number;
     userId?: number | null;
-    items?: Array<CartItemDto> | null;
+    items?: Array<CartItemDto>;
     subtotal?: number;
     itemCount?: number;
     createdAt?: string | null;

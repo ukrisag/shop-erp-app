@@ -12,62 +12,62 @@ export class AdminGalleryService {
    * Get all gallery images including inactive (admin only)
    */
   getGalleryImages(page: number = 1, pageSize: number = 12, category?: string, isFeatured?: boolean) {
-    return this.apiGalleryService.apiGalleryAdminGet(page, pageSize, category, isFeatured);
+    return this.apiGalleryService.galleryGetAllGalleryImages(page, pageSize, category, isFeatured);
   }
 
   /**
    * Get gallery image by ID
    */
   getGalleryImageById(id: number) {
-    return this.apiGalleryService.apiGalleryIdGet(id);
+    return this.apiGalleryService.galleryGetGalleryImage(id);
   }
 
   /**
    * Create new gallery image
    */
   createGalleryImage(dto: CreateGalleryImageDto) {
-    return this.apiGalleryService.apiGalleryPost(dto);
+    return this.apiGalleryService.galleryCreateGalleryImage(dto);
   }
 
   /**
    * Update gallery image
    */
   updateGalleryImage(id: number, dto: UpdateGalleryImageDto) {
-    return this.apiGalleryService.apiGalleryIdPut(id, dto);
+    return this.apiGalleryService.galleryUpdateGalleryImage(id, dto);
   }
 
   /**
    * Delete gallery image
    */
   deleteGalleryImage(id: number) {
-    return this.apiGalleryService.apiGalleryIdDelete(id);
+    return this.apiGalleryService.galleryDeleteGalleryImage(id);
   }
 
   /**
    * Toggle active status
    */
   toggleActiveStatus(id: number) {
-    return this.apiGalleryService.apiGalleryIdToggleActivePatch(id);
+    return this.apiGalleryService.galleryToggleActiveStatus(id);
   }
 
   /**
    * Toggle featured status
    */
   toggleFeaturedStatus(id: number) {
-    return this.apiGalleryService.apiGalleryIdToggleFeaturedPatch(id);
+    return this.apiGalleryService.galleryToggleFeaturedStatus(id);
   }
 
   /**
    * Get all categories
    */
   getCategories() {
-    return this.apiGalleryService.apiGalleryCategoriesGet();
+    return this.apiGalleryService.galleryGetCategories();
   }
 
   /**
    * Upload gallery image
    */
   uploadGalleryImage(file: Blob) {
-    return this.uploadService.apiUploadGalleryImagePost(file);
+    return this.uploadService.uploadUploadGalleryImage(file);
   }
 }

@@ -6,12 +6,19 @@ import {
   EmployeeListDto,
   EmployeeDetailDto,
   EmployeeCreateDto,
-  EmployeeUpdateDto,
-  BranchDto,
-  ApiResponseDtoOfIEnumerableOfBranchDto
+  EmployeeUpdateDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
 import { environment } from '../../../../../environments/environment';
+
+// The generated BranchesController actions return untyped IActionResult on the backend,
+// so openapi-generator does not emit a typed BranchDto / ApiResponseDto<IEnumerable<BranchDto>> model.
+// Define the shape locally to keep this component type-safe.
+interface BranchDto {
+  id?: number;
+  name?: string | null;
+  code?: string | null;
+}
 
 @Component({
   selector: 'app-employee-list-admin',
@@ -118,7 +125,7 @@ export class EmployeeListAdminComponent implements OnInit {
 
   loadEmployees(): void {
     this.loading.set(true);
-    this.employeesService.apiEmployeesGet().subscribe({
+    this.employeesService.employeesGetAllEmployees().subscribe({
       next: (employees: EmployeeListDto[]) => {
         this.employees.set(employees);
         this.applyFilters();
@@ -133,8 +140,8 @@ export class EmployeeListAdminComponent implements OnInit {
   }
 
   loadBranches(): void {
-    this.branchesService.apiErpBranchesGet().subscribe({
-      next: (response: ApiResponseDtoOfIEnumerableOfBranchDto) => {
+    this.branchesService.branchesGetAll().subscribe({
+      next: (response: any) => {
         if (response.success && response.data) {
           this.branches.set(response.data);
         }
@@ -235,7 +242,7 @@ export class EmployeeListAdminComponent implements OnInit {
 
   openEditModal(employeeListItem: EmployeeListDto): void {
     // Load full employee details
-    this.employeesService.apiEmployeesIdGet(employeeListItem.id!).subscribe({
+    this.employeesService.employeesGetEmployeeById(employeeListItem.id!).subscribe({
       next: (employee: EmployeeDetailDto) => {
         this.isEditMode.set(true);
         this.selectedEmployee.set(employee);
@@ -276,7 +283,7 @@ export class EmployeeListAdminComponent implements OnInit {
   }
 
   openDeleteModal(employee: EmployeeListDto): void {
-    this.employeesService.apiEmployeesIdGet(employee.id!).subscribe({
+    this.employeesService.employeesGetEmployeeById(employee.id!).subscribe({
       next: (details: EmployeeDetailDto) => {
         this.selectedEmployee.set(details);
         this.showDeleteModal.set(true);
@@ -329,11 +336,11 @@ export class EmployeeListAdminComponent implements OnInit {
       status: this.employeeForm.status || undefined
     };
 
-    this.employeesService.apiEmployeesPost(dto).subscribe({
+    this.employeesService.employeesCreateEmployee(dto).subscribe({
       next: (created: EmployeeDetailDto) => {
         // Upload photo if selected
         if (this.selectedPhotoFile && created.id) {
-          this.employeesService.apiEmployeesIdPhotoPost(created.id, this.selectedPhotoFile).subscribe({
+          this.employeesService.employeesUploadPhoto(created.id, this.selectedPhotoFile).subscribe({
             next: () => {
               this.notificationService.success('สร้างพนักงานและอัปโหลดรูปภาพสำเร็จ');
               this.loadEmployees();
@@ -389,11 +396,11 @@ export class EmployeeListAdminComponent implements OnInit {
       status: this.employeeForm.status || undefined
     };
 
-    this.employeesService.apiEmployeesIdPut(employee.id!, dto).subscribe({
+    this.employeesService.employeesUpdateEmployee(employee.id!, dto).subscribe({
       next: (updated: EmployeeDetailDto) => {
         // Upload photo if selected
         if (this.selectedPhotoFile && employee.id) {
-          this.employeesService.apiEmployeesIdPhotoPost(employee.id, this.selectedPhotoFile).subscribe({
+          this.employeesService.employeesUploadPhoto(employee.id, this.selectedPhotoFile).subscribe({
             next: () => {
               this.notificationService.success('อัปเดตข้อมูลพนักงานและรูปภาพสำเร็จ');
               this.loadEmployees();
@@ -423,7 +430,7 @@ export class EmployeeListAdminComponent implements OnInit {
     const employee = this.selectedEmployee();
     if (!employee) return;
 
-    this.employeesService.apiEmployeesIdDelete(employee.id!).subscribe({
+    this.employeesService.employeesDeleteEmployee(employee.id!).subscribe({
       next: () => {
         this.notificationService.success('ลบพนักงานสำเร็จ');
         this.loadEmployees();

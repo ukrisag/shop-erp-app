@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,7 +9,10 @@
  */
 
 
+/**
+ * DTO for updating user role
+ */
 export interface UpdateUserRoleDto { 
-    role?: string | null;
+    role?: string;
 }
 

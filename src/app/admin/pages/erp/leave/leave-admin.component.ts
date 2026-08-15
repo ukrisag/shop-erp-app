@@ -154,7 +154,7 @@ export class LeaveAdminComponent implements OnInit {
   }
 
   loadEmployees(): void {
-    this.employeesService.apiEmployeesGet().subscribe({
+    this.employeesService.employeesGetAllEmployees().subscribe({
       next: (employees: any[]) => {
         this.employees.set(employees);
       },
@@ -169,7 +169,7 @@ export class LeaveAdminComponent implements OnInit {
     this.loading.set(true);
 
     if (this.filterForm.startDate && this.filterForm.endDate) {
-      this.leaveService.apiLeavePeriodGet(
+      this.leaveService.leaveGetLeaveRecordsByPeriod(
         this.filterForm.startDate,
         this.filterForm.endDate
       ).subscribe({
@@ -188,7 +188,7 @@ export class LeaveAdminComponent implements OnInit {
 
   loadPendingRecords(): void {
     this.loading.set(true);
-    this.leaveService.apiLeavePendingGet().subscribe({
+    this.leaveService.leaveGetPendingLeaveRecords().subscribe({
       next: (records: any[]) => {
         this.pendingRecords.set(records);
         this.loading.set(false);
@@ -206,7 +206,7 @@ export class LeaveAdminComponent implements OnInit {
 
     // Load balances for all employees
     const balancePromises = this.employees().map(emp =>
-      this.leaveService.apiLeaveBalanceEmployeeIdGet(emp.id!, this.balanceYear).toPromise()
+      this.leaveService.leaveGetLeaveBalance(emp.id!, this.balanceYear).toPromise()
     );
 
     Promise.all(balancePromises).then(
@@ -307,7 +307,7 @@ export class LeaveAdminComponent implements OnInit {
         reason: this.leaveForm.reason
       };
 
-      this.leaveService.apiLeaveIdPut(this.selectedRecord()!.id, updateDto).subscribe({
+      this.leaveService.leaveUpdateLeaveRecord(this.selectedRecord()!.id, updateDto).subscribe({
         next: () => {
           this.notificationService.success('แก้ไขข้อมูลการลาสำเร็จ');
           this.loadLeaveRecords();
@@ -329,7 +329,7 @@ export class LeaveAdminComponent implements OnInit {
         reason: this.leaveForm.reason
       };
 
-      this.leaveService.apiLeavePost(createDto).subscribe({
+      this.leaveService.leaveCreateLeaveRecord(createDto).subscribe({
         next: () => {
           this.notificationService.success('บันทึกข้อมูลการลาสำเร็จ');
           this.loadLeaveRecords();
@@ -375,7 +375,7 @@ export class LeaveAdminComponent implements OnInit {
       'ต้องการอนุมัติการลานี้ใช่หรือไม่?',
       () => {
         this.loading.set(true);
-        this.leaveService.apiLeaveIdApprovePost(record.id).subscribe({
+        this.leaveService.leaveApproveLeaveRecord(record.id).subscribe({
           next: () => {
             this.notificationService.success('อนุมัติการลาสำเร็จ');
             this.loadLeaveRecords();
@@ -410,7 +410,7 @@ export class LeaveAdminComponent implements OnInit {
     };
 
     this.loading.set(true);
-    this.leaveService.apiLeaveIdRejectPost(this.selectedRecord()!.id, rejectDto).subscribe({
+    this.leaveService.leaveRejectLeaveRecord(this.selectedRecord()!.id, rejectDto).subscribe({
       next: () => {
         this.notificationService.success('ปฏิเสธการลาสำเร็จ');
         this.closeModal();
@@ -437,7 +437,7 @@ export class LeaveAdminComponent implements OnInit {
       'ต้องการลบรายการลานี้ใช่หรือไม่?',
       () => {
         this.loading.set(true);
-        this.leaveService.apiLeaveIdDelete(record.id).subscribe({
+        this.leaveService.leaveDeleteLeaveRecord(record.id).subscribe({
           next: () => {
             this.notificationService.success('ลบรายการลาสำเร็จ');
             this.loadLeaveRecords();

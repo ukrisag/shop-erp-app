@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO สำหรับสร้าง OT record ใหม่
+ */
 export interface OvertimeRecordCreateDto { 
     employeeId: number;
     overtimeDate: string;

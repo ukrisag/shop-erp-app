@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,6 +10,9 @@
 import { UpdateProductVariantDto } from './updateProductVariantDto';
 
 
+/**
+ * DTO for updating a product
+ */
 export interface UpdateProductDto { 
     categoryId?: number | null;
     brandId?: number | null;

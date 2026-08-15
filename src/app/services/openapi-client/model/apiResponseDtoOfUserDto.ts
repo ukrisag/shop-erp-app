@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { UserDto } from './userDto';
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfUserDto { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
-    data?: UserDto;
+    /**
+     * Response data
+     */
+    data?: UserDto | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

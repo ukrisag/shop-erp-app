@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -14,7 +14,7 @@ export interface CreateBankAccountDto {
     bankName: string;
     accountNumber: string;
     accountName?: string | null;
-    accountType?: string | null;
+    accountType?: string;
     initialBalance?: number | null;
 }
 

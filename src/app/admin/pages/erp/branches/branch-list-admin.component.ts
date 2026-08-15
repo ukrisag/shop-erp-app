@@ -3,12 +3,24 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BranchesService } from '../../../../services/openapi-client/api/branches.service';
 import { NotificationService } from '../../../../services/notification.service';
-import { BranchDto } from '../../../../services/openapi-client/model/branchDto';
 import { CreateBranchDto } from '../../../../services/openapi-client/model/createBranchDto';
 import { UpdateBranchDto } from '../../../../services/openapi-client/model/updateBranchDto';
-import { BranchDtoIEnumerableApiResponseDto } from '../../../../services/openapi-client/model/branchDtoIEnumerableApiResponseDto';
-import { BranchDtoApiResponseDto } from '../../../../services/openapi-client/model/branchDtoApiResponseDto';
-import { BooleanApiResponseDto } from '../../../../services/openapi-client/model/booleanApiResponseDto';
+
+// The generated BranchesController actions return untyped IActionResult on the backend,
+// so openapi-generator does not emit a typed BranchDto / ApiResponseDto<BranchDto> model.
+// Define the shape locally to keep this component type-safe.
+interface BranchDto {
+  id?: number;
+  name?: string | null;
+  code?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  isMain?: boolean | null;
+  isActive?: boolean | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
 
 @Component({
   selector: 'app-branch-list-admin',
@@ -73,8 +85,8 @@ export class BranchListAdminComponent implements OnInit {
     this.loading.set(true);
     this.error.set('');
 
-    this.branchesService.apiErpBranchesGet().subscribe({
-      next: (response: BranchDtoIEnumerableApiResponseDto) => {
+    this.branchesService.branchesGetAll().subscribe({
+      next: (response: any) => {
         if (response.success && response.data) {
           this.branches.set(response.data);
           this.applyFilters();
@@ -208,8 +220,8 @@ export class BranchListAdminComponent implements OnInit {
   onConfirmDelete(): void {
     if (!this.branchToDelete()?.id) return;
 
-    this.branchesService.apiErpBranchesIdDelete(this.branchToDelete()!.id!).subscribe({
-      next: (response: BooleanApiResponseDto) => {
+    this.branchesService.branchesDelete(this.branchToDelete()!.id!).subscribe({
+      next: (response: any) => {
         if (response.success) {
           this.notificationService.success('ลบสาขาเรียบร้อยแล้ว');
           this.showDeleteConfirm.set(false);
@@ -246,8 +258,8 @@ export class BranchListAdminComponent implements OnInit {
       isActive: !branch.isActive
     };
 
-    this.branchesService.apiErpBranchesIdPut(branch.id, updateDto).subscribe({
-      next: (response: BranchDtoApiResponseDto) => {
+    this.branchesService.branchesUpdate(branch.id, updateDto).subscribe({
+      next: (response: any) => {
         if (response.success) {
           branch.isActive = !branch.isActive;
           this.notificationService.success(
@@ -312,8 +324,8 @@ export class BranchListAdminComponent implements OnInit {
         isActive: this.branchForm.isActive ?? true
       };
 
-      this.branchesService.apiErpBranchesIdPut(this.currentBranch()!.id!, updateDto).subscribe({
-        next: (response: BranchDtoApiResponseDto) => {
+      this.branchesService.branchesUpdate(this.currentBranch()!.id!, updateDto).subscribe({
+        next: (response: any) => {
           if (response.success) {
             this.notificationService.success('อัปเดตสาขาเรียบร้อยแล้ว');
             this.showModal.set(false);
@@ -338,8 +350,8 @@ export class BranchListAdminComponent implements OnInit {
         isActive: this.branchForm.isActive ?? true
       };
 
-      this.branchesService.apiErpBranchesPost(createDto).subscribe({
-        next: (response: BranchDtoApiResponseDto) => {
+      this.branchesService.branchesCreate(createDto).subscribe({
+        next: (response: any) => {
           if (response.success) {
             this.notificationService.success('เพิ่มสาขาเรียบร้อยแล้ว');
             this.showModal.set(false);

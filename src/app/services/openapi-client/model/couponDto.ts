@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,10 +9,13 @@
  */
 
 
+/**
+ * DTO for coupon
+ */
 export interface CouponDto { 
     id?: number;
-    code?: string | null;
-    type?: string | null;
+    code?: string;
+    type?: string;
     value?: number;
     minPurchaseAmount?: number | null;
     maxDiscountAmount?: number | null;

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO for uploading product image
+ */
 export interface UploadProductImageDto { 
     imageUrl: string;
     isPrimary?: boolean;

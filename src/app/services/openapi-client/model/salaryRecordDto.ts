@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO สำหรับข้อมูลเงินเดือนรายเดือน
+ */
 export interface SalaryRecordDto { 
     id?: number;
     employeeId?: number;
@@ -37,7 +40,7 @@ export interface SalaryRecordDto {
     totalEarnings?: number;
     totalDeductions?: number;
     netSalary?: number;
-    status?: string | null;
+    status?: string;
     approvedBy?: number | null;
     approvedByName?: string | null;
     approvedAt?: string | null;

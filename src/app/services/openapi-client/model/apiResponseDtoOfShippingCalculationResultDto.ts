@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { ShippingCalculationResultDto } from './shippingCalculationResultDto';
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfShippingCalculationResultDto { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
-    data?: ShippingCalculationResultDto;
+    /**
+     * Response data
+     */
+    data?: ShippingCalculationResultDto | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

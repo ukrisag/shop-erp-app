@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO for creating a review
+ */
 export interface CreateReviewDto { 
     rating: number;
     title?: string | null;

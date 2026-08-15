@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO สำหรับแสดงวันลาคงเหลือ
+ */
 export interface LeaveBalanceDto { 
     employeeId?: number;
     employeeCode?: string | null;

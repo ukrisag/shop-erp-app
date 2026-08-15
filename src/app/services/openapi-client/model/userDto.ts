@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,17 +9,53 @@
  */
 
 
+/**
+ * DTO for user information
+ */
 export interface UserDto { 
+    /**
+     * User ID
+     */
     id?: number;
-    email?: string | null;
+    /**
+     * User\'s email address
+     */
+    email?: string;
+    /**
+     * User\'s first name
+     */
     firstName?: string | null;
+    /**
+     * User\'s last name
+     */
     lastName?: string | null;
-    readonly fullName?: string | null;
+    /**
+     * User\'s full name
+     */
+    fullName?: string | null;
+    /**
+     * User\'s phone number
+     */
     phone?: string | null;
+    /**
+     * User\'s role
+     */
     role?: string | null;
+    /**
+     * User\'s status
+     */
     status?: string | null;
+    /**
+     * Email verification status
+     */
     emailVerified?: boolean;
+    /**
+     * Account creation date
+     */
     createdAt?: string | null;
+    /**
+     * Last login date
+     */
     lastLoginAt?: string | null;
 }
 

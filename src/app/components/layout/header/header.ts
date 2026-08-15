@@ -8,7 +8,8 @@ import { ProductService } from '../../../services/product.service';
 import { AuthService } from '../../../services/auth.service';
 import { EmployeeAuthService } from '../../../services/employee-auth.service';
 import { Product } from '../../../models/product.model';
-import { UserDto, EmployeeAuthDto } from '../../../services/openapi-client/model/models';
+import { UserDto } from '../../../services/openapi-client/model/models';
+import { EmployeeAuthDto } from '../../../models/employee.model';
 import { getPrimaryProductImageUrl } from '../../../utils/image-url.helper';
 
 @Component({

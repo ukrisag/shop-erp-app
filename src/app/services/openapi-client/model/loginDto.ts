@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,8 +9,17 @@
  */
 
 
+/**
+ * DTO for user login
+ */
 export interface LoginDto { 
+    /**
+     * User\'s email address
+     */
     email: string;
+    /**
+     * User\'s password
+     */
     password: string;
 }
 

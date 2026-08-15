@@ -18,7 +18,7 @@ export class AdminBrandService {
    * Get all brands (including inactive)
    */
   getBrands(includeInactive: boolean = true): Observable<BrandDto[]> {
-    return this.brandsService.apiBrandsGet(includeInactive).pipe(
+    return this.brandsService.brandsGetBrands(includeInactive).pipe(
       map(response => response.data || [])
     );
   }
@@ -27,8 +27,8 @@ export class AdminBrandService {
    * Get brand by ID
    */
   getBrandById(id: number): Observable<BrandDto | undefined> {
-    return this.brandsService.apiBrandsIdGet(id).pipe(
-      map(response => response.data)
+    return this.brandsService.brandsGetBrand(id).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -36,8 +36,8 @@ export class AdminBrandService {
    * Create new brand
    */
   createBrand(brandDto: CreateBrandDto): Observable<BrandDto | undefined> {
-    return this.brandsService.apiBrandsPost(brandDto).pipe(
-      map(response => response.data)
+    return this.brandsService.brandsCreateBrand(brandDto).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -45,8 +45,8 @@ export class AdminBrandService {
    * Update brand
    */
   updateBrand(id: number, brandDto: CreateBrandDto): Observable<BrandDto | undefined> {
-    return this.brandsService.apiBrandsIdPut(id, brandDto).pipe(
-      map(response => response.data)
+    return this.brandsService.brandsUpdateBrand(id, brandDto).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -54,8 +54,8 @@ export class AdminBrandService {
    * Delete brand
    */
   deleteBrand(id: number): Observable<any> {
-    return this.brandsService.apiBrandsIdDelete(id).pipe(
-      map(response => response.data)
+    return this.brandsService.brandsDeleteBrand(id).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 

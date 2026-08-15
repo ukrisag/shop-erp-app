@@ -21,7 +21,7 @@ export class AdminReviewService {
    * Get reviews for a specific product
    */
   getProductReviews(productId: number): Observable<ReviewDto[]> {
-    return this.reviewsService.apiProductsProductIdReviewsGet(productId).pipe(
+    return this.reviewsService.reviewsGetProductReviews(productId).pipe(
       map(response => response.data || [])
     );
   }
@@ -30,7 +30,7 @@ export class AdminReviewService {
    * Get all reviews across all products (Admin)
    */
   getAllReviews(status?: string, rating?: number, pageNumber: number = 1, pageSize: number = 100): Observable<ReviewDto[]> {
-    return this.adminReviewsService.apiAdminReviewsGet(status, rating, pageNumber, pageSize).pipe(
+    return this.adminReviewsService.adminReviewsGetAllReviews(status, rating, pageNumber, pageSize).pipe(
       map(response => response.data || [])
     );
   }
@@ -55,8 +55,8 @@ export class AdminReviewService {
       adminResponse: adminResponse || null
     };
 
-    return this.reviewsService.apiReviewsIdApprovePut(id, approveDto).pipe(
-      map(response => response.data)
+    return this.reviewsService.reviewsApproveReview(id, approveDto).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -64,8 +64,8 @@ export class AdminReviewService {
    * Reject review (Admin)
    */
   rejectReview(id: number): Observable<ReviewDto | undefined> {
-    return this.adminReviewsService.apiAdminReviewsIdRejectPut(id).pipe(
-      map(response => response.data)
+    return this.adminReviewsService.adminReviewsRejectReview(id).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -73,8 +73,8 @@ export class AdminReviewService {
    * Delete review
    */
   deleteReview(id: number): Observable<any> {
-    return this.reviewsService.apiReviewsIdDelete(id).pipe(
-      map(response => response.data)
+    return this.reviewsService.reviewsDeleteReview(id).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -82,8 +82,8 @@ export class AdminReviewService {
    * Update review (for admin response)
    */
   updateReview(id: number, updateDto: UpdateReviewDto): Observable<ReviewDto | undefined> {
-    return this.reviewsService.apiReviewsIdPut(id, updateDto).pipe(
-      map(response => response.data)
+    return this.reviewsService.reviewsUpdateReview(id, updateDto).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 

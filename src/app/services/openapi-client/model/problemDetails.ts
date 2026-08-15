@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,9 +10,6 @@
 
 
 export interface ProblemDetails { 
-  [key: string]: any | any;
-
-
     type?: string | null;
     title?: string | null;
     status?: number | null;

@@ -6,6 +6,9 @@ import { ReportsService } from './openapi-client/api/reports.service';
 })
 export class ReportService {
 
+  private readonly PDF_ACCEPT = { httpHeaderAccept: 'application/pdf' as const };
+  private readonly EXCEL_ACCEPT = { httpHeaderAccept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' as const };
+
   constructor(private reportsService: ReportsService) { }
 
   /**
@@ -13,7 +16,7 @@ export class ReportService {
    */
   downloadOrderPdf(orderId: number): void {
     // OpenAPI client จะ auto-detect responseType เป็น 'blob' จาก [Produces("application/pdf")]
-    this.reportsService.apiReportsOrdersIdPdfGet(orderId).subscribe({
+    this.reportsService.reportsDownloadOrderPdf(orderId, 'body', false, this.PDF_ACCEPT).subscribe({
       next: (blob: any) => {
         this.downloadFile(blob, `Order-${orderId}.pdf`);
       },
@@ -27,7 +30,7 @@ export class ReportService {
    * Download order details as PDF (Thermal 80mm - for admin/POS)
    */
   downloadOrderPdfThermal(orderId: number): void {
-    this.reportsService.apiReportsOrdersIdPdfThermalGet(orderId).subscribe({
+    this.reportsService.reportsDownloadOrderPdfThermal(orderId, 'body', false, this.PDF_ACCEPT).subscribe({
       next: (blob: any) => {
         this.downloadFile(blob, `Order-Thermal-${orderId}.pdf`);
       },
@@ -42,7 +45,7 @@ export class ReportService {
    */
   downloadInvoicePdf(orderId: number): void {
     // OpenAPI client จะ auto-detect responseType เป็น 'blob' จาก [Produces("application/pdf")]
-    this.reportsService.apiReportsOrdersIdInvoiceGet(orderId).subscribe({
+    this.reportsService.reportsDownloadInvoice(orderId, 'body', false, this.PDF_ACCEPT).subscribe({
       next: (blob: any) => {
         this.downloadFile(blob, `Invoice-${orderId}.pdf`);
       },
@@ -56,7 +59,7 @@ export class ReportService {
    * Download invoice PDF (Thermal 80mm - for admin/POS)
    */
   downloadInvoicePdfThermal(orderId: number): void {
-    this.reportsService.apiReportsOrdersIdInvoiceThermalGet(orderId).subscribe({
+    this.reportsService.reportsDownloadInvoiceThermal(orderId, 'body', false, this.PDF_ACCEPT).subscribe({
       next: (blob: any) => {
         this.downloadFile(blob, `Invoice-Thermal-${orderId}.pdf`);
       },
@@ -71,7 +74,7 @@ export class ReportService {
    */
   downloadOrdersExcel(startDate?: string, endDate?: string, status?: string): void {
     // OpenAPI client จะ auto-detect responseType เป็น 'blob' จาก [Produces("application/vnd.openxmlformats...")]
-    this.reportsService.apiReportsOrdersExcelGet(startDate, endDate, status).subscribe({
+    this.reportsService.reportsDownloadOrdersExcel(startDate, endDate, status, 'body', false, this.EXCEL_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Orders-Report-${new Date().toISOString().split('T')[0]}.xlsx`;
         this.downloadFile(blob, filename);
@@ -86,7 +89,7 @@ export class ReportService {
    * Download orders report as PDF (Admin only)
    */
   downloadOrdersPdf(startDate?: string, endDate?: string, status?: string): void {
-    this.reportsService.apiReportsOrdersPdfGet(startDate, endDate, status).subscribe({
+    this.reportsService.reportsDownloadOrdersPdf(startDate, endDate, status, 'body', false, this.PDF_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Orders-Report-${new Date().toISOString().split('T')[0]}.pdf`;
         this.downloadFile(blob, filename);
@@ -101,7 +104,7 @@ export class ReportService {
    * Download products report as Excel (Admin only)
    */
   downloadProductsExcel(categoryId?: number, brandId?: number): void {
-    this.reportsService.apiReportsProductsExcelGet(categoryId, brandId).subscribe({
+    this.reportsService.reportsDownloadProductsExcel(categoryId, brandId, 'body', false, this.EXCEL_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Products-Report-${new Date().toISOString().split('T')[0]}.xlsx`;
         this.downloadFile(blob, filename);
@@ -116,7 +119,7 @@ export class ReportService {
    * Download products report as PDF (Admin only)
    */
   downloadProductsPdf(categoryId?: number, brandId?: number): void {
-    this.reportsService.apiReportsProductsPdfGet(categoryId, brandId).subscribe({
+    this.reportsService.reportsDownloadProductsPdf(categoryId, brandId, 'body', false, this.PDF_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Products-Report-${new Date().toISOString().split('T')[0]}.pdf`;
         this.downloadFile(blob, filename);
@@ -131,7 +134,7 @@ export class ReportService {
    * Download users report as Excel (Admin only)
    */
   downloadUsersExcel(role?: string): void {
-    this.reportsService.apiReportsUsersExcelGet(role).subscribe({
+    this.reportsService.reportsDownloadUsersExcel(role, 'body', false, this.EXCEL_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Users-Report-${new Date().toISOString().split('T')[0]}.xlsx`;
         this.downloadFile(blob, filename);
@@ -146,7 +149,7 @@ export class ReportService {
    * Download users report as PDF (Admin only)
    */
   downloadUsersPdf(role?: string): void {
-    this.reportsService.apiReportsUsersPdfGet(role).subscribe({
+    this.reportsService.reportsDownloadUsersPdf(role, 'body', false, this.PDF_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Users-Report-${new Date().toISOString().split('T')[0]}.pdf`;
         this.downloadFile(blob, filename);
@@ -161,7 +164,7 @@ export class ReportService {
    * Download brands report as Excel (Admin only)
    */
   downloadBrandsExcel(): void {
-    this.reportsService.apiReportsBrandsExcelGet().subscribe({
+    this.reportsService.reportsDownloadBrandsExcel('body', false, this.EXCEL_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Brands-Report-${new Date().toISOString().split('T')[0]}.xlsx`;
         this.downloadFile(blob, filename);
@@ -176,7 +179,7 @@ export class ReportService {
    * Download brands report as PDF (Admin only)
    */
   downloadBrandsPdf(): void {
-    this.reportsService.apiReportsBrandsPdfGet().subscribe({
+    this.reportsService.reportsDownloadBrandsPdf('body', false, this.PDF_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Brands-Report-${new Date().toISOString().split('T')[0]}.pdf`;
         this.downloadFile(blob, filename);
@@ -191,7 +194,7 @@ export class ReportService {
    * Download categories report as Excel (Admin only)
    */
   downloadCategoriesExcel(): void {
-    this.reportsService.apiReportsCategoriesExcelGet().subscribe({
+    this.reportsService.reportsDownloadCategoriesExcel('body', false, this.EXCEL_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Categories-Report-${new Date().toISOString().split('T')[0]}.xlsx`;
         this.downloadFile(blob, filename);
@@ -206,7 +209,7 @@ export class ReportService {
    * Download categories report as PDF (Admin only)
    */
   downloadCategoriesPdf(): void {
-    this.reportsService.apiReportsCategoriesPdfGet().subscribe({
+    this.reportsService.reportsDownloadCategoriesPdf('body', false, this.PDF_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Categories-Report-${new Date().toISOString().split('T')[0]}.pdf`;
         this.downloadFile(blob, filename);
@@ -221,7 +224,7 @@ export class ReportService {
    * Download coupons report as Excel (Admin only)
    */
   downloadCouponsExcel(activeOnly?: boolean): void {
-    this.reportsService.apiReportsCouponsExcelGet(activeOnly).subscribe({
+    this.reportsService.reportsDownloadCouponsExcel(activeOnly, 'body', false, this.EXCEL_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Coupons-Report-${new Date().toISOString().split('T')[0]}.xlsx`;
         this.downloadFile(blob, filename);
@@ -236,7 +239,7 @@ export class ReportService {
    * Download coupons report as PDF (Admin only)
    */
   downloadCouponsPdf(activeOnly?: boolean): void {
-    this.reportsService.apiReportsCouponsPdfGet(activeOnly).subscribe({
+    this.reportsService.reportsDownloadCouponsPdf(activeOnly, 'body', false, this.PDF_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Coupons-Report-${new Date().toISOString().split('T')[0]}.pdf`;
         this.downloadFile(blob, filename);
@@ -251,7 +254,7 @@ export class ReportService {
    * Download reviews report as Excel (Admin only)
    */
   downloadReviewsExcel(minRating?: number, maxRating?: number): void {
-    this.reportsService.apiReportsReviewsExcelGet(minRating, maxRating).subscribe({
+    this.reportsService.reportsDownloadReviewsExcel(minRating, maxRating, 'body', false, this.EXCEL_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Reviews-Report-${new Date().toISOString().split('T')[0]}.xlsx`;
         this.downloadFile(blob, filename);
@@ -266,7 +269,7 @@ export class ReportService {
    * Download reviews report as PDF (Admin only)
    */
   downloadReviewsPdf(minRating?: number, maxRating?: number): void {
-    this.reportsService.apiReportsReviewsPdfGet(minRating, maxRating).subscribe({
+    this.reportsService.reportsDownloadReviewsPdf(minRating, maxRating, 'body', false, this.PDF_ACCEPT).subscribe({
       next: (blob: any) => {
         const filename = `Reviews-Report-${new Date().toISOString().split('T')[0]}.pdf`;
         this.downloadFile(blob, filename);

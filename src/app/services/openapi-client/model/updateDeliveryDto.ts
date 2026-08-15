@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -17,7 +17,7 @@ export interface UpdateDeliveryDto {
     deliveryAddress: string;
     contactPerson?: string | null;
     contactPhone?: string | null;
-    status?: string | null;
+    status?: string;
     signatureUrl?: string | null;
     photoUrl?: string | null;
     notes?: string | null;

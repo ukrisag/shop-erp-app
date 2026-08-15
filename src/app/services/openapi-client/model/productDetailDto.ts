@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -11,15 +11,18 @@ import { ProductImageDto } from './productImageDto';
 import { ProductVariantDto } from './productVariantDto';
 
 
+/**
+ * DTO for product detail view
+ */
 export interface ProductDetailDto { 
     id?: number;
     categoryId?: number | null;
     categoryName?: string | null;
     brandId?: number | null;
     brandName?: string | null;
-    sku?: string | null;
-    name?: string | null;
-    slug?: string | null;
+    sku?: string;
+    name?: string;
+    slug?: string;
     shortDescription?: string | null;
     fullDescription?: string | null;
     features?: string | null;
@@ -34,8 +37,8 @@ export interface ProductDetailDto {
     isBestseller?: boolean;
     isNewArrival?: boolean;
     isActive?: boolean;
-    images?: Array<ProductImageDto> | null;
-    variants?: Array<ProductVariantDto> | null;
+    images?: Array<ProductImageDto>;
+    variants?: Array<ProductVariantDto>;
     averageRating?: number | null;
     reviewCount?: number;
     metaTitle?: string | null;

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -21,16 +21,13 @@ import { OpenApiHttpParams, QueryParamStyle } from '../query.params';
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 import { BaseService } from '../api.base.service';
-import {
-    HealthServiceInterface
-} from './health.serviceInterface';
 
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class HealthService extends BaseService implements HealthServiceInterface {
+export class HealthService extends BaseService {
 
     constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string|string[], @Optional() configuration?: Configuration) {
         super(basePath, configuration);

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { GalleryImageDto } from './galleryImageDto';
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfGalleryImageDto { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
-    data?: GalleryImageDto;
+    /**
+     * Response data
+     */
+    data?: GalleryImageDto | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

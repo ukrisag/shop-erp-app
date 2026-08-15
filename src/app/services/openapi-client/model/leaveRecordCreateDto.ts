@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO สำหรับสร้างคำขอลาใหม่
+ */
 export interface LeaveRecordCreateDto { 
     employeeId: number;
     leaveType: string;

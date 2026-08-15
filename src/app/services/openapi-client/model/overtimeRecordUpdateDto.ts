@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO สำหรับแก้ไข OT record
+ */
 export interface OvertimeRecordUpdateDto { 
     overtimeDate: string;
     startTime: string;

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO สำหรับสร้างพนักงานใหม่
+ */
 export interface EmployeeCreateDto { 
     employeeCode: string;
     email: string;

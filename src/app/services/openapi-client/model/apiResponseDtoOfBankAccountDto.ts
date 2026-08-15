@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,10 +10,25 @@
 import { BankAccountDto } from './bankAccountDto';
 
 
+/**
+ * Generic API response wrapper
+ */
 export interface ApiResponseDtoOfBankAccountDto { 
+    /**
+     * Indicates if the request was successful
+     */
     success?: boolean;
+    /**
+     * Response message
+     */
     message?: string | null;
-    data?: BankAccountDto;
+    /**
+     * Response data
+     */
+    data?: BankAccountDto | null;
+    /**
+     * Error details if any
+     */
     errors?: Array<string> | null;
 }
 

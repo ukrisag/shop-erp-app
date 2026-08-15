@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO สำหรับอนุมัติ/ปฏิเสธการลา
+ */
 export interface LeaveApprovalDto { 
     leaveId: number;
     isApproved: boolean;

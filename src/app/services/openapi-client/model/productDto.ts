@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,15 +9,18 @@
  */
 
 
+/**
+ * DTO for product list view
+ */
 export interface ProductDto { 
     id?: number;
     categoryId?: number | null;
     categoryName?: string | null;
     brandId?: number | null;
     brandName?: string | null;
-    sku?: string | null;
-    name?: string | null;
-    slug?: string | null;
+    sku?: string;
+    name?: string;
+    slug?: string;
     shortDescription?: string | null;
     basePrice?: number;
     compareAtPrice?: number | null;

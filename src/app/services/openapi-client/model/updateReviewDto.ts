@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO for updating a review
+ */
 export interface UpdateReviewDto { 
     rating?: number | null;
     title?: string | null;

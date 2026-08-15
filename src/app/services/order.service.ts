@@ -22,7 +22,7 @@ export class OrderService {
   ) {}
 
   createOrder(orderData: CreateOrderDto): Observable<OrderDetailDto> {
-    return this.apiOrdersService.apiOrdersPost(orderData).pipe(
+    return this.apiOrdersService.ordersCreateOrder(orderData).pipe(
       map((response: any) => {
         if (response.success && response.data) {
           return response.data;
@@ -33,7 +33,7 @@ export class OrderService {
   }
 
   getMyOrders(): Observable<OrderDto[]> {
-    return this.apiOrdersService.apiOrdersGet().pipe(
+    return this.apiOrdersService.ordersGetUserOrders().pipe(
       map((response: any) => {
         if (response.success && response.data) {
           return response.data;
@@ -44,7 +44,7 @@ export class OrderService {
   }
 
   getOrderById(id: number): Observable<OrderDetailDto> {
-    return this.apiOrdersService.apiOrdersIdGet(id).pipe(
+    return this.apiOrdersService.ordersGetOrderById(id).pipe(
       map((response: any) => {
         if (response.success && response.data) {
           return response.data;
@@ -55,7 +55,7 @@ export class OrderService {
   }
 
   cancelOrder(id: number): Observable<void> {
-    return this.apiOrdersService.apiOrdersIdCancelPut(id).pipe(
+    return this.apiOrdersService.ordersCancelOrder(id).pipe(
       map((response: any) => {
         if (!response.success) {
           throw new Error(response.message || 'Failed to cancel order');
@@ -65,7 +65,7 @@ export class OrderService {
   }
 
   uploadPaymentSlip(id: number, paymentSlipUrl: string): Observable<OrderDetailDto> {
-    return this.apiOrdersService.apiOrdersIdPaymentSlipPut(id, { paymentSlipUrl }).pipe(
+    return this.apiOrdersService.ordersUploadPaymentSlip(id, { paymentSlipUrl }).pipe(
       map((response: any) => {
         if (response.success && response.data) {
           return response.data;

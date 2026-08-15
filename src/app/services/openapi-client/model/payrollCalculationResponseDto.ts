@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,12 +10,15 @@
 import { SalaryRecordDto } from './salaryRecordDto';
 
 
+/**
+ * DTO สำหรับผลการคำนวณเงินเดือน
+ */
 export interface PayrollCalculationResponseDto { 
     month?: number;
     year?: number;
     totalEmployees?: number;
     totalNetSalary?: number;
-    salaryRecords?: Array<SalaryRecordDto> | null;
-    errors?: Array<string> | null;
+    salaryRecords?: Array<SalaryRecordDto>;
+    errors?: Array<string>;
 }
 

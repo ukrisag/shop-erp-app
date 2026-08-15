@@ -54,7 +54,7 @@ export class CartService {
    * Load cart from API
    */
   public loadCart(): void {
-    this.apiCartService.apiCartGet().subscribe({
+    this.apiCartService.cartGetCart().subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.cart = this.transformCartDto(response.data);
@@ -158,7 +158,7 @@ export class CartService {
       quantity: request.quantity
     };
 
-    return this.apiCartService.apiCartItemsPost(addToCartDto).pipe(
+    return this.apiCartService.cartAddToCart(addToCartDto).pipe(
       map(response => {
         if (response.success && response.data) {
           this.cart = this.transformCartDto(response.data);
@@ -183,7 +183,7 @@ export class CartService {
       quantity: quantity
     };
 
-    return this.apiCartService.apiCartItemsIdPut(itemId, updateDto).pipe(
+    return this.apiCartService.cartUpdateCartItem(itemId, updateDto).pipe(
       map(response => {
         if (response.success && response.data) {
           this.cart = this.transformCartDto(response.data);
@@ -199,7 +199,7 @@ export class CartService {
    * Remove item from cart
    */
   removeCartItem(itemId: number): Observable<Cart> {
-    return this.apiCartService.apiCartItemsIdDelete(itemId).pipe(
+    return this.apiCartService.cartRemoveFromCart(itemId).pipe(
       tap(() => {
         // After deletion, reload the cart to get updated state
         this.loadCart();
@@ -212,7 +212,7 @@ export class CartService {
    * Clear cart
    */
   clearCart(): Observable<Cart> {
-    return this.apiCartService.apiCartDelete().pipe(
+    return this.apiCartService.cartClearCart().pipe(
       tap(() => {
         // After clearing, reload the cart to get updated state
         this.loadCart();

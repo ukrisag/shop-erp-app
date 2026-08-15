@@ -20,7 +20,7 @@ export class AdminCouponService {
    * Get all coupons (both active and inactive)
    */
   getCoupons(): Observable<CouponDto[]> {
-    return this.couponsService.apiCouponsAvailableGet().pipe(
+    return this.couponsService.couponsGetAvailableCoupons().pipe(
       map(response => response.data || [])
     );
   }
@@ -40,8 +40,8 @@ export class AdminCouponService {
    * Create a new coupon
    */
   createCoupon(couponData: CreateCouponDto): Observable<CouponDto | undefined> {
-    return this.adminCouponsService.apiAdminCouponsPost(couponData).pipe(
-      map(response => response.data)
+    return this.adminCouponsService.adminCouponsCreateCoupon(couponData).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -49,8 +49,8 @@ export class AdminCouponService {
    * Update an existing coupon
    */
   updateCoupon(id: number, couponData: CreateCouponDto): Observable<CouponDto | undefined> {
-    return this.adminCouponsService.apiAdminCouponsIdPut(id, couponData).pipe(
-      map(response => response.data)
+    return this.adminCouponsService.adminCouponsUpdateCoupon(id, couponData).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 
@@ -58,8 +58,8 @@ export class AdminCouponService {
    * Delete a coupon
    */
   deleteCoupon(id: number): Observable<any> {
-    return this.adminCouponsService.apiAdminCouponsIdDelete(id).pipe(
-      map(response => response.data)
+    return this.adminCouponsService.adminCouponsDeleteCoupon(id).pipe(
+      map(response => response.data ?? undefined)
     );
   }
 

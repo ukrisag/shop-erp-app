@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,9 +9,12 @@
  */
 
 
+/**
+ * DTO for shipping rate
+ */
 export interface ShippingRateDto { 
     id?: number;
-    method?: string | null;
+    method?: string;
     rate?: number;
     estimatedDays?: number;
     description?: string | null;

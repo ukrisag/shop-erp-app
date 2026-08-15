@@ -5,17 +5,100 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ErpSalesOrdersService, ErpSalesPaymentsService, BranchesService, ProductsService } from '../../../../services/openapi-client';
 import {
-  ErpSalesOrderDto,
   CreateErpSalesOrderDto,
   UpdateErpSalesOrderDto,
-  ErpSalesPaymentDto,
   CreateErpSalesPaymentDto,
-  BranchDto,
   CreateErpSalesOrderItemDto,
   ProductDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
 import { environment } from '../../../../../environments/environment';
+
+// The generated ErpSalesOrdersController/ErpSalesPaymentsController/BranchesController actions
+// return untyped IActionResult on the backend, so openapi-generator does not emit typed
+// ErpSalesOrderDto / ErpSalesPaymentDto / BranchDto models. Define the shapes locally.
+interface ErpSalesOrderItemDto {
+  id?: number;
+  salesOrderId?: number;
+  productId?: number | null;
+  productVariantId?: number | null;
+  productName?: string | null;
+  productSku?: string | null;
+  productSize?: string | null;
+  productDescription?: string | null;
+  quantity?: number;
+  unitPrice?: number;
+  discount?: number;
+  totalPrice?: number;
+  notes?: string | null;
+  createdAt?: string | null;
+}
+
+interface ErpSalesPaymentDto {
+  id?: number;
+  salesOrderId?: number;
+  orderNumber?: string | null;
+  branchId?: number;
+  branchName?: string | null;
+  paymentDate?: string | null;
+  paymentType?: string | null;
+  amount?: number;
+  paymentMethod?: string | null;
+  bankName?: string | null;
+  accountNumber?: string | null;
+  transferDate?: string | null;
+  slipUrl?: string | null;
+  notes?: string | null;
+  createdBy?: number | null;
+  createdByName?: string | null;
+  createdAt?: string | null;
+}
+
+interface ErpSalesOrderDto {
+  id?: number;
+  branchId?: number;
+  branchName?: string | null;
+  orderNumber?: string | null;
+  customerId?: number | null;
+  customerName?: string | null;
+  customerPhone?: string | null;
+  customerAddress?: string | null;
+  customerTaxId?: string | null;
+  orderDate?: string | null;
+  orderType?: string | null;
+  status?: string | null;
+  subtotal?: number;
+  discountAmount?: number;
+  discountPercentage?: number;
+  amountBeforeVat?: number;
+  vatEnabled?: boolean;
+  vatPercentage?: number;
+  vatAmount?: number;
+  totalAmount?: number;
+  depositAmount?: number;
+  paidAmount?: number;
+  outstandingAmount?: number;
+  deliveryAppointmentDate?: string | null;
+  deliveryDate?: string | null;
+  deliveryStatus?: string | null;
+  productStatus?: string | null;
+  notes?: string | null;
+  internalNotes?: string | null;
+  createdBy?: number | null;
+  createdByName?: string | null;
+  updatedBy?: number | null;
+  updatedByName?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  items?: ErpSalesOrderItemDto[];
+  payments?: ErpSalesPaymentDto[];
+}
+
+interface BranchDto {
+  id?: number;
+  name?: string | null;
+  code?: string | null;
+}
 
 @Component({
   selector: 'app-sales-order-admin',
@@ -134,7 +217,7 @@ export class SalesOrderAdminComponent implements OnInit {
 
   loadOrders(): void {
     this.loading.set(true);
-    this.ordersService.apiErpSalesOrdersGet().subscribe({
+    this.ordersService.erpSalesOrdersGetAll().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.orders.set(response.data);
@@ -150,7 +233,7 @@ export class SalesOrderAdminComponent implements OnInit {
   }
 
   loadBranches(): void {
-    this.branchesService.apiErpBranchesGet().subscribe({
+    this.branchesService.branchesGetAll().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.branches.set(response.data);
@@ -165,7 +248,7 @@ export class SalesOrderAdminComponent implements OnInit {
   loadProducts(): void {
     this.loadingProducts.set(true);
     // Load all active products with large page size
-    this.productsService.apiProductsGet(1, 1000).subscribe({
+    this.productsService.productsGetProducts(1, 1000).subscribe({
       next: (response: any) => {
         if (response.success && response.data?.items) {
           // Filter only active products
@@ -331,7 +414,7 @@ export class SalesOrderAdminComponent implements OnInit {
       items: this.orderForm.items
     };
 
-    this.ordersService.apiErpSalesOrdersPost(dto).subscribe({
+    this.ordersService.erpSalesOrdersCreate(dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadOrders();
@@ -372,7 +455,7 @@ export class SalesOrderAdminComponent implements OnInit {
       items: this.orderForm.items
     };
 
-    this.ordersService.apiErpSalesOrdersIdPut(order.id!, dto).subscribe({
+    this.ordersService.erpSalesOrdersUpdate(order.id!, dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadOrders();
@@ -394,7 +477,7 @@ export class SalesOrderAdminComponent implements OnInit {
     const order = this.selectedOrder();
     if (!order) return;
 
-    this.ordersService.apiErpSalesOrdersIdDelete(order.id!).subscribe({
+    this.ordersService.erpSalesOrdersDelete(order.id!).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadOrders();
@@ -479,7 +562,7 @@ export class SalesOrderAdminComponent implements OnInit {
       notes: this.paymentForm.notes || null
     };
 
-    this.paymentsService.apiErpSalesPaymentsPost(dto).subscribe({
+    this.paymentsService.erpSalesPaymentsCreate(dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.notificationService.success('บันทึกการชำระเงินสำเร็จ');
@@ -507,7 +590,7 @@ export class SalesOrderAdminComponent implements OnInit {
   }
 
   reloadOrderDetail(orderId: number): void {
-    this.ordersService.apiErpSalesOrdersIdGet(orderId).subscribe({
+    this.ordersService.erpSalesOrdersGetById(orderId).subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.selectedOrder.set(response.data);

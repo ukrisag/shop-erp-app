@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -19,10 +19,6 @@ import { OpenApiHttpParams, QueryParamStyle } from '../query.params';
 // @ts-ignore
 import { CreateEmployeeUserDto } from '../model/createEmployeeUserDto';
 // @ts-ignore
-import { EmployeeAuthDto } from '../model/employeeAuthDto';
-// @ts-ignore
-import { EmployeeAuthResponseDto } from '../model/employeeAuthResponseDto';
-// @ts-ignore
 import { LoginDto } from '../model/loginDto';
 // @ts-ignore
 import { RefreshTokenRequestDto } from '../model/refreshTokenRequestDto';
@@ -31,39 +27,37 @@ import { RefreshTokenRequestDto } from '../model/refreshTokenRequestDto';
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 import { BaseService } from '../api.base.service';
-import {
-    EmployeeAuthServiceInterface
-} from './employeeAuth.serviceInterface';
 
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class EmployeeAuthService extends BaseService implements EmployeeAuthServiceInterface {
+export class EmployeeAuthService extends BaseService {
 
     constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string|string[], @Optional() configuration?: Configuration) {
         super(basePath, configuration);
     }
 
     /**
+     * Create new employee (Admin only)
      * @endpoint post /api/employee-auth/create
-     * @param createEmployeeUserDto 
+     * @param createEmployeeUserDto Employee creation data
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiEmployeeAuthCreatePost(createEmployeeUserDto?: CreateEmployeeUserDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<EmployeeAuthDto>;
-    public apiEmployeeAuthCreatePost(createEmployeeUserDto?: CreateEmployeeUserDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EmployeeAuthDto>>;
-    public apiEmployeeAuthCreatePost(createEmployeeUserDto?: CreateEmployeeUserDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EmployeeAuthDto>>;
-    public apiEmployeeAuthCreatePost(createEmployeeUserDto?: CreateEmployeeUserDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public employeeAuthCreateEmployee(createEmployeeUserDto: CreateEmployeeUserDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public employeeAuthCreateEmployee(createEmployeeUserDto: CreateEmployeeUserDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public employeeAuthCreateEmployee(createEmployeeUserDto: CreateEmployeeUserDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public employeeAuthCreateEmployee(createEmployeeUserDto: CreateEmployeeUserDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (createEmployeeUserDto === null || createEmployeeUserDto === undefined) {
+            throw new Error('Required parameter createEmployeeUserDto was null or undefined when calling employeeAuthCreateEmployee.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -98,7 +92,7 @@ export class EmployeeAuthService extends BaseService implements EmployeeAuthServ
 
         let localVarPath = `/api/employee-auth/create`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<EmployeeAuthDto>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: createEmployeeUserDto,
@@ -113,23 +107,75 @@ export class EmployeeAuthService extends BaseService implements EmployeeAuthServ
     }
 
     /**
-     * @endpoint post /api/employee-auth/login
-     * @param loginDto 
+     * Get current employee information
+     * @endpoint get /api/employee-auth/me
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiEmployeeAuthLoginPost(loginDto?: LoginDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<EmployeeAuthResponseDto>;
-    public apiEmployeeAuthLoginPost(loginDto?: LoginDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EmployeeAuthResponseDto>>;
-    public apiEmployeeAuthLoginPost(loginDto?: LoginDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EmployeeAuthResponseDto>>;
-    public apiEmployeeAuthLoginPost(loginDto?: LoginDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public employeeAuthGetCurrentEmployee(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public employeeAuthGetCurrentEmployee(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public employeeAuthGetCurrentEmployee(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public employeeAuthGetCurrentEmployee(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
+        ]);
+        if (localVarHttpHeaderAcceptSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+        }
+
+        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+        const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+
+        let responseType_: 'text' | 'json' | 'blob' = 'json';
+        if (localVarHttpHeaderAcceptSelected) {
+            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+                responseType_ = 'text';
+            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+                responseType_ = 'json';
+            } else {
+                responseType_ = 'blob';
+            }
+        }
+
+        let localVarPath = `/api/employee-auth/me`;
+        const { basePath, withCredentials } = this.configuration;
+        return this.httpClient.request<any>('get', `${basePath}${localVarPath}`,
+            {
+                context: localVarHttpContext,
+                responseType: <any>responseType_,
+                ...(withCredentials ? { withCredentials } : {}),
+                headers: localVarHeaders,
+                observe: observe,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Employee login
+     * @endpoint post /api/employee-auth/login
+     * @param loginDto Login credentials
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     * @param options additional options
+     */
+    public employeeAuthLogin(loginDto: LoginDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public employeeAuthLogin(loginDto: LoginDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public employeeAuthLogin(loginDto: LoginDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public employeeAuthLogin(loginDto: LoginDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (loginDto === null || loginDto === undefined) {
+            throw new Error('Required parameter loginDto was null or undefined when calling employeeAuthLogin.');
+        }
+
+        let localVarHeaders = this.defaultHeaders;
+
+        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -164,7 +210,7 @@ export class EmployeeAuthService extends BaseService implements EmployeeAuthServ
 
         let localVarPath = `/api/employee-auth/login`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<EmployeeAuthResponseDto>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: loginDto,
@@ -179,76 +225,24 @@ export class EmployeeAuthService extends BaseService implements EmployeeAuthServ
     }
 
     /**
-     * @endpoint get /api/employee-auth/me
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     * @param options additional options
-     */
-    public apiEmployeeAuthMeGet(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<EmployeeAuthDto>;
-    public apiEmployeeAuthMeGet(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EmployeeAuthDto>>;
-    public apiEmployeeAuthMeGet(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EmployeeAuthDto>>;
-    public apiEmployeeAuthMeGet(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-
-        let localVarHeaders = this.defaultHeaders;
-
-        const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
-        ]);
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
-
-        const localVarTransferCache: boolean = options?.transferCache ?? true;
-
-
-        let responseType_: 'text' | 'json' | 'blob' = 'json';
-        if (localVarHttpHeaderAcceptSelected) {
-            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-                responseType_ = 'text';
-            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-                responseType_ = 'json';
-            } else {
-                responseType_ = 'blob';
-            }
-        }
-
-        let localVarPath = `/api/employee-auth/me`;
-        const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<EmployeeAuthDto>('get', `${basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                responseType: <any>responseType_,
-                ...(withCredentials ? { withCredentials } : {}),
-                headers: localVarHeaders,
-                observe: observe,
-                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
+     * Refresh access token using refresh token
      * @endpoint post /api/employee-auth/refresh-token
-     * @param refreshTokenRequestDto 
+     * @param refreshTokenRequestDto Refresh token request
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
      */
-    public apiEmployeeAuthRefreshTokenPost(refreshTokenRequestDto?: RefreshTokenRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<EmployeeAuthResponseDto>;
-    public apiEmployeeAuthRefreshTokenPost(refreshTokenRequestDto?: RefreshTokenRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<EmployeeAuthResponseDto>>;
-    public apiEmployeeAuthRefreshTokenPost(refreshTokenRequestDto?: RefreshTokenRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<EmployeeAuthResponseDto>>;
-    public apiEmployeeAuthRefreshTokenPost(refreshTokenRequestDto?: RefreshTokenRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public employeeAuthRefreshToken(refreshTokenRequestDto: RefreshTokenRequestDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public employeeAuthRefreshToken(refreshTokenRequestDto: RefreshTokenRequestDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public employeeAuthRefreshToken(refreshTokenRequestDto: RefreshTokenRequestDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public employeeAuthRefreshToken(refreshTokenRequestDto: RefreshTokenRequestDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (refreshTokenRequestDto === null || refreshTokenRequestDto === undefined) {
+            throw new Error('Required parameter refreshTokenRequestDto was null or undefined when calling employeeAuthRefreshToken.');
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
         const localVarHttpHeaderAcceptSelected: string | undefined = options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([
-            'text/plain',
-            'application/json',
-            'text/json'
         ]);
         if (localVarHttpHeaderAcceptSelected !== undefined) {
             localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
@@ -283,7 +277,7 @@ export class EmployeeAuthService extends BaseService implements EmployeeAuthServ
 
         let localVarPath = `/api/employee-auth/refresh-token`;
         const { basePath, withCredentials } = this.configuration;
-        return this.httpClient.request<EmployeeAuthResponseDto>('post', `${basePath}${localVarPath}`,
+        return this.httpClient.request<any>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 body: refreshTokenRequestDto,

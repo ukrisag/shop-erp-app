@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,17 +9,20 @@
  */
 
 
+/**
+ * DTO for product review
+ */
 export interface ReviewDto { 
     id?: number;
     productId?: number;
     userId?: number;
-    userName?: string | null;
+    userName?: string;
     rating?: number;
     title?: string | null;
     comment?: string | null;
     isVerifiedPurchase?: boolean;
     helpfulCount?: number;
-    status?: string | null;
+    status?: string;
     adminResponse?: string | null;
     createdAt?: string | null;
     updatedAt?: string | null;

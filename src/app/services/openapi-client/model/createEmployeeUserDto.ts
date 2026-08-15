@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,18 +9,57 @@
  */
 
 
+/**
+ * DTO for creating employee or admin users
+ */
 export interface CreateEmployeeUserDto { 
+    /**
+     * Employee\'s email address
+     */
     email: string;
+    /**
+     * Employee\'s password
+     */
     password: string;
+    /**
+     * First name
+     */
     firstName: string;
+    /**
+     * Last name
+     */
     lastName: string;
+    /**
+     * Phone number
+     */
     phone?: string | null;
+    /**
+     * Role: employee, admin, or super_admin
+     */
     role: string;
+    /**
+     * Employee code
+     */
     employeeCode?: string | null;
+    /**
+     * Position/Job title
+     */
     position?: string | null;
+    /**
+     * Branch ID
+     */
     branchId?: number | null;
+    /**
+     * Salary
+     */
     salary?: number | null;
+    /**
+     * Commission rate (0-100)
+     */
     commissionRate?: number | null;
+    /**
+     * Hire date
+     */
     hireDate?: string | null;
 }
 

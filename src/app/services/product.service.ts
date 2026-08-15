@@ -29,7 +29,7 @@ export class ProductService {
     const page = filters?.page || 1;
     const pageSize = filters?.limit || 12;
 
-    return this.productsService.apiProductsGet(
+    return this.productsService.productsGetProducts(
       page,
       pageSize,
       filters?.search,
@@ -62,7 +62,7 @@ export class ProductService {
    * Get product by ID
    */
   getProductById(id: number): Observable<Product | undefined> {
-    return this.productsService.apiProductsIdGet(id).pipe(
+    return this.productsService.productsGetProduct(id).pipe(
       map(response => {
         if (response.data) {
           return this.transformProductDetailDto(response.data);
@@ -76,7 +76,7 @@ export class ProductService {
    * Get product by slug
    */
   getProductBySlug(slug: string): Observable<Product | undefined> {
-    return this.productsService.apiProductsSlugSlugGet(slug).pipe(
+    return this.productsService.productsGetProductBySlug(slug).pipe(
       map(response => {
         if (response.data) {
           return this.transformProductDetailDto(response.data);
@@ -90,7 +90,7 @@ export class ProductService {
    * Get featured products
    */
   getFeaturedProducts(limit: number = 8): Observable<Product[]> {
-    return this.productsService.apiProductsGet(
+    return this.productsService.productsGetProducts(
       1,
       limit,
       undefined,
@@ -114,7 +114,7 @@ export class ProductService {
    * Get bestseller products
    */
   getBestsellerProducts(limit: number = 8): Observable<Product[]> {
-    return this.productsService.apiProductsGet(
+    return this.productsService.productsGetProducts(
       1,
       limit,
       undefined,
@@ -138,7 +138,7 @@ export class ProductService {
    * Get new arrival products
    */
   getNewArrivalProducts(limit: number = 8): Observable<Product[]> {
-    return this.productsService.apiProductsGet(
+    return this.productsService.productsGetProducts(
       1,
       limit,
       undefined,
@@ -162,7 +162,7 @@ export class ProductService {
    * Get all categories
    */
   getCategories(): Observable<Category[]> {
-    return this.categoriesService.apiCategoriesGet().pipe(
+    return this.categoriesService.categoriesGetCategories().pipe(
       map(response => {
         const items = response.data || [];
         return items.map(item => this.transformCategoryDto(item));
@@ -174,7 +174,7 @@ export class ProductService {
    * Get category by ID
    */
   getCategoryById(id: number): Observable<Category | undefined> {
-    return this.categoriesService.apiCategoriesIdGet(id).pipe(
+    return this.categoriesService.categoriesGetCategory(id).pipe(
       map(response => {
         if (response.data) {
           return this.transformCategoryDto(response.data);
@@ -188,7 +188,7 @@ export class ProductService {
    * Get all brands
    */
   getBrands(): Observable<Brand[]> {
-    return this.brandsService.apiBrandsGet().pipe(
+    return this.brandsService.brandsGetBrands().pipe(
       map(response => {
         const items = response.data || [];
         return items.map(item => this.transformBrandDto(item));
@@ -200,7 +200,7 @@ export class ProductService {
    * Get brand by ID
    */
   getBrandById(id: number): Observable<Brand | undefined> {
-    return this.brandsService.apiBrandsIdGet(id).pipe(
+    return this.brandsService.brandsGetBrand(id).pipe(
       map(response => {
         if (response.data) {
           return this.transformBrandDto(response.data);
@@ -214,7 +214,7 @@ export class ProductService {
    * Search products
    */
   searchProducts(query: string): Observable<Product[]> {
-    return this.productsService.apiProductsGet(
+    return this.productsService.productsGetProducts(
       1,
       100, // Get more results for search
       query,

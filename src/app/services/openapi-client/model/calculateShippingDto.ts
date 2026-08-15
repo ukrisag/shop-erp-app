@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO for calculating shipping fee
+ */
 export interface CalculateShippingDto { 
     province: string;
     postalCode?: string | null;

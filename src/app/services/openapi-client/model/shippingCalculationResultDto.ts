@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,8 +9,11 @@
  */
 
 
+/**
+ * DTO for shipping calculation result
+ */
 export interface ShippingCalculationResultDto { 
     shippingFee?: number;
-    province?: string | null;
+    province?: string;
 }
 

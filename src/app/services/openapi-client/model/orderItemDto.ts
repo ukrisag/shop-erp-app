@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,12 +9,15 @@
  */
 
 
+/**
+ * DTO for order item
+ */
 export interface OrderItemDto { 
     id?: number;
     productVariantId?: number;
-    productName?: string | null;
-    variantName?: string | null;
-    sku?: string | null;
+    productName?: string;
+    variantName?: string;
+    sku?: string;
     quantity?: number;
     unitPrice?: number;
     totalPrice?: number;

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO for updating a product variant
+ */
 export interface UpdateProductVariantDto { 
     sku?: string | null;
     name?: string | null;

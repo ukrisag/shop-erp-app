@@ -11,7 +11,7 @@ export class CouponService {
   constructor(private apiCouponsService: CouponsService) {}
 
   validateCoupon(code: string, orderTotal: number): Observable<any> {
-    return this.apiCouponsService.apiCouponsValidatePost({ code, subtotal: orderTotal }).pipe(
+    return this.apiCouponsService.couponsValidateCoupon({ code, subtotal: orderTotal }).pipe(
       map((response: any) => {
         if (response.success && response.data) {
           return response.data;
@@ -22,7 +22,7 @@ export class CouponService {
   }
 
   getAvailableCoupons(): Observable<CouponDto[]> {
-    return this.apiCouponsService.apiCouponsAvailableGet().pipe(
+    return this.apiCouponsService.couponsGetAvailableCoupons().pipe(
       map((response: any) => {
         if (response.success && response.data) {
           return response.data;

@@ -3,13 +3,60 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DeliveriesService, BranchesService, EmployeesService } from '../../../../services/openapi-client';
 import {
-  DeliveryDto,
   CreateDeliveryDto,
-  UpdateDeliveryDto,
-  BranchDto,
-  EmployeeListDto
+  UpdateDeliveryDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
+
+// The generated DeliveriesController/BranchesController/EmployeesController actions return
+// untyped IActionResult on the backend, so openapi-generator does not emit typed
+// DeliveryDto / BranchDto / EmployeeListDto models. Define the shapes locally.
+interface DeliveryDto {
+  id?: number;
+  deliveryNumber?: string | null;
+  branchId?: number;
+  branchName?: string | null;
+  ecommerceOrderId?: number | null;
+  ecommerceOrderNumber?: string | null;
+  erpSalesOrderId?: number | null;
+  erpSalesOrderNumber?: string | null;
+  scheduledDate?: string | null;
+  actualDeliveryDate?: string | null;
+  driverId?: number | null;
+  driverName?: string | null;
+  vehicleNumber?: string | null;
+  deliveryAddress?: string | null;
+  contactPerson?: string | null;
+  contactPhone?: string | null;
+  status?: string | null;
+  signatureUrl?: string | null;
+  photoUrl?: string | null;
+  notes?: string | null;
+  createdBy?: number | null;
+  createdByName?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+
+interface BranchDto {
+  id?: number;
+  name?: string | null;
+  code?: string | null;
+}
+
+interface EmployeeListDto {
+  id?: number;
+  employeeCode?: string | null;
+  email?: string | null;
+  fullNameTh?: string | null;
+  fullNameEn?: string | null;
+  phone?: string | null;
+  position?: string | null;
+  photoUrl?: string | null;
+  branchId?: number | null;
+  branchName?: string | null;
+  status?: string | null;
+}
 
 @Component({
   selector: 'app-delivery-list-admin',
@@ -80,7 +127,7 @@ export class DeliveryListAdminComponent implements OnInit {
 
   loadDeliveries(): void {
     this.loading.set(true);
-    this.deliveriesService.apiErpDeliveriesGet().subscribe({
+    this.deliveriesService.deliveriesGetAll().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.deliveries.set(response.data);
@@ -96,7 +143,7 @@ export class DeliveryListAdminComponent implements OnInit {
   }
 
   loadBranches(): void {
-    this.branchesService.apiErpBranchesGet().subscribe({
+    this.branchesService.branchesGetAll().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.branches.set(response.data);
@@ -107,7 +154,7 @@ export class DeliveryListAdminComponent implements OnInit {
   }
 
   loadDrivers(): void {
-    this.employeesService.apiEmployeesGet().subscribe({
+    this.employeesService.employeesGetAllEmployees().subscribe({
       next: (response: any) => {
         if (response.success && response.data) {
           this.drivers.set(response.data);
@@ -227,7 +274,7 @@ export class DeliveryListAdminComponent implements OnInit {
       createdBy: this.deliveryForm.createdBy || null
     };
 
-    this.deliveriesService.apiErpDeliveriesPost(dto).subscribe({
+    this.deliveriesService.deliveriesCreate(dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadDeliveries();
@@ -259,7 +306,7 @@ export class DeliveryListAdminComponent implements OnInit {
       notes: this.deliveryForm.notes || null
     };
 
-    this.deliveriesService.apiErpDeliveriesIdPut(delivery.id!, dto).subscribe({
+    this.deliveriesService.deliveriesUpdate(delivery.id!, dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadDeliveries();
@@ -277,7 +324,7 @@ export class DeliveryListAdminComponent implements OnInit {
     const delivery = this.selectedDelivery();
     if (!delivery) return;
 
-    this.deliveriesService.apiErpDeliveriesIdDelete(delivery.id!).subscribe({
+    this.deliveriesService.deliveriesDelete(delivery.id!).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadDeliveries();

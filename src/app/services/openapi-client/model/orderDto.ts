@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,12 +10,15 @@
 import { OrderItemDto } from './orderItemDto';
 
 
+/**
+ * DTO for order
+ */
 export interface OrderDto { 
     id?: number;
-    orderNumber?: string | null;
+    orderNumber?: string;
     userId?: number | null;
-    status?: string | null;
-    paymentStatus?: string | null;
+    status?: string;
+    paymentStatus?: string;
     paymentMethod?: string | null;
     invoiceType?: string | null;
     shippingMethod?: string | null;
@@ -27,7 +30,7 @@ export interface OrderDto {
     shippingFullName?: string | null;
     shippingPhone?: string | null;
     shippingAddress?: string | null;
-    items?: Array<OrderItemDto> | null;
+    items?: Array<OrderItemDto>;
     createdAt?: string | null;
     updatedAt?: string | null;
 }

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,11 +10,14 @@
 import { ProductDto } from './productDto';
 
 
+/**
+ * DTO for wishlist
+ */
 export interface WishlistDto { 
     id?: number;
     userId?: number;
     productId?: number;
-    product?: ProductDto;
+    product?: ProductDto | null;
     createdAt?: string | null;
 }
 

@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -10,13 +10,37 @@
 import { GalleryImageDto } from './galleryImageDto';
 
 
+/**
+ * Paginated response wrapper
+ */
 export interface PaginatedResponseDtoOfGalleryImageDto { 
-    items?: Array<GalleryImageDto> | null;
+    /**
+     * List of items for current page
+     */
+    items?: Array<GalleryImageDto>;
+    /**
+     * Current page number (1-based)
+     */
     page?: number;
+    /**
+     * Number of items per page
+     */
     pageSize?: number;
+    /**
+     * Total number of items across all pages
+     */
     totalItems?: number;
+    /**
+     * Total number of pages
+     */
     totalPages?: number;
-    readonly hasPreviousPage?: boolean;
-    readonly hasNextPage?: boolean;
+    /**
+     * Whether there is a previous page
+     */
+    hasPreviousPage?: boolean;
+    /**
+     * Whether there is a next page
+     */
+    hasNextPage?: boolean;
 }
 

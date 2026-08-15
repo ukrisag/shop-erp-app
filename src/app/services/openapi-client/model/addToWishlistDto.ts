@@ -1,5 +1,5 @@
 /**
- * ShopErpApi
+ * ShopErpApi | v1
  *
  * 
  *
@@ -9,6 +9,9 @@
  */
 
 
+/**
+ * DTO for adding product to wishlist
+ */
 export interface AddToWishlistDto { 
     productId: number;
 }
