@@ -13,6 +13,6 @@
  * DTO for updating user status
  */
 export interface UpdateUserStatusDto { 
-    status?: string;
+    status: string;
 }
 

@@ -9,10 +9,9 @@
  */
 
 
-/**
- * DTO for updating user role
- */
-export interface UpdateUserRoleDto { 
-    role: string;
+export interface ExpenseCategoryDto { 
+    id?: number;
+    name?: string;
+    code?: string;
 }
 
