@@ -1,7 +1,6 @@
 import { Component, OnInit, HostListener, PLATFORM_ID, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 interface SocialLink {
   name: string;
@@ -21,14 +20,14 @@ interface PaymentMethod {
 
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink, CommonModule, FormsModule],
+  imports: [RouterLink, CommonModule],
   templateUrl: './footer.html',
   styleUrl: './footer.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FooterComponent implements OnInit {
-  newsletterEmail = '';
   showBackToTop = false;
+  currentYear = new Date().getFullYear();
   private isBrowser: boolean;
 
   // Social Media Links
@@ -61,40 +60,31 @@ export class FooterComponent implements OnInit {
   ];
 
   // Quick Links
+  // 'โปรโมชั่น' (/promotions) removed - no such route exists in app.routes.ts,
+  // it silently fell through to the wildcard redirect back to home.
   quickLinks: FooterLink[] = [
     { label: 'สินค้าทั้งหมด', path: '/products' },
     { label: 'หมวดหมู่', path: '/categories' },
     { label: 'แบรนด์', path: '/brands' },
-    { label: 'โปรโมชั่น', path: '/promotions' },
     { label: 'สินค้าใหม่', path: '/products?sort=newest' },
   ];
 
-  // Service Links
-  serviceLinks: FooterLink[] = [
-    { label: 'คำถามที่พบบ่อย', path: '/faq' },
-    { label: 'การจัดส่ง', path: '/shipping' },
-    { label: 'การคืนสินค้า', path: '/returns' },
-    { label: 'ติดตามพัสดุ', path: '/track-order' },
-    { label: 'ศูนย์ช่วยเหลือ', path: '/help' },
-  ];
+  // Service Links section removed entirely: every single one of its links
+  // (/faq, /shipping, /returns, /track-order, /help) pointed at a page that
+  // doesn't exist anywhere in app.routes.ts - none were ever real.
 
   // Payment Methods
+  // Was Visa/Mastercard/PayPal/PromptPay (all four literally sharing the same
+  // placeholder card-shaped icon path) - none of that is real, this shop only
+  // takes bank transfer and in-store payment.
   paymentMethods: PaymentMethod[] = [
     {
-      name: 'Visa',
-      icon: 'M4.5 3h15A1.5 1.5 0 0121 4.5v15a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19.5v-15A1.5 1.5 0 014.5 3zm0 1.5v15h15v-15h-15zM7 9h10v1.5H7V9zm0 3h10v1.5H7V12zm0 3h6v1.5H7V15z'
+      name: 'โอนเงินผ่านธนาคาร',
+      icon: 'M12 2L2 8v2h20V8L12 2zM4 12v7H2v2h20v-2h-2v-7h-2v7h-3v-7h-2v7h-2v-7H9v7H6v-7H4z'
     },
     {
-      name: 'Mastercard',
-      icon: 'M4.5 3h15A1.5 1.5 0 0121 4.5v15a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19.5v-15A1.5 1.5 0 014.5 3zm0 1.5v15h15v-15h-15zM7 9h10v1.5H7V9zm0 3h10v1.5H7V12zm0 3h6v1.5H7V15z'
-    },
-    {
-      name: 'PayPal',
-      icon: 'M4.5 3h15A1.5 1.5 0 0121 4.5v15a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19.5v-15A1.5 1.5 0 014.5 3zm0 1.5v15h15v-15h-15zM7 9h10v1.5H7V9zm0 3h10v1.5H7V12zm0 3h6v1.5H7V15z'
-    },
-    {
-      name: 'PromptPay',
-      icon: 'M4.5 3h15A1.5 1.5 0 0121 4.5v15a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 19.5v-15A1.5 1.5 0 014.5 3zm0 1.5v15h15v-15h-15zM7 9h10v1.5H7V9zm0 3h10v1.5H7V12zm0 3h6v1.5H7V15z'
+      name: 'ชำระเงินหน้าร้าน',
+      icon: 'M4 4h16l1 5a2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 01-2 2 2 2 0 01-2-2 2 2 0 01-2 2 2 2 0 01-2-2l1-5zM5 11v9h4v-6h6v6h4v-9H5z'
     }
   ];
 
@@ -114,35 +104,6 @@ export class FooterComponent implements OnInit {
     }
   }
 
-
-  subscribeNewsletter(event: Event): void {
-    event.preventDefault();
-
-    if (!this.newsletterEmail) {
-      return;
-    }
-
-    // Show success message
-    this.showSuccessMessage();
-    this.newsletterEmail = '';
-  }
-
-  private showSuccessMessage(): void {
-    // Create and show success toast
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-8 right-8 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-4 rounded-2xl shadow-lg shadow-green-500/50 z-50 flex items-center gap-3';
-    toast.innerHTML = `
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-      </svg>
-      <span class="font-semibold">ลงทะเบียนรับข่าวสารสำเร็จ!</span>
-    `;
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-      toast.remove();
-    }, 3000);
-  }
 
   scrollToTop(): void {
     if (this.isBrowser) {

@@ -24,8 +24,11 @@ export class AboutComponent implements OnInit {
 
     address: '124 ปากซอย อินทามระ 32 ถนน สุทธิสารวินิจฉัย แยก 1 ถ. สุทธิสารวินิจฉัย แขวงรัชดาภิเษก เขตดินแดง กรุงเทพมหานคร 10400',
     phone: '02-277-3907',
-    email: '',
-    line: '',
+    // TODO: แทนที่ด้วยข้อมูลจริงของร้าน (ค่าด้านล่างเป็นตัวอย่างเท่านั้น)
+    email: 'info@saengthong-jaikla.com',
+    line: '@saengthongjaikla',
+    facebook: 'https://facebook.com/saengthongjaikla',
+    tiktok: 'https://tiktok.com/@saengthongjaikla',
 
     // เปลี่ยน coordinates ตามที่ตั้งจริงของร้าน
     coordinates: {
@@ -105,6 +108,14 @@ export class AboutComponent implements OnInit {
 
   openLineChat() {
     window.open(`https://line.me/R/ti/p/${this.storeInfo.line}`, '_blank');
+  }
+
+  openFacebook() {
+    window.open(this.storeInfo.facebook, '_blank');
+  }
+
+  openTiktok() {
+    window.open(this.storeInfo.tiktok, '_blank');
   }
 
   callPhone() {
