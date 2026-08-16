@@ -7,6 +7,7 @@ import {
   UpdateDeliveryDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
+import { formatThaiDate } from '../../../../utils/thai-date.helper';
 
 // The generated DeliveriesController/BranchesController/EmployeesController actions return
 // untyped IActionResult on the backend, so openapi-generator does not emit typed
@@ -154,11 +155,12 @@ export class DeliveryListAdminComponent implements OnInit {
   }
 
   loadDrivers(): void {
+    // employeesGetAllEmployees() resolves directly to EmployeeListDto[],
+    // not an ApiResponse envelope - unwrapping response.data here always
+    // left this.drivers empty, so the "พนักงานขับรถ" dropdown had no options.
     this.employeesService.employeesGetAllEmployees().subscribe({
-      next: (response: any) => {
-        if (response.success && response.data) {
-          this.drivers.set(response.data);
-        }
+      next: (employees: EmployeeListDto[]) => {
+        this.drivers.set(employees);
       },
       error: (error: any) => console.error('Error:', error)
     });
@@ -371,7 +373,6 @@ export class DeliveryListAdminComponent implements OnInit {
   }
 
   formatDate(date: string | null | undefined): string {
-    if (!date) return '-';
-    return new Date(date).toLocaleDateString('th-TH');
+    return formatThaiDate(date);
   }
 }

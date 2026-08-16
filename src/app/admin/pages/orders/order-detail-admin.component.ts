@@ -7,6 +7,7 @@ import { NotificationService } from '../../../services/notification.service';
 import { ReportService } from '../../../services/report.service';
 import { OrderDetailDto } from '../../../services/openapi-client/model/orderDetailDto';
 import { UpdateOrderStatusDto } from '../../../services/openapi-client/model/updateOrderStatusDto';
+import { formatThaiDateTime } from '../../../utils/thai-date.helper';
 
 @Component({
   selector: 'app-order-detail-admin',
@@ -196,15 +197,7 @@ export class OrderDetailAdminComponent implements OnInit {
   }
 
   formatDate(dateString: string | null | undefined): string {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('th-TH', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
+    return formatThaiDateTime(dateString);
   }
 
   getOrderTimeline(): { label: string; date: string | null | undefined; completed: boolean }[] {

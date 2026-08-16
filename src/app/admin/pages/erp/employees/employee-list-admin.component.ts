@@ -10,6 +10,7 @@ import {
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
 import { environment } from '../../../../../environments/environment';
+import { formatThaiDate } from '../../../../utils/thai-date.helper';
 
 // The generated BranchesController actions return untyped IActionResult on the backend,
 // so openapi-generator does not emit a typed BranchDto / ApiResponseDto<IEnumerable<BranchDto>> model.
@@ -174,12 +175,12 @@ export class EmployeeListAdminComponent implements OnInit {
 
     // Employment type filter
     if (this.selectedEmploymentType()) {
-      filtered = filtered.filter(emp => emp.employmentType === this.selectedEmploymentType());
+      filtered = filtered.filter(emp => emp.employmentType?.toLowerCase() === this.selectedEmploymentType());
     }
 
     // Nationality filter
     if (this.selectedNationality()) {
-      filtered = filtered.filter(emp => emp.nationality === this.selectedNationality());
+      filtered = filtered.filter(emp => emp.nationality?.toLowerCase() === this.selectedNationality());
     }
 
     this.filteredEmployees.set(filtered);
@@ -258,12 +259,16 @@ export class EmployeeListAdminComponent implements OnInit {
           email: employee.email || '',
           phone: employee.phone || '',
           dateOfBirth: employee.dateOfBirth || '',
-          nationality: employee.nationality || 'thai',
+          // .toLowerCase(): some older records were saved with mismatched
+          // casing (e.g. "Thai"/"Monthly") before the backend started
+          // normalizing these fields, which made the <select> below fail to
+          // pre-select the current value (options are lowercase only).
+          nationality: employee.nationality?.toLowerCase() || 'thai',
           idCardNumber: employee.idCardNumber || '',
           passportNumber: employee.passportNumber || '',
           address: employee.address || '',
           position: employee.position || '',
-          employmentType: employee.employmentType || 'monthly',
+          employmentType: employee.employmentType?.toLowerCase() || 'monthly',
           salary: employee.salary,
           dailyRate: employee.dailyRate,
           bankAccountNumber: employee.bankAccountNumber || '',
@@ -271,7 +276,7 @@ export class EmployeeListAdminComponent implements OnInit {
           workPermitStartDate: employee.workPermitStartDate || '',
           workPermitEndDate: employee.workPermitEndDate || '',
           hasSocialSecurity: employee.hasSocialSecurity ?? true,
-          status: employee.status || 'active'
+          status: employee.status?.toLowerCase() || 'active'
         };
         this.showModal.set(true);
       },
@@ -489,17 +494,17 @@ export class EmployeeListAdminComponent implements OnInit {
   }
 
   getEmploymentTypeLabel(type: string | null | undefined): string {
-    const found = this.employmentTypes.find(t => t.value === type);
+    const found = this.employmentTypes.find(t => t.value === type?.toLowerCase());
     return found ? found.label : type || '-';
   }
 
   getNationalityLabel(nationality: string | null | undefined): string {
-    const found = this.nationalities.find(n => n.value === nationality);
+    const found = this.nationalities.find(n => n.value === nationality?.toLowerCase());
     return found ? found.label : nationality || '-';
   }
 
   getStatusLabel(status: string | null | undefined): string {
-    const found = this.statuses.find(s => s.value === status);
+    const found = this.statuses.find(s => s.value === status?.toLowerCase());
     return found ? found.label : status || '-';
   }
 
@@ -510,8 +515,7 @@ export class EmployeeListAdminComponent implements OnInit {
   }
 
   formatDate(date: string | null | undefined): string {
-    if (!date) return '-';
-    return new Date(date).toLocaleDateString('th-TH');
+    return formatThaiDate(date);
   }
 
   calculateAge(dateOfBirth: string | null | undefined): number | null {

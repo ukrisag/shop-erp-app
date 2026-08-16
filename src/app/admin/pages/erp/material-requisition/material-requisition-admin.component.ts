@@ -1,13 +1,26 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MaterialRequisitionsService, BranchesService, EmployeesService } from '../../../../services/openapi-client';
+import { MaterialRequisitionsService, BranchesService, EmployeesService, ProductsService } from '../../../../services/openapi-client';
 import {
   CreateMaterialRequisitionDto,
+  CreateMaterialRequisitionItemDto,
   UpdateMaterialRequisitionDto,
-  EmployeeListDto
+  EmployeeListDto,
+  ProductDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
+import { formatThaiDate } from '../../../../utils/thai-date.helper';
+
+// Editable row shape for the items UI - keeps productName/productSku around
+// purely for display (selected-product preview), separate from the
+// productId/quantity pair actually sent to the backend.
+interface RequisitionItemFormRow {
+  productId: number | null;
+  productName?: string;
+  productSku?: string;
+  quantity: number | null;
+}
 
 // The generated MaterialRequisitionsController/BranchesController actions return untyped
 // IActionResult on the backend, so openapi-generator does not emit typed
@@ -17,6 +30,7 @@ interface MaterialRequisitionItemDto {
   materialRequisitionId?: number;
   productId?: number;
   productName?: string | null;
+  productSku?: string | null;
   quantity?: number;
   unit?: string | null;
   issuedQuantity?: number | null;
@@ -60,7 +74,9 @@ export class MaterialRequisitionAdminComponent implements OnInit {
   filteredRequisitions = signal<MaterialRequisitionDto[]>([]);
   branches = signal<BranchDto[]>([]);
   employees = signal<EmployeeListDto[]>([]);
+  products = signal<ProductDto[]>([]);
   loading = signal(false);
+  loadingProducts = signal(false);
 
   searchTerm = signal('');
   selectedBranch = signal<string>('');
@@ -78,7 +94,8 @@ export class MaterialRequisitionAdminComponent implements OnInit {
     purpose: '',
     salesOrderId: null,
     status: 'pending',
-    notes: ''
+    notes: '',
+    items: [] as RequisitionItemFormRow[]
   };
 
   currentPage = signal(1);
@@ -97,6 +114,7 @@ export class MaterialRequisitionAdminComponent implements OnInit {
     private requisitionsService: MaterialRequisitionsService,
     private branchesService: BranchesService,
     private employeesService: EmployeesService,
+    private productsService: ProductsService,
     private notificationService: NotificationService
   ) {}
 
@@ -104,6 +122,23 @@ export class MaterialRequisitionAdminComponent implements OnInit {
     this.loadRequisitions();
     this.loadBranches();
     this.loadEmployees();
+    this.loadProducts();
+  }
+
+  loadProducts(): void {
+    this.loadingProducts.set(true);
+    this.productsService.productsGetProducts(1, 1000).subscribe({
+      next: (response: any) => {
+        if (response.success && response.data?.items) {
+          this.products.set(response.data.items.filter((p: ProductDto) => p.isActive));
+        }
+        this.loadingProducts.set(false);
+      },
+      error: (error: any) => {
+        console.error('Error loading products:', error);
+        this.loadingProducts.set(false);
+      }
+    });
   }
 
   loadRequisitions(): void {
@@ -135,11 +170,12 @@ export class MaterialRequisitionAdminComponent implements OnInit {
   }
 
   loadEmployees(): void {
+    // employeesGetAllEmployees() resolves directly to EmployeeListDto[],
+    // not an ApiResponse envelope - unwrapping response.data here always
+    // left this.employees empty, so the "ผู้เบิก" dropdown had no options.
     this.employeesService.employeesGetAllEmployees().subscribe({
-      next: (response: any) => {
-        if (response.success && response.data) {
-          this.employees.set(response.data);
-        }
+      next: (employees: EmployeeListDto[]) => {
+        this.employees.set(employees);
       },
       error: (error: any) => console.error('Error:', error)
     });
@@ -194,7 +230,8 @@ export class MaterialRequisitionAdminComponent implements OnInit {
       purpose: '',
       salesOrderId: null,
       status: 'pending',
-      notes: ''
+      notes: '',
+      items: []
     };
     this.showModal.set(true);
   }
@@ -209,9 +246,33 @@ export class MaterialRequisitionAdminComponent implements OnInit {
       purpose: requisition.purpose,
       salesOrderId: requisition.salesOrderId,
       status: requisition.status,
-      notes: requisition.notes
+      notes: requisition.notes,
+      // GetAllAsync() (which populates this list) already includes items with
+      // their product, so this doesn't need a separate detail fetch.
+      items: (requisition.items || []).map(i => ({
+        productId: i.productId ?? null,
+        productName: i.productName ?? undefined,
+        productSku: i.productSku ?? undefined,
+        quantity: i.quantity ?? null
+      }))
     };
     this.showModal.set(true);
+  }
+
+  addItem(): void {
+    this.requisitionForm.items.push({ productId: null, quantity: 1 });
+  }
+
+  removeItem(index: number): void {
+    this.requisitionForm.items.splice(index, 1);
+  }
+
+  onProductSelect(index: number, productId: number | string | null): void {
+    const id = productId != null ? Number(productId) : null;
+    this.requisitionForm.items[index].productId = id;
+    const product = this.products().find(p => p.id === id);
+    this.requisitionForm.items[index].productName = product?.name || '';
+    this.requisitionForm.items[index].productSku = product?.sku || '';
   }
 
   openDeleteModal(requisition: MaterialRequisitionDto): void {
@@ -227,18 +288,47 @@ export class MaterialRequisitionAdminComponent implements OnInit {
     }
   }
 
+  /** Both create and update reject the request with 400 ("ต้องมีรายการเบิก
+   *  อย่างน้อย 1 รายการ") unless `items` is non-empty - this form used to have
+   *  no items UI at all, so a material requisition could never actually be
+   *  created from here. Validate + build the items payload client-side. */
+  private buildItemsPayload(): CreateMaterialRequisitionItemDto[] | null {
+    const items = this.requisitionForm.items as RequisitionItemFormRow[];
+    if (!items || items.length === 0) {
+      this.notificationService.error('กรุณาเพิ่มรายการสินค้าอย่างน้อย 1 รายการ');
+      return null;
+    }
+    if (items.some(i => !i.productId || !i.quantity || i.quantity <= 0)) {
+      this.notificationService.error('กรุณาเลือกสินค้าและระบุจำนวนให้ครบทุกรายการ');
+      return null;
+    }
+    return items.map(i => ({ productId: i.productId!, quantity: i.quantity! }));
+  }
+
   create(): void {
-    const dto: CreateMaterialRequisitionDto = this.requisitionForm;
+    const items = this.buildItemsPayload();
+    if (!items) return;
+
+    const dto: CreateMaterialRequisitionDto = {
+      branchId: this.requisitionForm.branchId,
+      requestedBy: this.requisitionForm.requestedBy,
+      requisitionDate: this.requisitionForm.requisitionDate,
+      purpose: this.requisitionForm.purpose || undefined,
+      salesOrderId: this.requisitionForm.salesOrderId || undefined,
+      notes: this.requisitionForm.notes || undefined,
+      items
+    };
     this.requisitionsService.materialRequisitionsCreate(dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadRequisitions();
           this.closeModals();
+          this.notificationService.success('สร้างใบเบิกสำเร็จ');
         }
       },
       error: (error: any) => {
         console.error('Error:', error);
-        this.notificationService.error(error.error?.message || 'เกิดข้อผิดพลาด');
+        this.notificationService.error(error.error?.message || error.error?.errors?.Items?.[0] || 'เกิดข้อผิดพลาด');
       }
     });
   }
@@ -247,17 +337,27 @@ export class MaterialRequisitionAdminComponent implements OnInit {
     const req = this.selectedRequisition();
     if (!req) return;
 
-    const dto: UpdateMaterialRequisitionDto = this.requisitionForm;
+    const items = this.buildItemsPayload();
+    if (!items) return;
+
+    const dto: UpdateMaterialRequisitionDto = {
+      requisitionDate: this.requisitionForm.requisitionDate,
+      purpose: this.requisitionForm.purpose || undefined,
+      salesOrderId: this.requisitionForm.salesOrderId || undefined,
+      notes: this.requisitionForm.notes || undefined,
+      items
+    };
     this.requisitionsService.materialRequisitionsUpdate(req.id!, dto).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.loadRequisitions();
           this.closeModals();
+          this.notificationService.success('บันทึกสำเร็จ');
         }
       },
       error: (error: any) => {
         console.error('Error:', error);
-        this.notificationService.error(error.error?.message || 'เกิดข้อผิดพลาด');
+        this.notificationService.error(error.error?.message || error.error?.errors?.Items?.[0] || 'เกิดข้อผิดพลาด');
       }
     });
   }
@@ -313,7 +413,6 @@ export class MaterialRequisitionAdminComponent implements OnInit {
   }
 
   formatDate(date: string | null | undefined): string {
-    if (!date) return '-';
-    return new Date(date).toLocaleDateString('th-TH');
+    return formatThaiDate(date);
   }
 }

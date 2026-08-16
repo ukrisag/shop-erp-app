@@ -74,14 +74,24 @@
         </div>
 
         <!-- Year Filter -->
+        <!-- [ngModel]/[ngValue] instead of the old plain [value]/(change): a native
+             <select> bound with just [value] (no ngModel/formControl) sets the DOM
+             value once at initial render, before Angular has necessarily finished
+             inserting the @for-generated <option> elements - the browser then
+             silently falls back to visually showing the FIRST option (2567) even
+             though the underlying selectedYear signal was already correctly 2026/2569
+             the whole time (which is why the loaded data was right but the dropdown
+             looked wrong). ngModel's SelectControlValueAccessor handles this
+             option-registration timing correctly. -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">ปี</label>
           <select
-            [value]="selectedYear()"
-            (change)="onYearFilterChange(+$any($event.target).value)"
+            [ngModel]="selectedYear()"
+            (ngModelChange)="onYearFilterChange($event)"
+            name="payrollYearFilter"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
             @for (year of years; track year) {
-              <option [value]="year">{{ year + 543 }}</option>
+              <option [ngValue]="year">{{ year + 543 }}</option>
             }
           </select>
         </div>
@@ -90,11 +100,12 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">เดือน</label>
           <select
-            [value]="selectedMonth()"
-            (change)="onMonthFilterChange(+$any($event.target).value)"
+            [ngModel]="selectedMonth()"
+            (ngModelChange)="onMonthFilterChange($event)"
+            name="payrollMonthFilter"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
             @for (month of months; track month.value) {
-              <option [value]="month.value">{{ month.label }}</option>
+              <option [ngValue]="month.value">{{ month.label }}</option>
             }
           </select>
         </div>
@@ -327,9 +338,10 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">ปี <span class="text-red-500">*</span></label>
           <select
             [(ngModel)]="calculationForm.year"
+            (ngModelChange)="onCalculationPeriodChange()"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
             @for (year of years; track year) {
-              <option [value]="year">{{ year + 543 }}</option>
+              <option [ngValue]="year">{{ year + 543 }}</option>
             }
           </select>
         </div>
@@ -338,9 +350,10 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">เดือน <span class="text-red-500">*</span></label>
           <select
             [(ngModel)]="calculationForm.month"
+            (ngModelChange)="onCalculationPeriodChange()"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
             @for (month of months; track month.value) {
-              <option [value]="month.value">{{ month.label }}</option>
+              <option [ngValue]="month.value">{{ month.label }}</option>
             }
           </select>
         </div>
@@ -350,9 +363,16 @@
           <select
             [(ngModel)]="calculationForm.branchId"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-            <option [value]="null">ทั้งหมด</option>
+            <!-- [ngValue] not [value]: plain [value] on a native <select> option
+                 always comes back out as a STRING through ngModel, so
+                 calculationForm.branchId became "3" while employee.branchId from
+                 the API is the number 3 - `"3" === 3` is false, so the filter in
+                 getEmployeesForCalculation() matched nothing at all once any
+                 branch was picked (worked fine only on the unfiltered "ทั้งหมด"
+                 case). [ngValue] preserves the real number through the binding. -->
+            <option [ngValue]="null">ทั้งหมด</option>
             @for (branch of branches(); track branch.id) {
-              <option [value]="branch.id">{{ branch.name }}</option>
+              <option [ngValue]="branch.id">{{ branch.name }}</option>
             }
           </select>
         </div>
@@ -378,12 +398,12 @@
         </div>
 
         <div class="border border-gray-300 rounded-lg max-h-96 overflow-y-auto">
-          @if (employees().length === 0) {
+          @if (getEmployeesForCalculation().length === 0) {
             <div class="p-8 text-center text-gray-500">
               <p>ไม่พบพนักงานที่ใช้งานอยู่</p>
             </div>
           }
-          @for (employee of employees(); track employee.id) {
+          @for (employee of getEmployeesForCalculation(); track employee.id) {
             <div class="flex items-center p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
               <input
                 type="checkbox"

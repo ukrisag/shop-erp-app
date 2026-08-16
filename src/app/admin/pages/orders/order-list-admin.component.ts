@@ -6,6 +6,7 @@ import { AdminOrderService } from '../../services/admin-order.service';
 import { NotificationService } from '../../../services/notification.service';
 import { ReportService } from '../../../services/report.service';
 import { OrderDto } from '../../../services/openapi-client/model/orderDto';
+import { formatThaiDateTime } from '../../../utils/thai-date.helper';
 
 @Component({
   selector: 'app-order-list-admin',
@@ -171,15 +172,7 @@ export class OrderListAdminComponent implements OnInit {
   }
 
   formatDate(dateString: string | null | undefined): string {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('th-TH', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
+    return formatThaiDateTime(dateString);
   }
 
   getPageNumbers(): number[] {

@@ -13,6 +13,7 @@ import {
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
 import { environment } from '../../../../../environments/environment';
+import { formatThaiDate } from '../../../../utils/thai-date.helper';
 
 // The generated ErpSalesOrdersController/ErpSalesPaymentsController/BranchesController actions
 // return untyped IActionResult on the backend, so openapi-generator does not emit typed
@@ -652,8 +653,7 @@ export class SalesOrderAdminComponent implements OnInit {
   }
 
   formatDate(date: string | null | undefined): string {
-    if (!date) return '-';
-    return new Date(date).toLocaleDateString('th-TH');
+    return formatThaiDate(date);
   }
 
   // Item Management

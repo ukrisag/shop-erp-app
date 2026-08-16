@@ -6,6 +6,7 @@ import { AdminUserService } from '../../services/admin-user.service';
 import { NotificationService } from '../../../services/notification.service';
 import { ReportService } from '../../../services/report.service';
 import { UserDto } from '../../../services/openapi-client/model/userDto';
+import { formatThaiDate } from '../../../utils/thai-date.helper';
 
 @Component({
   selector: 'app-user-list-admin',
@@ -198,13 +199,7 @@ export class UserListAdminComponent implements OnInit {
   }
 
   formatDate(dateString: string | null | undefined): string {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    }).format(date);
+    return formatThaiDate(dateString);
   }
 
   getPageNumbers(): number[] {

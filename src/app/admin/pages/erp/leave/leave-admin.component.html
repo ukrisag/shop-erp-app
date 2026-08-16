@@ -296,7 +296,7 @@
         [(ngModel)]="balanceYear"
         (change)="loadLeaveBalances()"
         class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        @for (year of [2024, 2025, 2026, 2027]; track year) {
+        @for (year of balanceYears; track year) {
           <option [value]="year">{{ year }}</option>
         }
       </select>

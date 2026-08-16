@@ -16,6 +16,7 @@
     "e2e:ui": "playwright test --ui",
     "e2e:headed": "playwright test --headed",
     "e2e:report": "playwright show-report",
+    "seed:admin": "node scripts/admin-seed-mock-data.mjs",
     "api": "openapi-generator-cli generate -i http://localhost:5259/openapi/v1.json -g typescript-angular -o src/app/services/openapi-client"
   },
   "private": true,

@@ -6,6 +6,7 @@ import { AdminCouponService } from '../../services/admin-coupon.service';
 import { NotificationService } from '../../../services/notification.service';
 import { ReportService } from '../../../services/report.service';
 import { CouponDto } from '../../../services/openapi-client/model/couponDto';
+import { formatThaiDate } from '../../../utils/thai-date.helper';
 
 @Component({
   selector: 'app-coupon-list-admin',
@@ -219,13 +220,7 @@ export class CouponListAdminComponent implements OnInit {
   }
 
   formatDate(dateString: string | null | undefined): string {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('th-TH', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    return formatThaiDate(dateString);
   }
 
   formatPrice(price: number | null | undefined): string {

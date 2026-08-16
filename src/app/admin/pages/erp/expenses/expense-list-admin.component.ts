@@ -7,6 +7,7 @@ import {
   UpdateExpenseDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
+import { formatThaiDate } from '../../../../utils/thai-date.helper';
 
 // The generated ExpensesController/ExpenseCategoriesController/BranchesController actions
 // return untyped IActionResult on the backend, so openapi-generator does not emit typed
@@ -397,7 +398,6 @@ export class ExpenseListAdminComponent implements OnInit {
   }
 
   formatDate(date: string | null | undefined): string {
-    if (!date) return '-';
-    return new Date(date).toLocaleDateString('th-TH');
+    return formatThaiDate(date);
   }
 }

@@ -5,6 +5,7 @@ import { AdminOrderService } from '../../services/admin-order.service';
 import { AdminUserService } from '../../services/admin-user.service';
 import { ProductService } from '../../../services/product.service';
 import { OrderDto } from '../../../services/openapi-client';
+import { formatThaiDateTime } from '../../../utils/thai-date.helper';
 import { forkJoin } from 'rxjs';
 
 interface DashboardStat {
@@ -296,12 +297,6 @@ export class AdminDashboardComponent implements OnInit {
 
   formatDate(date?: string): string {
     if (!date) return '';
-    return new Date(date).toLocaleDateString('th-TH', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return formatThaiDateTime(date);
   }
 }

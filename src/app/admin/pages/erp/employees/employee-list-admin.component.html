@@ -152,10 +152,10 @@
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <span class="px-2 py-1 text-xs font-medium rounded-full"
-                    [class.bg-blue-100]="employee.employmentType === 'monthly'"
-                    [class.text-blue-800]="employee.employmentType === 'monthly'"
-                    [class.bg-green-100]="employee.employmentType === 'daily'"
-                    [class.text-green-800]="employee.employmentType === 'daily'">
+                    [class.bg-blue-100]="employee.employmentType?.toLowerCase() === 'monthly'"
+                    [class.text-blue-800]="employee.employmentType?.toLowerCase() === 'monthly'"
+                    [class.bg-green-100]="employee.employmentType?.toLowerCase() === 'daily'"
+                    [class.text-green-800]="employee.employmentType?.toLowerCase() === 'daily'">
                     {{ getEmploymentTypeLabel(employee.employmentType) }}
                   </span>
                 </td>
@@ -167,14 +167,14 @@
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
                   <span class="px-2 py-1 text-xs font-medium rounded-full"
-                    [class.bg-green-100]="employee.status === 'active'"
-                    [class.text-green-800]="employee.status === 'active'"
-                    [class.bg-yellow-100]="employee.status === 'on leave'"
-                    [class.text-yellow-800]="employee.status === 'on leave'"
-                    [class.bg-gray-100]="employee.status === 'resigned'"
-                    [class.text-gray-800]="employee.status === 'resigned'"
-                    [class.bg-red-100]="employee.status === 'terminated'"
-                    [class.text-red-800]="employee.status === 'terminated'">
+                    [class.bg-green-100]="employee.status?.toLowerCase() === 'active'"
+                    [class.text-green-800]="employee.status?.toLowerCase() === 'active'"
+                    [class.bg-yellow-100]="employee.status?.toLowerCase() === 'on leave'"
+                    [class.text-yellow-800]="employee.status?.toLowerCase() === 'on leave'"
+                    [class.bg-gray-100]="employee.status?.toLowerCase() === 'resigned'"
+                    [class.text-gray-800]="employee.status?.toLowerCase() === 'resigned'"
+                    [class.bg-red-100]="employee.status?.toLowerCase() === 'terminated'"
+                    [class.text-red-800]="employee.status?.toLowerCase() === 'terminated'">
                     {{ getStatusLabel(employee.status) }}
                   </span>
                 </td>
@@ -222,17 +222,17 @@
             </div>
             <div class="flex flex-col gap-1 items-end">
               <span class="px-2 py-1 text-xs font-medium rounded-full"
-                [class.bg-blue-100]="employee.employmentType === 'monthly'"
-                [class.text-blue-800]="employee.employmentType === 'monthly'"
-                [class.bg-green-100]="employee.employmentType === 'daily'"
-                [class.text-green-800]="employee.employmentType === 'daily'">
+                [class.bg-blue-100]="employee.employmentType?.toLowerCase() === 'monthly'"
+                [class.text-blue-800]="employee.employmentType?.toLowerCase() === 'monthly'"
+                [class.bg-green-100]="employee.employmentType?.toLowerCase() === 'daily'"
+                [class.text-green-800]="employee.employmentType?.toLowerCase() === 'daily'">
                 {{ getEmploymentTypeLabel(employee.employmentType) }}
               </span>
               <span class="px-2 py-1 text-xs font-medium rounded-full"
-                [class.bg-green-100]="employee.status === 'active'"
-                [class.text-green-800]="employee.status === 'active'"
-                [class.bg-yellow-100]="employee.status === 'on leave'"
-                [class.text-yellow-800]="employee.status === 'on leave'">
+                [class.bg-green-100]="employee.status?.toLowerCase() === 'active'"
+                [class.text-green-800]="employee.status?.toLowerCase() === 'active'"
+                [class.bg-yellow-100]="employee.status?.toLowerCase() === 'on leave'"
+                [class.text-yellow-800]="employee.status?.toLowerCase() === 'on leave'">
                 {{ getStatusLabel(employee.status) }}
               </span>
             </div>

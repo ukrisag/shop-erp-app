@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { LeaveService } from '../../../../services/openapi-client/api/leave.service';
 import { EmployeesService } from '../../../../services/openapi-client/api/employees.service';
 import { NotificationService } from '../../../../services/notification.service';
+import { formatThaiDate } from '../../../../utils/thai-date.helper';
 import {
   LeaveRecordCreateDto,
   LeaveRecordUpdateDto,
@@ -93,6 +94,15 @@ export class LeaveAdminComponent implements OnInit {
 
   // Balance filter
   balanceYear = new Date().getFullYear();
+  // Generated once from today's date (current year - 2 through current year + 1)
+  // instead of a hardcoded list, so the dropdown never needs a code change to
+  // stay current - it was previously a literal [2024, 2025, 2026, 2027].
+  balanceYears: number[] = (() => {
+    const currentYear = new Date().getFullYear();
+    const years: number[] = [];
+    for (let y = currentYear - 2; y <= currentYear + 1; y++) years.push(y);
+    return years;
+  })();
 
   // Computed values
   filteredRecords = computed(() => {
@@ -140,8 +150,12 @@ export class LeaveAdminComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadEmployees();
-    this.loadLeaveRecords();
+    // setDefaultDates() must run BEFORE loadLeaveRecords(): that call reads
+    // filterForm.startDate/endDate and silently no-ops when they're unset, so
+    // calling it first left the records table permanently empty on page load
+    // until the user manually touched a filter.
     this.setDefaultDates();
+    this.loadLeaveRecords();
   }
 
   setDefaultDates(): void {
@@ -165,6 +179,20 @@ export class LeaveAdminComponent implements OnInit {
     });
   }
 
+  /** The backend nests employee identity under `record.employee.{employeeCode,
+   *  firstNameTh, lastNameTh}` instead of the flat `employeeCode`/`employeeNameTh`
+   *  fields this component (and its template) were written to expect - so every
+   *  row silently rendered a blank employee column. Flatten it here so the rest
+   *  of the component doesn't need to change. */
+  private mapEmployeeFields(records: any[]): LeaveRecordDto[] {
+    return records.map(r => ({
+      ...r,
+      employeeCode: r.employeeCode ?? r.employee?.employeeCode,
+      employeeNameTh: r.employeeNameTh ?? [r.employee?.firstNameTh, r.employee?.lastNameTh].filter(Boolean).join(' '),
+      employeeNameEn: r.employeeNameEn ?? ([r.employee?.firstNameEn, r.employee?.lastNameEn].filter(Boolean).join(' ') || undefined)
+    }));
+  }
+
   loadLeaveRecords(): void {
     this.loading.set(true);
 
@@ -174,7 +202,7 @@ export class LeaveAdminComponent implements OnInit {
         this.filterForm.endDate
       ).subscribe({
         next: (records: any[]) => {
-          this.leaveRecords.set(records);
+          this.leaveRecords.set(this.mapEmployeeFields(records));
           this.loading.set(false);
         },
         error: (error) => {
@@ -190,7 +218,7 @@ export class LeaveAdminComponent implements OnInit {
     this.loading.set(true);
     this.leaveService.leaveGetPendingLeaveRecords().subscribe({
       next: (records: any[]) => {
-        this.pendingRecords.set(records);
+        this.pendingRecords.set(this.mapEmployeeFields(records));
         this.loading.set(false);
       },
       error: (error) => {
@@ -498,12 +526,6 @@ export class LeaveAdminComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('th-TH', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    return formatThaiDate(dateString);
   }
 }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { OvertimeService } from '../../../../services/openapi-client/api/overtime.service';
 import { EmployeesService } from '../../../../services/openapi-client/api/employees.service';
 import { NotificationService } from '../../../../services/notification.service';
+import { formatThaiDate } from '../../../../utils/thai-date.helper';
 import {
   OvertimeRecordCreateDto,
   OvertimeRecordUpdateDto,
@@ -119,8 +120,12 @@ export class OvertimeAdminComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadEmployees();
-    this.loadOvertimeRecords();
+    // setDefaultDates() must run BEFORE loadOvertimeRecords(): that call reads
+    // filterForm.startDate/endDate and silently no-ops when they're unset, so
+    // calling it first left the records table permanently empty on page load
+    // until the user manually touched a filter.
     this.setDefaultDates();
+    this.loadOvertimeRecords();
   }
 
   setDefaultDates(): void {
@@ -144,6 +149,20 @@ export class OvertimeAdminComponent implements OnInit {
     });
   }
 
+  /** The backend nests employee identity under `record.employee.{employeeCode,
+   *  firstNameTh, lastNameTh}` instead of the flat `employeeCode`/`employeeNameTh`
+   *  fields this component (and its template) were written to expect - so every
+   *  row silently rendered a blank employee column. Flatten it here so the rest
+   *  of the component doesn't need to change. */
+  private mapEmployeeFields(records: any[]): OvertimeRecordDto[] {
+    return records.map(r => ({
+      ...r,
+      employeeCode: r.employeeCode ?? r.employee?.employeeCode,
+      employeeNameTh: r.employeeNameTh ?? [r.employee?.firstNameTh, r.employee?.lastNameTh].filter(Boolean).join(' '),
+      employeeNameEn: r.employeeNameEn ?? ([r.employee?.firstNameEn, r.employee?.lastNameEn].filter(Boolean).join(' ') || undefined)
+    }));
+  }
+
   loadOvertimeRecords(): void {
     this.loading.set(true);
 
@@ -153,7 +172,7 @@ export class OvertimeAdminComponent implements OnInit {
         this.filterForm.endDate
       ).subscribe({
         next: (records: any[]) => {
-          this.overtimeRecords.set(records);
+          this.overtimeRecords.set(this.mapEmployeeFields(records));
           this.loading.set(false);
         },
         error: (error) => {
@@ -169,7 +188,7 @@ export class OvertimeAdminComponent implements OnInit {
     this.loading.set(true);
     this.overtimeService.overtimeGetPendingOvertimeRecords().subscribe({
       next: (records: any[]) => {
-        this.pendingRecords.set(records);
+        this.pendingRecords.set(this.mapEmployeeFields(records));
         this.loading.set(false);
       },
       error: (error) => {
@@ -438,13 +457,7 @@ export class OvertimeAdminComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('th-TH', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    return formatThaiDate(dateString);
   }
 
   formatTime(timeString: string): string {

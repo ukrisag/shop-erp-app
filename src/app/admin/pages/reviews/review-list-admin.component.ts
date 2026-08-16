@@ -5,6 +5,7 @@ import { AdminReviewService } from '../../services/admin-review.service';
 import { NotificationService } from '../../../services/notification.service';
 import { ReportService } from '../../../services/report.service';
 import { ReviewDto } from '../../../services/openapi-client/model/reviewDto';
+import { formatThaiDateTime } from '../../../utils/thai-date.helper';
 
 @Component({
   selector: 'app-review-list-admin',
@@ -492,15 +493,7 @@ export class ReviewListAdminComponent implements OnInit {
   }
 
   formatDate(dateString: string | null | undefined): string {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
+    return formatThaiDateTime(dateString);
   }
 
   // Report downloads

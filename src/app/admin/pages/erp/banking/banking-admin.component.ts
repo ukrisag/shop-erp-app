@@ -10,6 +10,7 @@ import {
   CreateBankTransactionDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
+import { formatThaiDate } from '../../../../utils/thai-date.helper';
 
 // The generated BranchesController actions return untyped IActionResult on the backend,
 // so openapi-generator does not emit a typed BranchDto model. Define the shape locally.
@@ -527,8 +528,7 @@ export class BankingAdminComponent implements OnInit {
   }
 
   formatDate(date: string | null | undefined): string {
-    if (!date) return '-';
-    return new Date(date).toLocaleDateString('th-TH');
+    return formatThaiDate(date);
   }
 
   isDebit(type: string | null | undefined): boolean {

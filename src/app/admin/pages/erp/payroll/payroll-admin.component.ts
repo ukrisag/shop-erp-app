@@ -17,6 +17,7 @@ import {
   EmployeeListDto
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
+import { formatThaiDate } from '../../../../utils/thai-date.helper';
 
 // The generated BranchesController actions return untyped IActionResult on the backend,
 // so openapi-generator does not emit a typed BranchDto model. Define the shape locally.
@@ -40,6 +41,11 @@ export class PayrollAdminComponent implements OnInit {
   employees = signal<EmployeeListDto[]>([]);
   branches = signal<BranchDto[]>([]);
   loading = signal(false);
+  // Employee IDs that already have a salary record for calculationForm's
+  // current year/month - used to hide them from the "เลือกพนักงาน" calculate
+  // list, since selecting one just fails calculation with a confusing error
+  // for anyone whose existing record isn't in "draft" status.
+  existingRecordEmployeeIds = signal<Set<number>>(new Set());
 
   // Active tab
   activeTab = signal<'records' | 'calculate'>('records');
@@ -157,12 +163,21 @@ export class PayrollAdminComponent implements OnInit {
     });
   }
 
-  loadSalaryRecordsByPeriod(year: number, month: number): void {
+  /** `preserveCurrentPage`: applyFilters() normally resets to page 1 on every
+   *  call, which is correct when the user actually changes a filter but wrong
+   *  when this is just a data refresh after approving/marking a single record
+   *  paid (used to bounce the admin back to page 1 every time, even from
+   *  page 3+). Pass true from those "just refresh, same view" call sites. */
+  loadSalaryRecordsByPeriod(year: number, month: number, preserveCurrentPage = false): void {
     this.loading.set(true);
+    const pageToRestore = this.currentPage();
     this.payrollService.payrollGetSalaryRecordsByPeriod(year, month).subscribe({
       next: (records: SalaryRecordDto[]) => {
         this.salaryRecords.set(records);
         this.applyFilters();
+        if (preserveCurrentPage) {
+          this.currentPage.set(Math.min(pageToRestore, this.getTotalPages() || 1));
+        }
         this.loading.set(false);
       },
       error: (error: any) => {
@@ -256,6 +271,23 @@ export class PayrollAdminComponent implements OnInit {
 
   switchTab(tab: 'records' | 'calculate'): void {
     this.activeTab.set(tab);
+    if (tab === 'calculate') {
+      this.onCalculationPeriodChange();
+    }
+  }
+
+  /** Refetches which employees already have a salary record for
+   *  calculationForm.year/month, so getEmployeesForCalculation() can hide
+   *  them. Called on tab switch and whenever the year/month select changes. */
+  onCalculationPeriodChange(): void {
+    this.payrollService.payrollGetSalaryRecordsByPeriod(this.calculationForm.year, this.calculationForm.month).subscribe({
+      next: (records: SalaryRecordDto[]) => {
+        this.existingRecordEmployeeIds.set(new Set(records.map(r => r.employeeId!).filter(id => id != null)));
+      },
+      error: (error: any) => {
+        console.error('Error checking existing salary records for period:', error);
+      }
+    });
   }
 
   // Calculate Payroll
@@ -294,6 +326,13 @@ export class PayrollAdminComponent implements OnInit {
         this.loading.set(false);
         // Reload salary records to show new calculations
         this.loadSalaryRecordsByPeriod(this.calculationForm.year, this.calculationForm.month);
+        // Clear the checkbox selection and refresh the exclusion list so the
+        // employees just calculated no longer show up as selectable - both of
+        // these used to linger indefinitely (selection never got cleared, and
+        // nothing ever re-checked which employees already had a record) so
+        // reopening this tab kept offering the same already-processed people.
+        this.calculationForm.employeeIds = [];
+        this.onCalculationPeriodChange();
       },
       error: (error: any) => {
         console.error('Error calculating payroll:', error);
@@ -415,7 +454,7 @@ export class PayrollAdminComponent implements OnInit {
     this.payrollService.payrollDeleteSalaryRecord(record.id!).subscribe({
       next: () => {
         this.notificationService.success('ลบรายการเงินเดือนสำเร็จ');
-        this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth());
+        this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth(), true);
         this.closeModals();
       },
       error: (error: any) => {
@@ -429,7 +468,7 @@ export class PayrollAdminComponent implements OnInit {
     this.payrollService.payrollApproveSalaryRecord(record.id!).subscribe({
       next: (updated: SalaryRecordDto) => {
         this.notificationService.success('อนุมัติรายการเงินเดือนสำเร็จ');
-        this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth());
+        this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth(), true);
       },
       error: (error: any) => {
         console.error('Error approving salary record:', error);
@@ -442,7 +481,7 @@ export class PayrollAdminComponent implements OnInit {
     this.payrollService.payrollMarkSalaryRecordAsPaid(record.id!).subscribe({
       next: (updated: SalaryRecordDto) => {
         this.notificationService.success('ทำเครื่องหมายจ่ายเงินแล้วสำเร็จ');
-        this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth());
+        this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth(), true);
       },
       error: (error: any) => {
         console.error('Error marking salary record as paid:', error);
@@ -484,8 +523,24 @@ export class PayrollAdminComponent implements OnInit {
     }
   }
 
+  /** The "สาขา (ถ้าต้องการกรอง)" select only fed calculationForm.branchId into
+   *  the eventual API payload - the employee checkbox list below it rendered
+   *  `employees()` directly and never actually filtered by it, so picking a
+   *  branch never narrowed down who showed up. A plain method (not a computed
+   *  signal, since calculationForm.branchId is a mutated plain property, not
+   *  a signal) so it re-evaluates on every change detection pass, i.e. right
+   *  after the branch <select>'s ngModel updates. */
+  getEmployeesForCalculation(): EmployeeListDto[] {
+    const existing = this.existingRecordEmployeeIds();
+    let list = this.employees().filter(e => !existing.has(e.id!));
+    if (this.calculationForm.branchId) {
+      list = list.filter(e => e.branchId === this.calculationForm.branchId);
+    }
+    return list;
+  }
+
   selectAllEmployees(): void {
-    this.calculationForm.employeeIds = this.employees().map(e => e.id!);
+    this.calculationForm.employeeIds = this.getEmployeesForCalculation().map(e => e.id!);
   }
 
   deselectAllEmployees(): void {
@@ -571,8 +626,7 @@ export class PayrollAdminComponent implements OnInit {
   }
 
   formatDate(date: string | null | undefined): string {
-    if (!date) return '-';
-    return new Date(date).toLocaleDateString('th-TH');
+    return formatThaiDate(date);
   }
 
   formatCurrency(amount: number | null | undefined): string {
