@@ -1,0 +1,53 @@
+/* Phone Allowance Admin Component Styles */
+
+/* Custom scrollbar for modal */
+.max-h-\[90vh\]::-webkit-scrollbar {
+  width: 8px;
+}
+
+.max-h-\[90vh\]::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.max-h-\[90vh\]::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.max-h-\[90vh\]::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Smooth transitions for interactive elements */
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Table hover effects */
+tbody tr {
+  transition: background-color 0.15s ease-in-out;
+}
+
+/* Status badge animations */
+.rounded-full {
+  transition: transform 0.2s ease-in-out;
+}
+
+.rounded-full:hover {
+  transform: scale(1.05);
+}
+
+/* Progress bar animation */
+.h-2 {
+  transition: width 0.3s ease-in-out;
+}
+
+/* Input focus effects */
+input:focus,
+select:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Loading skeleton animation is handled by the component itself */

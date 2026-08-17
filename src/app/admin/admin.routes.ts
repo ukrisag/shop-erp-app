@@ -190,6 +190,13 @@ export const ADMIN_ROUTES: Routes = [
         canActivate: [permissionGuard],
         data: { permission: Permission.VIEW_ERP }
       },
+      // ERP - Phone Allowance
+      {
+        path: 'erp/phone-allowance',
+        loadComponent: () => import('./pages/erp/phone-allowance/phone-allowance-admin.component').then(m => m.PhoneAllowanceAdminComponent),
+        canActivate: [permissionGuard],
+        data: { permission: Permission.VIEW_ERP }
+      },
       // ERP - Sales Orders (ใบเสนอราคา/ใบแจ้งหนี้ ERP สำหรับลูกค้าทั่วไป B2B ขายส่ง ไม่ใช่คำสั่งซื้อออนไลน์)
       {
         path: 'erp/sales',

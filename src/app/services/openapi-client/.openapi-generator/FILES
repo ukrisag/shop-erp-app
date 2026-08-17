@@ -36,6 +36,7 @@ api/passportFee.service.ts
 api/payroll.service.ts
 api/payrollPeriods.service.ts
 api/payrollRecords.service.ts
+api/phoneAllowance.service.ts
 api/products.service.ts
 api/reports.service.ts
 api/reviews.service.ts
@@ -182,6 +183,10 @@ model/payrollCalculationRequestDto.ts
 model/payrollCalculationResponseDto.ts
 model/payrollPeriodDto.ts
 model/payrollRecordDto.ts
+model/phoneAllowanceApprovalDto.ts
+model/phoneAllowanceCreateDto.ts
+model/phoneAllowanceDto.ts
+model/phoneAllowanceUpdateDto.ts
 model/problemDetails.ts
 model/productDetailDto.ts
 model/productDto.ts

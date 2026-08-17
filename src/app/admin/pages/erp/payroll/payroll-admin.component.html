@@ -173,16 +173,23 @@
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">รหัส</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">พนักงาน</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">งวด</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">เงินเดือน</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">OT</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">รายได้รวม</th>
                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  หักรวม
-                  <span class="text-xs font-normal text-gray-500 block">
-                    (ลา/เบิก/อื่นๆ)
-                  </span>
+                  <div class="flex flex-col items-end">
+                    <span class="text-blue-700">รายได้</span>
+                    <span class="text-xs font-normal text-gray-500">(เดือน/OT/อื่นๆ)</span>
+                  </div>
                 </th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">สุทธิ</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                  <div class="flex flex-col items-end">
+                    <span class="text-red-700">รายหัก</span>
+                    <span class="text-xs font-normal text-gray-500">(ลา/เบิก/อื่นๆ)</span>
+                  </div>
+                </th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                  <div class="flex flex-col items-end">
+                    <span class="text-green-700">สุทธิ</span>
+                  </div>
+                </th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">สถานะ</th>
                 <th class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">จัดการ</th>
               </tr>
@@ -190,7 +197,7 @@
             <tbody class="bg-white divide-y divide-gray-200">
               @if (getPaginatedRecords().length === 0) {
                 <tr>
-                  <td colspan="10" class="px-6 py-12 text-center text-gray-500">
+                  <td colspan="8" class="px-6 py-12 text-center text-gray-500">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
@@ -210,43 +217,62 @@
                   <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
                     {{ getMonthLabel(record.month) }} {{ record.year ? (record.year + 543) : '-' }}
                   </td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">
-                    {{ formatCurrency(record.baseSalary) }}
-                  </td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">
-                    {{ formatCurrency(record.overtimeAmount) }}
-                  </td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-blue-700 text-right">
-                    {{ formatCurrency(record.totalEarnings) }}
-                  </td>
-                  <td class="px-4 py-3 text-sm font-medium text-red-700 text-right">
+                  <!-- Earnings Column -->
+                  <td class="px-4 py-3 text-sm text-right">
                     <div class="flex flex-col items-end gap-1">
-                      <span class="font-bold">{{ formatCurrency(record.totalDeductions) }}</span>
-                      @if (record.leaveDeduction && record.leaveDeduction > 0) {
-                        <span class="text-xs text-gray-600">
-                          ลา: {{ formatCurrency(record.leaveDeduction) }}
-                        </span>
-                      }
-                      @if (record.advancePaymentCurrent && record.advancePaymentCurrent > 0) {
-                        <span class="text-xs text-gray-600">
-                          เบิก: {{ formatCurrency(record.advancePaymentCurrent) }}
-                        </span>
-                      }
-                      @if (record.socialSecurityDeduction && record.socialSecurityDeduction > 0) {
-                        <span class="text-xs text-gray-600">
-                          ปกส: {{ formatCurrency(record.socialSecurityDeduction) }}
-                        </span>
-                      }
-                      @if (record.passportFeeDeduction && record.passportFeeDeduction > 0) {
-                        <span class="text-xs text-gray-600">
-                          Passport: {{ formatCurrency(record.passportFeeDeduction) }}
-                        </span>
-                      }
+                      <span class="font-bold text-blue-700">{{ formatCurrency(record.totalEarnings) }}</span>
+                      <div class="flex flex-col items-end gap-0.5">
+                        @if (record.baseSalary && record.baseSalary > 0) {
+                          <span class="text-xs text-gray-600">
+                            เดือน: {{ formatCurrency(record.baseSalary) }}
+                          </span>
+                        }
+                        @if (record.overtimeAmount && record.overtimeAmount > 0) {
+                          <span class="text-xs text-gray-600">
+                            OT: {{ formatCurrency(record.overtimeAmount) }}
+                          </span>
+                        }
+                        @if (record.phoneAllowance && record.phoneAllowance > 0) {
+                          <span class="text-xs text-gray-600">
+                            โทรศัพท์: {{ formatCurrency(record.phoneAllowance) }}
+                          </span>
+                        }
+                      </div>
                     </div>
                   </td>
+                  <!-- Deductions Column -->
+                  <td class="px-4 py-3 text-sm text-right">
+                    <div class="flex flex-col items-end gap-1">
+                      <span class="font-bold text-red-700">{{ formatCurrency(record.totalDeductions) }}</span>
+                      <div class="flex flex-col items-end gap-0.5">
+                        @if (record.leaveDeduction && record.leaveDeduction > 0) {
+                          <span class="text-xs text-gray-600">
+                            ลา: {{ formatCurrency(record.leaveDeduction) }}
+                          </span>
+                        }
+                        @if (record.advancePaymentCurrent && record.advancePaymentCurrent > 0) {
+                          <span class="text-xs text-gray-600">
+                            เบิก: {{ formatCurrency(record.advancePaymentCurrent) }}
+                          </span>
+                        }
+                        @if (record.socialSecurityDeduction && record.socialSecurityDeduction > 0) {
+                          <span class="text-xs text-gray-600">
+                            ปกส: {{ formatCurrency(record.socialSecurityDeduction) }}
+                          </span>
+                        }
+                        @if (record.passportFeeDeduction && record.passportFeeDeduction > 0) {
+                          <span class="text-xs text-gray-600">
+                            Passport: {{ formatCurrency(record.passportFeeDeduction) }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                  <!-- Net Salary Column -->
                   <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-700 text-right">
                     {{ formatCurrency(record.netSalary) }}
                   </td>
+                  <!-- Status Column -->
                   <td class="px-4 py-3 whitespace-nowrap">
                     <span class="px-2 py-1 text-xs font-medium rounded-full"
                       [class.bg-yellow-100]="record.status === 'draft'"
@@ -258,6 +284,7 @@
                       {{ getStatusLabel(record.status) }}
                     </span>
                   </td>
+                  <!-- Actions Column -->
                   <td class="px-4 py-3 whitespace-nowrap text-center text-sm font-medium">
                     <button
                       (click)="downloadPaySlip(record)"
