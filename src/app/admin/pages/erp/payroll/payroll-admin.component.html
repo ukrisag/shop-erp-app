@@ -176,7 +176,12 @@
                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">เงินเดือน</th>
                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">OT</th>
                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">รายได้รวม</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">หักรวม</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
+                  หักรวม
+                  <span class="text-xs font-normal text-gray-500 block">
+                    (ลา/เบิก/อื่นๆ)
+                  </span>
+                </th>
                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">สุทธิ</th>
                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">สถานะ</th>
                 <th class="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">จัดการ</th>
@@ -214,8 +219,30 @@
                   <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-blue-700 text-right">
                     {{ formatCurrency(record.totalEarnings) }}
                   </td>
-                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-red-700 text-right">
-                    {{ formatCurrency(record.totalDeductions) }}
+                  <td class="px-4 py-3 text-sm font-medium text-red-700 text-right">
+                    <div class="flex flex-col items-end gap-1">
+                      <span class="font-bold">{{ formatCurrency(record.totalDeductions) }}</span>
+                      @if (record.leaveDeduction && record.leaveDeduction > 0) {
+                        <span class="text-xs text-gray-600">
+                          ลา: {{ formatCurrency(record.leaveDeduction) }}
+                        </span>
+                      }
+                      @if (record.advancePaymentCurrent && record.advancePaymentCurrent > 0) {
+                        <span class="text-xs text-gray-600">
+                          เบิก: {{ formatCurrency(record.advancePaymentCurrent) }}
+                        </span>
+                      }
+                      @if (record.socialSecurityDeduction && record.socialSecurityDeduction > 0) {
+                        <span class="text-xs text-gray-600">
+                          ปกส: {{ formatCurrency(record.socialSecurityDeduction) }}
+                        </span>
+                      }
+                      @if (record.passportFeeDeduction && record.passportFeeDeduction > 0) {
+                        <span class="text-xs text-gray-600">
+                          Passport: {{ formatCurrency(record.passportFeeDeduction) }}
+                        </span>
+                      }
+                    </div>
                   </td>
                   <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-700 text-right">
                     {{ formatCurrency(record.netSalary) }}

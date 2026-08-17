@@ -174,7 +174,7 @@ export class LeaveAdminComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading employees:', error);
-        this.notificationService.error('เกิดข้อผิดพลาดในการโหลดข้อมูลพนักงาน');
+        this.notificationService.error(error.error?.message || 'Failed to load employees');
       }
     });
   }
@@ -207,7 +207,7 @@ export class LeaveAdminComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error loading leave records:', error);
-          this.notificationService.error('เกิดข้อผิดพลาดในการโหลดข้อมูลการลา');
+          this.notificationService.error(error.error?.message || 'Failed to load leave records');
           this.loading.set(false);
         }
       });
@@ -223,7 +223,7 @@ export class LeaveAdminComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading pending records:', error);
-        this.notificationService.error('เกิดข้อผิดพลาดในการโหลดรายการรออนุมัติ');
+        this.notificationService.error(error.error?.message || 'Failed to load pending records');
         this.loading.set(false);
       }
     });
@@ -244,7 +244,7 @@ export class LeaveAdminComponent implements OnInit {
       },
       (error) => {
         console.error('Error loading balances:', error);
-        this.notificationService.error('เกิดข้อผิดพลาดในการโหลดยอดวันลา');
+        this.notificationService.error(error.error?.message || 'Failed to load leave balances');
         this.loading.set(false);
       }
     );
@@ -290,7 +290,7 @@ export class LeaveAdminComponent implements OnInit {
 
   openEditModal(record: LeaveRecordDto): void {
     if (record.status !== 'pending') {
-      this.notificationService.error('สามารถแก้ไขได้เฉพาะรายการที่รออนุมัติเท่านั้น');
+      this.notificationService.error('Can only edit pending records');
       return;
     }
 
@@ -336,14 +336,14 @@ export class LeaveAdminComponent implements OnInit {
       };
 
       this.leaveService.leaveUpdateLeaveRecord(this.selectedRecord()!.id, updateDto).subscribe({
-        next: () => {
-          this.notificationService.success('แก้ไขข้อมูลการลาสำเร็จ');
-          this.loadLeaveRecords();
+        next: (response: any) => {
+          this.notificationService.success(response?.message || 'Successfully updated leave record');
           this.closeModal();
+          this.loadLeaveRecords();
         },
         error: (error) => {
           console.error('Error updating leave:', error);
-          this.notificationService.error('เกิดข้อผิดพลาดในการแก้ไขข้อมูล');
+          this.notificationService.error(error.error?.message || 'Failed to update leave record');
           this.loading.set(false);
         }
       });
@@ -358,14 +358,14 @@ export class LeaveAdminComponent implements OnInit {
       };
 
       this.leaveService.leaveCreateLeaveRecord(createDto).subscribe({
-        next: () => {
-          this.notificationService.success('บันทึกข้อมูลการลาสำเร็จ');
-          this.loadLeaveRecords();
+        next: (response: any) => {
+          this.notificationService.success(response?.message || 'Successfully created leave record');
           this.closeModal();
+          this.loadLeaveRecords();
         },
         error: (error) => {
           console.error('Error creating leave:', error);
-          this.notificationService.error('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+          this.notificationService.error(error.error?.message || 'Failed to create leave record');
           this.loading.set(false);
         }
       });
@@ -374,19 +374,19 @@ export class LeaveAdminComponent implements OnInit {
 
   validateForm(): boolean {
     if (!this.leaveForm.employeeId && !this.isEditMode()) {
-      this.notificationService.error('กรุณาเลือกพนักงาน');
+      this.notificationService.error('Please select an employee');
       return false;
     }
     if (!this.leaveForm.leaveType) {
-      this.notificationService.error('กรุณาเลือกประเภทการลา');
+      this.notificationService.error('Please select leave type');
       return false;
     }
     if (!this.leaveForm.startDate || !this.leaveForm.endDate) {
-      this.notificationService.error('กรุณาระบุวันที่เริ่มต้นและสิ้นสุด');
+      this.notificationService.error('Please specify start and end dates');
       return false;
     }
     if (new Date(this.leaveForm.endDate) < new Date(this.leaveForm.startDate)) {
-      this.notificationService.error('วันที่สิ้นสุดต้องมากกว่าหรือเท่ากับวันที่เริ่มต้น');
+      this.notificationService.error('End date must be greater than or equal to start date');
       return false;
     }
     return true;
@@ -400,12 +400,12 @@ export class LeaveAdminComponent implements OnInit {
 
   approveRecord(record: LeaveRecordDto): void {
     this.notificationService.confirm(
-      'ต้องการอนุมัติการลานี้ใช่หรือไม่?',
+      'Do you want to approve this leave record?',
       () => {
         this.loading.set(true);
         this.leaveService.leaveApproveLeaveRecord(record.id).subscribe({
-          next: () => {
-            this.notificationService.success('อนุมัติการลาสำเร็จ');
+          next: (response: any) => {
+            this.notificationService.success(response?.message || 'Successfully approved leave record');
             this.loadLeaveRecords();
             if (this.activeTab() === 'pending') {
               this.loadPendingRecords();
@@ -413,21 +413,21 @@ export class LeaveAdminComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error approving leave:', error);
-            this.notificationService.error('เกิดข้อผิดพลาดในการอนุมัติ');
+            this.notificationService.error(error.error?.message || 'Failed to approve leave record');
             this.loading.set(false);
           }
         });
       },
       undefined,
-      'อนุมัติ',
-      'ยกเลิก',
+      'Approve',
+      'Cancel',
       'info'
     );
   }
 
   rejectRecord(): void {
     if (!this.approvalForm.reason) {
-      this.notificationService.error('กรุณาระบุเหตุผลในการปฏิเสธ');
+      this.notificationService.error('Please specify reason for rejection');
       return;
     }
 
@@ -439,8 +439,8 @@ export class LeaveAdminComponent implements OnInit {
 
     this.loading.set(true);
     this.leaveService.leaveRejectLeaveRecord(this.selectedRecord()!.id, rejectDto).subscribe({
-      next: () => {
-        this.notificationService.success('ปฏิเสธการลาสำเร็จ');
+      next: (response: any) => {
+        this.notificationService.success(response?.message || 'Successfully rejected leave record');
         this.closeModal();
         this.loadLeaveRecords();
         if (this.activeTab() === 'pending') {
@@ -449,7 +449,7 @@ export class LeaveAdminComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error rejecting leave:', error);
-        this.notificationService.error('เกิดข้อผิดพลาดในการปฏิเสธ');
+        this.notificationService.error(error.error?.message || 'Failed to reject leave record');
         this.loading.set(false);
       }
     });
@@ -457,17 +457,17 @@ export class LeaveAdminComponent implements OnInit {
 
   deleteRecord(record: LeaveRecordDto): void {
     if (record.status === 'approved') {
-      this.notificationService.error('ไม่สามารถลบรายการที่อนุมัติแล้ว');
+      this.notificationService.error('Cannot delete approved records');
       return;
     }
 
     this.notificationService.confirm(
-      'ต้องการลบรายการลานี้ใช่หรือไม่?',
+      'Do you want to delete this leave record?',
       () => {
         this.loading.set(true);
         this.leaveService.leaveDeleteLeaveRecord(record.id).subscribe({
-          next: () => {
-            this.notificationService.success('ลบรายการลาสำเร็จ');
+          next: (response: any) => {
+            this.notificationService.success(response?.message || 'Successfully deleted leave record');
             this.loadLeaveRecords();
             if (this.activeTab() === 'pending') {
               this.loadPendingRecords();
@@ -475,14 +475,14 @@ export class LeaveAdminComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error deleting leave:', error);
-            this.notificationService.error('เกิดข้อผิดพลาดในการลบรายการ');
+            this.notificationService.error(error.error?.message || 'Failed to delete leave record');
             this.loading.set(false);
           }
         });
       },
       undefined,
-      'ลบ',
-      'ยกเลิก',
+      'Delete',
+      'Cancel',
       'danger'
     );
   }

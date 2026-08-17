@@ -138,6 +138,16 @@ export class AdminSidebarComponent {
           label: 'การลา',
           route: '/admin/erp/leave',
           permission: Permission.VIEW_ERP
+        },
+        {
+          label: 'เบิกเงินล่วงหน้า',
+          route: '/admin/erp/advance',
+          permission: Permission.VIEW_ERP
+        },
+        {
+          label: 'ค่า Passport Fee',
+          route: '/admin/erp/passport-fee',
+          permission: Permission.VIEW_ERP
         }
       ]
     },
@@ -240,6 +250,10 @@ export class AdminSidebarComponent {
           return 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z';
         case '/admin/erp/leave':
           return 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z';
+        case '/admin/erp/advance':
+          return 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z';
+        case '/admin/erp/passport-fee':
+          return 'M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2';
         case '/admin/erp/banking':
           return 'M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z';
         case '/admin/employees':

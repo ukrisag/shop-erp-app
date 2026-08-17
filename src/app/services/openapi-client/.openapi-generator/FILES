@@ -7,6 +7,7 @@ api/adminOrders.service.ts
 api/adminProducts.service.ts
 api/adminReviews.service.ts
 api/adminUsers.service.ts
+api/advance.service.ts
 api/api.ts
 api/auth.service.ts
 api/bankAccounts.service.ts
@@ -31,6 +32,7 @@ api/leave.service.ts
 api/materialRequisitions.service.ts
 api/orders.service.ts
 api/overtime.service.ts
+api/passportFee.service.ts
 api/payroll.service.ts
 api/payrollPeriods.service.ts
 api/payrollRecords.service.ts
@@ -46,6 +48,10 @@ git_push.sh
 index.ts
 model/addToCartDto.ts
 model/addToWishlistDto.ts
+model/advanceApprovalDto.ts
+model/advancePaymentCreateDto.ts
+model/advancePaymentDto.ts
+model/advancePaymentUpdateDto.ts
 model/apiResponseDtoOfBankAccountDto.ts
 model/apiResponseDtoOfBankTransactionDto.ts
 model/apiResponseDtoOfBoolean.ts
@@ -169,6 +175,9 @@ model/overtimeRecordCreateDto.ts
 model/overtimeRecordUpdateDto.ts
 model/paginatedResponseDtoOfGalleryImageDto.ts
 model/paginatedResponseDtoOfProductDto.ts
+model/passportFeeCreateDto.ts
+model/passportFeeDto.ts
+model/passportFeeUpdateDto.ts
 model/payrollCalculationRequestDto.ts
 model/payrollCalculationResponseDto.ts
 model/payrollPeriodDto.ts

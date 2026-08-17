@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { LoadingSkeletonComponent } from '../../../../components/shared/loading-skeleton/loading-skeleton.component';
 import { OvertimeService } from '../../../../services/openapi-client/api/overtime.service';
 import { EmployeesService } from '../../../../services/openapi-client/api/employees.service';
 import { NotificationService } from '../../../../services/notification.service';
@@ -35,7 +36,7 @@ interface OvertimeRecordDto {
 @Component({
   selector: 'app-overtime-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingSkeletonComponent],
   templateUrl: './overtime-admin.component.html',
   styleUrls: ['./overtime-admin.component.css']
 })
@@ -144,7 +145,7 @@ export class OvertimeAdminComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading employees:', error);
-        this.notificationService.error('เกิดข้อผิดพลาดในการโหลดข้อมูลพนักงาน');
+        this.notificationService.error(error.error?.message || 'Failed to load employees');
       }
     });
   }
@@ -177,7 +178,7 @@ export class OvertimeAdminComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error loading overtime records:', error);
-          this.notificationService.error('เกิดข้อผิดพลาดในการโหลดข้อมูล OT');
+          this.notificationService.error(error.error?.message || 'Failed to load overtime records');
           this.loading.set(false);
         }
       });
@@ -193,7 +194,7 @@ export class OvertimeAdminComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading pending records:', error);
-        this.notificationService.error('เกิดข้อผิดพลาดในการโหลดรายการรออนุมัติ');
+        this.notificationService.error(error.error?.message || 'Failed to load pending records');
         this.loading.set(false);
       }
     });
@@ -219,7 +220,7 @@ export class OvertimeAdminComponent implements OnInit {
 
   openEditModal(record: OvertimeRecordDto): void {
     if (record.status !== 'pending') {
-      this.notificationService.error('สามารถแก้ไขได้เฉพาะรายการที่รออนุมัติเท่านั้น');
+      this.notificationService.error('Can only edit pending records');
       return;
     }
 
@@ -278,14 +279,14 @@ export class OvertimeAdminComponent implements OnInit {
       };
 
       this.overtimeService.overtimeUpdateOvertimeRecord(this.selectedRecord()!.id, updateDto).subscribe({
-        next: () => {
-          this.notificationService.success('แก้ไขข้อมูล OT สำเร็จ');
-          this.loadOvertimeRecords();
+        next: (response: any) => {
+          this.notificationService.success(response?.message || 'Successfully updated overtime record');
           this.closeModal();
+          this.loadOvertimeRecords();
         },
         error: (error) => {
           console.error('Error updating overtime:', error);
-          this.notificationService.error('เกิดข้อผิดพลาดในการแก้ไขข้อมูล');
+          this.notificationService.error(error.error?.message || 'Failed to update overtime record');
           this.loading.set(false);
         }
       });
@@ -301,14 +302,14 @@ export class OvertimeAdminComponent implements OnInit {
       };
 
       this.overtimeService.overtimeCreateOvertimeRecord(createDto).subscribe({
-        next: () => {
-          this.notificationService.success('บันทึกข้อมูล OT สำเร็จ');
-          this.loadOvertimeRecords();
+        next: (response: any) => {
+          this.notificationService.success(response?.message || 'Successfully created overtime record');
           this.closeModal();
+          this.loadOvertimeRecords();
         },
         error: (error) => {
           console.error('Error creating overtime:', error);
-          this.notificationService.error('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+          this.notificationService.error(error.error?.message || 'Failed to create overtime record');
           this.loading.set(false);
         }
       });
@@ -317,19 +318,39 @@ export class OvertimeAdminComponent implements OnInit {
 
   validateForm(): boolean {
     if (!this.overtimeForm.employeeId && !this.isEditMode()) {
-      this.notificationService.error('กรุณาเลือกพนักงาน');
+      this.notificationService.error('Please select an employee');
       return false;
     }
     if (!this.overtimeForm.overtimeDate) {
-      this.notificationService.error('กรุณาระบุวันที่ทำ OT');
+      this.notificationService.error('Please specify overtime date');
       return false;
     }
-    if (!this.overtimeForm.startTime || !this.overtimeForm.endTime) {
-      this.notificationService.error('กรุณาระบุเวลาเริ่มต้นและสิ้นสุด');
+    if (!this.overtimeForm.startTime) {
+      this.notificationService.error('Please specify start time');
       return false;
     }
-    if (!this.overtimeForm.hours || this.overtimeForm.hours <= 0) {
-      this.notificationService.error('กรุณาระบุจำนวนชั่วโมง');
+    if (!this.overtimeForm.endTime) {
+      this.notificationService.error('Please specify end time');
+      return false;
+    }
+    if (!this.overtimeForm.hours) {
+      this.notificationService.error('Please calculate hours');
+      return false;
+    }
+    if (this.overtimeForm.hours <= 0) {
+      this.notificationService.error('Hours must be greater than 0');
+      return false;
+    }
+    if (this.overtimeForm.hours > 24) {
+      this.notificationService.error('Hours cannot exceed 24 hours');
+      return false;
+    }
+    if (!this.overtimeForm.rateMultiplier || this.overtimeForm.rateMultiplier < 1) {
+      this.notificationService.error('Rate multiplier must be greater than or equal to 1.0');
+      return false;
+    }
+    if (this.overtimeForm.rateMultiplier > 3) {
+      this.notificationService.error('Rate multiplier should not exceed 3.0');
       return false;
     }
     return true;
@@ -343,12 +364,12 @@ export class OvertimeAdminComponent implements OnInit {
 
   approveRecord(record: OvertimeRecordDto): void {
     this.notificationService.confirm(
-      'ต้องการอนุมัติรายการ OT นี้ใช่หรือไม่?',
+      'Do you want to approve this overtime record?',
       () => {
         this.loading.set(true);
         this.overtimeService.overtimeApproveOvertimeRecord(record.id).subscribe({
-          next: () => {
-            this.notificationService.success('อนุมัติรายการ OT สำเร็จ');
+          next: (response: any) => {
+            this.notificationService.success(response?.message || 'Successfully approved overtime record');
             this.loadOvertimeRecords();
             if (this.activeTab() === 'pending') {
               this.loadPendingRecords();
@@ -356,21 +377,21 @@ export class OvertimeAdminComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error approving overtime:', error);
-            this.notificationService.error('เกิดข้อผิดพลาดในการอนุมัติ');
+            this.notificationService.error(error.error?.message || 'Failed to approve overtime record');
             this.loading.set(false);
           }
         });
       },
       undefined,
-      'อนุมัติ',
-      'ยกเลิก',
+      'Approve',
+      'Cancel',
       'info'
     );
   }
 
   rejectRecord(): void {
     if (!this.approvalForm.reason) {
-      this.notificationService.error('กรุณาระบุเหตุผลในการปฏิเสธ');
+      this.notificationService.error('Please specify reason for rejection');
       return;
     }
 
@@ -382,8 +403,8 @@ export class OvertimeAdminComponent implements OnInit {
 
     this.loading.set(true);
     this.overtimeService.overtimeRejectOvertimeRecord(this.selectedRecord()!.id, rejectDto).subscribe({
-      next: () => {
-        this.notificationService.success('ปฏิเสธรายการ OT สำเร็จ');
+      next: (response: any) => {
+        this.notificationService.success(response?.message || 'Successfully rejected overtime record');
         this.closeModal();
         this.loadOvertimeRecords();
         if (this.activeTab() === 'pending') {
@@ -392,7 +413,7 @@ export class OvertimeAdminComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error rejecting overtime:', error);
-        this.notificationService.error('เกิดข้อผิดพลาดในการปฏิเสธ');
+        this.notificationService.error(error.error?.message || 'Failed to reject overtime record');
         this.loading.set(false);
       }
     });
@@ -400,17 +421,17 @@ export class OvertimeAdminComponent implements OnInit {
 
   deleteRecord(record: OvertimeRecordDto): void {
     if (record.status === 'approved') {
-      this.notificationService.error('ไม่สามารถลบรายการที่อนุมัติแล้ว');
+      this.notificationService.error('Cannot delete approved records');
       return;
     }
 
     this.notificationService.confirm(
-      'ต้องการลบรายการ OT นี้ใช่หรือไม่?',
+      'Do you want to delete this overtime record?',
       () => {
         this.loading.set(true);
         this.overtimeService.overtimeDeleteOvertimeRecord(record.id).subscribe({
-          next: () => {
-            this.notificationService.success('ลบรายการ OT สำเร็จ');
+          next: (response: any) => {
+            this.notificationService.success(response?.message || 'Successfully deleted overtime record');
             this.loadOvertimeRecords();
             if (this.activeTab() === 'pending') {
               this.loadPendingRecords();
@@ -418,14 +439,14 @@ export class OvertimeAdminComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error deleting overtime:', error);
-            this.notificationService.error('เกิดข้อผิดพลาดในการลบรายการ');
+            this.notificationService.error(error.error?.message || 'Failed to delete overtime record');
             this.loading.set(false);
           }
         });
       },
       undefined,
-      'ลบ',
-      'ยกเลิก',
+      'Delete',
+      'Cancel',
       'danger'
     );
   }

@@ -176,6 +176,20 @@ export const ADMIN_ROUTES: Routes = [
         canActivate: [permissionGuard],
         data: { permission: Permission.VIEW_ERP }
       },
+      // ERP - Advance Payment
+      {
+        path: 'erp/advance',
+        loadComponent: () => import('./pages/erp/advance/advance-admin.component').then(m => m.AdvanceAdminComponent),
+        canActivate: [permissionGuard],
+        data: { permission: Permission.VIEW_ERP }
+      },
+      // ERP - Passport Fee
+      {
+        path: 'erp/passport-fee',
+        loadComponent: () => import('./pages/erp/passport-fee/passport-fee-admin.component').then(m => m.PassportFeeAdminComponent),
+        canActivate: [permissionGuard],
+        data: { permission: Permission.VIEW_ERP }
+      },
       // ERP - Sales Orders (ใบเสนอราคา/ใบแจ้งหนี้ ERP สำหรับลูกค้าทั่วไป B2B ขายส่ง ไม่ใช่คำสั่งซื้อออนไลน์)
       {
         path: 'erp/sales',

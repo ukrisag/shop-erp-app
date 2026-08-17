@@ -1,0 +1,54 @@
+/* Passport Fee Admin Component Styles */
+
+/* Custom styles for progress bars */
+.progress-bar-container {
+  transition: all 0.3s ease;
+}
+
+/* Smooth transitions for status badges */
+.status-badge {
+  transition: all 0.2s ease;
+}
+
+/* Table row hover effects */
+tr.hover\:bg-gray-50:hover {
+  transition: background-color 0.15s ease;
+}
+
+/* Modal animations */
+.modal-backdrop {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Button hover effects */
+button {
+  transition: all 0.2s ease;
+}
+
+/* Custom scrollbar for modal */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
