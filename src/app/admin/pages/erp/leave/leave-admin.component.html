@@ -485,8 +485,8 @@
             </button>
             <button
               type="submit"
-              [disabled]="loading() || leaveForm.invalid"
-              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              [disabled]="loading()"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
               [title]="leaveForm.invalid ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : ''">
               {{ loading() ? 'กำลังบันทึก...' : 'บันทึก' }}
             </button>
@@ -531,7 +531,7 @@
           <button
             (click)="rejectRecord()"
             [disabled]="loading()"
-            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-400">
+            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
             {{ loading() ? 'กำลังบันทึก...' : 'ยืนยันปฏิเสธ' }}
           </button>
         </div>
