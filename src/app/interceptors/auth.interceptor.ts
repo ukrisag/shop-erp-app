@@ -59,6 +59,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             // No refresh token or refresh endpoint failed, logout
             employeeAuthService.logout();
             router.navigate(['/admin/login']);
+            return throwError(() => error);
           }
         } else {
           // Customer endpoint - try to refresh token
@@ -88,6 +89,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             // No refresh token or refresh endpoint failed, logout
             authService.logout();
             router.navigate(['/login']);
+            return throwError(() => error);
           }
         }
       }

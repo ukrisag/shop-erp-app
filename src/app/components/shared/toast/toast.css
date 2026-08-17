@@ -1,0 +1,130 @@
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 300px;
+  max-width: 500px;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  pointer-events: auto;
+  cursor: pointer;
+  animation: slideIn 0.3s ease-out;
+  transition: all 0.3s ease;
+}
+
+.toast:hover {
+  transform: translateX(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.toast-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.toast-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-message {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.toast-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
+/* Success Toast */
+.toast-success {
+  background-color: #10b981;
+  color: white;
+}
+
+.toast-success .toast-close {
+  color: white;
+}
+
+/* Error Toast */
+.toast-error {
+  background-color: #ef4444;
+  color: white;
+}
+
+.toast-error .toast-close {
+  color: white;
+}
+
+/* Warning Toast */
+.toast-warning {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.toast-warning .toast-close {
+  color: white;
+}
+
+/* Info Toast */
+.toast-info {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.toast-info .toast-close {
+  color: white;
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .toast-container {
+    left: 20px;
+    right: 20px;
+    top: 20px;
+  }
+
+  .toast {
+    min-width: unset;
+    width: 100%;
+  }
+}

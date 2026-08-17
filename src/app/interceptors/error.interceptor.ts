@@ -1,12 +1,26 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
+import { catchError, throwError, retry, timer } from 'rxjs';
 import { NotificationService } from '../services/notification.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const notificationService = inject(NotificationService);
 
   return next(req).pipe(
+    // Retry สำหรับ network errors (status 0) และ 5xx errors
+    retry({
+      count: 2,
+      delay: (error: HttpErrorResponse, retryCount) => {
+        // Retry เฉพาะ network errors และ 5xx errors
+        if (error.status === 0 || error.status >= 500) {
+          const delayMs = retryCount * 1000; // 1s, 2s
+          console.log(`Retry attempt ${retryCount} after ${delayMs}ms for ${req.url}`);
+          return timer(delayMs);
+        }
+        // ไม่ retry สำหรับ error อื่นๆ
+        throw error;
+      }
+    }),
     catchError((error: HttpErrorResponse) => {
       // Skip showing toast for 401 errors (handled by auth interceptor)
       if (error.status === 401) {

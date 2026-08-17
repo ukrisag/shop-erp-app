@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { LoadingSkeletonComponent } from '../../../../components/shared/loading-skeleton/loading-skeleton.component';
 import {
   PayrollService,
   EmployeesService,
@@ -157,7 +158,7 @@ export class PayrollAdminComponent implements OnInit {
       },
       error: (error: any) => {
         console.error('Error loading salary records:', error);
-        this.notificationService.error('ไม่สามารถโหลดข้อมูลเงินเดือนได้');
+        this.notificationService.error(error.error?.message || 'Failed to load salary records');
         this.loading.set(false);
       }
     });
@@ -182,7 +183,7 @@ export class PayrollAdminComponent implements OnInit {
       },
       error: (error: any) => {
         console.error('Error loading salary records:', error);
-        this.notificationService.error('ไม่สามารถโหลดข้อมูลเงินเดือนได้');
+        this.notificationService.error(error.error?.message || 'Failed to load salary records');
         this.loading.set(false);
       }
     });
@@ -290,8 +291,59 @@ export class PayrollAdminComponent implements OnInit {
     });
   }
 
+  /**
+   * ตรวจสอบว่ามี OT หรือวันลาที่ยังรออนุมัติในเดือนที่ต้องการประมวลผล
+   * @returns true ถ้ามี pending records, false ถ้าไม่มี
+   */
+  async checkPendingRecords(): Promise<boolean> {
+    const year = this.calculationForm.year;
+    const month = this.calculationForm.month;
+    const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
+    const endDate = new Date(year, month, 0).toISOString().split('T')[0];
+
+    let hasPending = false;
+
+    // ตรวจสอบ OT ที่รออนุมัติ
+    try {
+      const overtimeRecords = await this.overtimeService.overtimeGetOvertimeRecordsByPeriod(startDate, endDate).toPromise();
+      const pendingOT = overtimeRecords?.filter((r: any) => r.status === 'pending') || [];
+
+      if (pendingOT.length > 0) {
+        this.notificationService.warning(
+          `Warning: Found ${pendingOT.length} pending overtime records for ${month}/${year}. Please approve or reject all overtime records before processing payroll`
+        );
+        hasPending = true;
+      }
+    } catch (error) {
+      console.error('Error checking pending OT:', error);
+    }
+
+    // ตรวจสอบวันลาที่รออนุมัติ
+    try {
+      const leaveRecords = await this.leaveService.leaveGetLeaveRecordsByPeriod(startDate, endDate).toPromise();
+      const pendingLeaves = leaveRecords?.filter((r: any) => r.status === 'pending') || [];
+
+      if (pendingLeaves.length > 0) {
+        this.notificationService.warning(
+          `Warning: Found ${pendingLeaves.length} pending leave records for ${month}/${year}. Please approve or reject all leave records before processing payroll`
+        );
+        hasPending = true;
+      }
+    } catch (error) {
+      console.error('Error checking pending leaves:', error);
+    }
+
+    return hasPending;
+  }
+
   // Calculate Payroll
   async calculatePayroll(): Promise<void> {
+    // ตรวจสอบ pending records ก่อน
+    const hasPending = await this.checkPendingRecords();
+    if (hasPending) {
+      return; // หยุดการคำนวณถ้ามี pending
+    }
+
     const request: PayrollCalculationRequestDto = {
       year: this.calculationForm.year,
       month: this.calculationForm.month,
@@ -308,7 +360,7 @@ export class PayrollAdminComponent implements OnInit {
         console.log('Payroll calculation result:', result);
 
         if (!result.salaryRecords || result.salaryRecords.length === 0) {
-          this.notificationService.error('ไม่พบพนักงานที่สามารถคำนวณเงินเดือนได้ กรุณาตรวจสอบว่ามีพนักงานสถานะ "Active" ในระบบ');
+          this.notificationService.error('No employees found for payroll calculation. Please verify that active employees exist in the system');
           this.loading.set(false);
           return;
         }
@@ -322,7 +374,7 @@ export class PayrollAdminComponent implements OnInit {
 
         this.calculationResult.set(result);
         this.showCalculationResultModal.set(true);
-        this.notificationService.success(`คำนวณเงินเดือนสำเร็จ ${result.salaryRecords?.length || 0} รายการ`);
+        this.notificationService.success(`Successfully calculated payroll for ${result.salaryRecords?.length || 0} records`);
         this.loading.set(false);
         // Reload salary records to show new calculations
         this.loadSalaryRecordsByPeriod(this.calculationForm.year, this.calculationForm.month);
@@ -405,7 +457,7 @@ export class PayrollAdminComponent implements OnInit {
   saveRecord(): void {
     if (this.isEditMode()) {
       // Cannot edit salary records - they are calculated
-      this.notificationService.error('ไม่สามารถแก้ไขรายการเงินเดือนที่คำนวณแล้วได้ กรุณาลบและคำนวณใหม่');
+      this.notificationService.error('Cannot edit calculated salary records. Please delete and recalculate');
     } else {
       this.createRecord();
     }
@@ -435,14 +487,14 @@ export class PayrollAdminComponent implements OnInit {
     };
 
     this.payrollService.payrollCreateSalaryRecord(dto).subscribe({
-      next: (created: SalaryRecordDto) => {
-        this.notificationService.success('สร้างรายการเงินเดือนสำเร็จ');
+      next: (response: any) => {
+        this.notificationService.success(response?.message || 'Successfully created salary record');
         this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth());
         this.closeModals();
       },
       error: (error: any) => {
         console.error('Error creating salary record:', error);
-        this.notificationService.error(error.error?.message || 'เกิดข้อผิดพลาดในการสร้างรายการเงินเดือน');
+        this.notificationService.error(error.error?.message || 'Failed to create salary record');
       }
     });
   }
@@ -452,40 +504,40 @@ export class PayrollAdminComponent implements OnInit {
     if (!record) return;
 
     this.payrollService.payrollDeleteSalaryRecord(record.id!).subscribe({
-      next: () => {
-        this.notificationService.success('ลบรายการเงินเดือนสำเร็จ');
+      next: (response: any) => {
+        this.notificationService.success(response?.message || 'Successfully deleted salary record');
         this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth(), true);
         this.closeModals();
       },
       error: (error: any) => {
         console.error('Error deleting salary record:', error);
-        this.notificationService.error(error.error?.message || 'เกิดข้อผิดพลาดในการลบรายการเงินเดือน');
+        this.notificationService.error(error.error?.message || 'Failed to delete salary record');
       }
     });
   }
 
   approveRecord(record: SalaryRecordDto): void {
     this.payrollService.payrollApproveSalaryRecord(record.id!).subscribe({
-      next: (updated: SalaryRecordDto) => {
-        this.notificationService.success('อนุมัติรายการเงินเดือนสำเร็จ');
+      next: (response: any) => {
+        this.notificationService.success(response?.message || 'Successfully approved salary record');
         this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth(), true);
       },
       error: (error: any) => {
         console.error('Error approving salary record:', error);
-        this.notificationService.error(error.error?.message || 'เกิดข้อผิดพลาดในการอนุมัติรายการเงินเดือน');
+        this.notificationService.error(error.error?.message || 'Failed to approve salary record');
       }
     });
   }
 
   markAsPaid(record: SalaryRecordDto): void {
     this.payrollService.payrollMarkSalaryRecordAsPaid(record.id!).subscribe({
-      next: (updated: SalaryRecordDto) => {
-        this.notificationService.success('ทำเครื่องหมายจ่ายเงินแล้วสำเร็จ');
+      next: (response: any) => {
+        this.notificationService.success(response?.message || 'Successfully marked as paid');
         this.loadSalaryRecordsByPeriod(this.selectedYear(), this.selectedMonth(), true);
       },
       error: (error: any) => {
         console.error('Error marking salary record as paid:', error);
-        this.notificationService.error(error.error?.message || 'เกิดข้อผิดพลาดในการทำเครื่องหมายจ่ายเงิน');
+        this.notificationService.error(error.error?.message || 'Failed to mark as paid');
       }
     });
   }
@@ -636,7 +688,7 @@ export class PayrollAdminComponent implements OnInit {
 
   downloadPaySlip(record: SalaryRecordDto): void {
     if (!record.id) {
-      this.notificationService.error('ไม่พบรหัสรายการเงินเดือน');
+      this.notificationService.error('Salary record ID not found');
       return;
     }
 
@@ -660,11 +712,11 @@ export class PayrollAdminComponent implements OnInit {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(downloadUrl);
 
-        this.notificationService.success('ดาวน์โหลด Pay Slip สำเร็จ');
+        this.notificationService.success('Successfully downloaded pay slip');
       },
       error: (error: any) => {
         console.error('Error downloading pay slip:', error);
-        this.notificationService.error('เกิดข้อผิดพลาดในการดาวน์โหลด Pay Slip');
+        this.notificationService.error(error.error?.message || 'Failed to download pay slip');
       }
     });
   }

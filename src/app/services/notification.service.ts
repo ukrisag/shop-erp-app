@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 export interface Toast {
   id: number;
   message: string;
-  type: 'success' | 'error' | 'info';
+  type: 'success' | 'error' | 'info' | 'warning';
 }
 
 export interface ConfirmDialog {
@@ -54,9 +54,16 @@ export class NotificationService {
   }
 
   /**
+   * Show warning toast
+   */
+  warning(message: string) {
+    this.showToast(message, 'warning');
+  }
+
+  /**
    * Show toast notification
    */
-  private showToast(message: string, type: 'success' | 'error' | 'info') {
+  private showToast(message: string, type: 'success' | 'error' | 'info' | 'warning') {
     const currentToasts = this.toastsSubject.value;
 
     // ตรวจสอบว่ามี toast ข้อความเดียวกันอยู่แล้วหรือไม่
@@ -87,8 +94,8 @@ export class NotificationService {
 
     this.toastsSubject.next(newToasts);
 
-    // Auto remove: 2 seconds for success/info, 4 seconds for error
-    const duration = type === 'error' ? 4000 : 2000;
+    // Auto remove: 4 seconds for error/warning, 2 seconds for success/info
+    const duration = (type === 'error' || type === 'warning') ? 4000 : 2000;
     const timeout = setTimeout(() => {
       this.removeToast(toast.id);
     }, duration);
