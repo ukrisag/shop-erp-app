@@ -524,8 +524,8 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
 
     const formValue = this.employeeForm.value;
 
+    // Note: employeeCode is NOT sent during update (readonly field, cannot be changed)
     const dto: EmployeeUpdateDto = {
-      employeeCode: formValue.employeeCode,
       branchId: formValue.branchId,
       firstNameTh: formValue.firstNameTh || undefined,
       lastNameTh: formValue.lastNameTh || undefined,
