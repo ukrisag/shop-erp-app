@@ -1,12 +1,12 @@
 <!-- Apple macOS / iPadOS Pro Admin Top Bar: "เครื่องครัวแสงทอง" -->
-<header class="h-16 bg-white/80 dark:bg-[#161617]/80 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between px-4 sm:px-6 lg:px-8 relative z-30 transition-colors duration-200">
+<header class="h-16 bg-white/80 dark:bg-[#161617]/80 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.08] flex items-center justify-between px-4 sm:px-6 lg:px-8 relative z-30 transition-colors duration-200 flex-nowrap">
 
   <!-- Left: Sidebar Toggle, Brand & Search -->
-  <div class="flex items-center gap-3 sm:gap-4 flex-1">
+  <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 flex-nowrap">
     <!-- Sidebar Toggle Button -->
     <button
       (click)="onToggleSidebar()"
-      class="p-2 rounded-full text-[#1d1d1f] dark:text-[#f5f5f7] hover:bg-black/[0.05] dark:hover:bg-white/[0.1] transition-colors focus:outline-none"
+      class="p-2 rounded-full text-[#1d1d1f] dark:text-[#f5f5f7] hover:bg-black/[0.05] dark:hover:bg-white/[0.1] transition-colors focus:outline-none flex-shrink-0"
       aria-label="เปิด/ปิดเมนูนำทาง"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -15,18 +15,18 @@
     </button>
 
     <!-- Brand Identity (macOS App Title: "แสงทอง" Golden Light) -->
-    <div class="flex items-center gap-2.5">
+    <div class="flex items-center gap-2.5 flex-shrink-0">
       <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#d97706] to-[#b45309] flex items-center justify-center text-white text-xs font-bold shadow-apple-gold">
         ERP
       </div>
-      <div class="hidden sm:block">
-        <h1 class="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight leading-tight">เครื่องครัวแสงทอง &bull; ERP</h1>
-        <p class="text-[11px] text-[#86868b] leading-tight">ระบบบริหารจัดการร้านและคลังสินค้า</p>
+      <div class="hidden sm:block whitespace-nowrap">
+        <h1 class="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight leading-tight whitespace-nowrap">เครื่องครัวแสงทอง &bull; ERP</h1>
+        <p class="text-[11px] text-[#86868b] leading-tight whitespace-nowrap">ระบบบริหารจัดการร้านและคลังสินค้า</p>
       </div>
     </div>
 
     <!-- Quick Search Input (Apple Style) -->
-    <div class="hidden md:flex items-center flex-1 max-w-sm ml-4">
+    <div class="hidden lg:flex items-center flex-1 max-w-xs ml-3">
       <div class="relative w-full">
         <input
           type="text"
@@ -44,7 +44,7 @@
   </div>
 
   <!-- Right: Actions, Theme Switcher, Storefront Link, Profile -->
-  <div class="flex items-center gap-2 sm:gap-3">
+  <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0 flex-nowrap">
 
     <!-- Theme Switcher Button (Apple Sun/Moon Toggle) -->
     <button
