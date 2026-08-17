@@ -157,23 +157,23 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
       this.employeeForm.addControl('password', this.fb.control('', baseConfig['password'] || []));
       this.employeeForm.addControl('confirmPassword', this.fb.control('', baseConfig['confirmPassword'] || []));
 
-      // Add async validators for create mode
+      // Add async validators for create mode (reduced debounce time to 300ms for better UX)
       this.employeeForm.get('employeeCode')?.setAsyncValidators([
-        AsyncValidators.uniqueEmployeeCode(this.employeesService)
+        AsyncValidators.uniqueEmployeeCode(this.employeesService, undefined, 300)
       ]);
       // Email is optional - no uniqueness check needed
       this.employeeForm.get('idCardNumber')?.setAsyncValidators([
-        AsyncValidators.uniqueIdCard(this.employeesService)
+        AsyncValidators.uniqueIdCard(this.employeesService, undefined, 300)
       ]);
     } else if (this.selectedEmployee()) {
-      // For edit mode, skip self-check in async validators
+      // For edit mode, skip self-check in async validators (reduced debounce time to 300ms)
       const currentId = this.selectedEmployee()?.id;
       this.employeeForm.get('employeeCode')?.setAsyncValidators([
-        AsyncValidators.uniqueEmployeeCode(this.employeesService, currentId)
+        AsyncValidators.uniqueEmployeeCode(this.employeesService, currentId, 300)
       ]);
       // Email is optional - no uniqueness check needed
       this.employeeForm.get('idCardNumber')?.setAsyncValidators([
-        AsyncValidators.uniqueIdCard(this.employeesService, currentId)
+        AsyncValidators.uniqueIdCard(this.employeesService, currentId, 300)
       ]);
     }
   }
@@ -517,6 +517,19 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
   updateEmployee(): void {
     const employee = this.selectedEmployee();
     if (!employee) return;
+
+    // Mark all fields as touched to show validation errors
+    FormHelpers.markFormGroupTouched(this.employeeForm);
+
+    // Check if form is valid
+    if (this.employeeForm.invalid || this.employeeForm.pending) {
+      if (this.employeeForm.pending) {
+        this.notificationService.error('กำลังตรวจสอบข้อมูล กรุณารอสักครู่...');
+      } else {
+        this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
+      }
+      return;
+    }
 
     const formValue = this.employeeForm.value;
 

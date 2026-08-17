@@ -801,7 +801,7 @@
             </button>
             <button
               type="submit"
-              [disabled]="loading() || employeeForm.invalid || employeeForm.pending"
+              [disabled]="loading() || employeeForm.invalid"
               class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               [title]="employeeForm.invalid ? 'กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง' : (employeeForm.pending ? 'กำลังตรวจสอบข้อมูล...' : '')">
               {{ loading() ? 'กำลังบันทึก...' : (isEditMode() ? 'บันทึก' : 'เพิ่มพนักงาน') }}
