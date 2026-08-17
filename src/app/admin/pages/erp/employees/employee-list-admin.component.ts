@@ -161,9 +161,7 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
       this.employeeForm.get('employeeCode')?.setAsyncValidators([
         AsyncValidators.uniqueEmployeeCode(this.employeesService)
       ]);
-      this.employeeForm.get('email')?.setAsyncValidators([
-        AsyncValidators.uniqueEmail(this.employeesService)
-      ]);
+      // Email is optional - no uniqueness check needed
       this.employeeForm.get('idCardNumber')?.setAsyncValidators([
         AsyncValidators.uniqueIdCard(this.employeesService)
       ]);
@@ -173,9 +171,7 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
       this.employeeForm.get('employeeCode')?.setAsyncValidators([
         AsyncValidators.uniqueEmployeeCode(this.employeesService, currentId)
       ]);
-      this.employeeForm.get('email')?.setAsyncValidators([
-        AsyncValidators.uniqueEmail(this.employeesService, currentId)
-      ]);
+      // Email is optional - no uniqueness check needed
       this.employeeForm.get('idCardNumber')?.setAsyncValidators([
         AsyncValidators.uniqueIdCard(this.employeesService, currentId)
       ]);
