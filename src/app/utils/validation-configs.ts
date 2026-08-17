@@ -11,7 +11,7 @@ export class ValidationConfigs {
    */
   static readonly employee = {
     // Basic Information
-    employeeCode: [Validators.required, FormValidators.employeeCode()],
+    employeeCode: [Validators.required], // Format validation removed - allow any format
     firstName: [Validators.required, Validators.maxLength(100)],
     lastName: [Validators.required, Validators.maxLength(100)],
     nickname: [Validators.maxLength(50)],
