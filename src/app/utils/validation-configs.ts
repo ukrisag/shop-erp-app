@@ -194,6 +194,8 @@ export class ValidationConfigs {
     // Password is optional in edit mode
     delete (config as any).password;
     delete (config as any).confirmPassword;
+    // EmployeeCode is readonly in edit mode - no validation needed
+    (config as any).employeeCode = [];
     return config;
   }
 
