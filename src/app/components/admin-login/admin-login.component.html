@@ -1,25 +1,25 @@
 <!-- Apple Business Style Employee Login -->
-<div class="min-h-screen bg-[#f5f5f7] flex items-center justify-center py-16 px-4">
+<div class="min-h-screen bg-[#f5f5f7] dark:bg-[#000000] flex items-center justify-center py-16 px-4 transition-colors duration-200">
   <div class="max-w-md w-full space-y-8">
 
-    <!-- Header & Brand -->
+    <!-- Header & Brand ("แสงทอง" Golden Light Emblem) -->
     <div class="text-center space-y-2">
-      <div class="w-14 h-14 rounded-2xl bg-[#1d1d1f] text-white flex items-center justify-center mx-auto shadow-apple-md">
+      <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#d97706] to-[#b45309] text-white flex items-center justify-center mx-auto shadow-apple-gold">
         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
       </div>
-      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">ระบบจัดการร้าน & ERP</h1>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">ระบบจัดการร้าน & ERP</h1>
       <p class="text-xs sm:text-sm text-[#86868b]">เข้าสู่ระบบสำหรับพนักงานและผู้ดูแลระบบ</p>
     </div>
 
     <!-- Login Form Card -->
-    <div class="bg-white rounded-3xl border border-black/[0.06] shadow-apple p-8 sm:p-10">
+    <div class="bg-white dark:bg-[#161617] rounded-3xl border border-black/[0.06] dark:border-white/[0.08] shadow-apple dark:shadow-apple-dark p-8 sm:p-10 transition-colors duration-200">
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
 
         <!-- Email Input -->
         <div>
-          <label for="email" class="block text-xs font-bold text-[#1d1d1f] uppercase tracking-wider mb-2">อีเมลพนักงาน</label>
+          <label for="email" class="block text-xs font-bold text-[#1d1d1f] dark:text-[#f5f5f7] uppercase tracking-wider mb-2">อีเมลพนักงาน</label>
           <input
             id="email"
             type="email"
@@ -37,7 +37,7 @@
 
         <!-- Password Input -->
         <div>
-          <label for="password" class="block text-xs font-bold text-[#1d1d1f] uppercase tracking-wider mb-2">รหัสผ่าน</label>
+          <label for="password" class="block text-xs font-bold text-[#1d1d1f] dark:text-[#f5f5f7] uppercase tracking-wider mb-2">รหัสผ่าน</label>
           <div class="relative">
             <input
               id="password"
@@ -49,7 +49,7 @@
             <button
               type="button"
               (click)="togglePasswordVisibility()"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-[#86868b] hover:text-[#1d1d1f] p-1"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] p-1"
             >
               @if (showPassword) {
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +73,7 @@
 
         <!-- Remember Me Checkbox -->
         <div class="flex items-center">
-          <label class="form-checkbox-container !text-xs text-[#6e6e73]">
+          <label class="form-checkbox-container !text-xs text-[#6e6e73] dark:text-[#86868b]">
             <input
               id="rememberMe"
               type="checkbox"
@@ -96,7 +96,7 @@
         <button
           type="submit"
           [disabled]="loginForm.invalid || loading()"
-          class="w-full apple-pill-btn !py-3.5 !text-sm font-semibold shadow-apple-sm disabled:opacity-40 disabled:cursor-not-allowed"
+          class="w-full apple-pill-btn !py-3.5 !text-sm font-semibold shadow-apple-gold disabled:opacity-40 disabled:cursor-not-allowed"
         >
           @if (!loading()) {
             <span>เข้าสู่ระบบพนักงาน</span>
@@ -109,7 +109,7 @@
 
     <!-- Back to Storefront Link -->
     <div class="text-center">
-      <a routerLink="/" class="text-xs text-[#86868b] hover:text-[#1d1d1f] transition-colors font-medium">
+      <a routerLink="/" class="text-xs text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors font-medium">
         &larr; กลับสู่หน้าร้านค้าออนไลน์
       </a>
     </div>
