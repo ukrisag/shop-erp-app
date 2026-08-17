@@ -12,8 +12,9 @@
 /**
  * DTO สำหรับแก้ไขข้อมูลพนักงาน Note: EmployeeCode is not included - it cannot be changed after creation
  */
-export interface EmployeeUpdateDto { 
+export interface EmployeeUpdateDto {
     email?: string | null;
+    password?: string | null;
     firstNameTh?: string | null;
     lastNameTh?: string | null;
     firstNameEn?: string | null;
