@@ -181,8 +181,9 @@ export class ValidationConfigs {
   static getEmployeeCreateConfig(): { [key: string]: ValidatorFn[] } {
     return {
       ...this.employee,
-      password: [Validators.required, Validators.minLength(6)],
-      confirmPassword: [Validators.required],
+      // Password is completely optional - no validation
+      password: [],
+      confirmPassword: [],
     };
   }
 

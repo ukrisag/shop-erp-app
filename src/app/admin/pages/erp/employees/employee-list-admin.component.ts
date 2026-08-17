@@ -146,15 +146,10 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
       hasSocialSecurity: [true],
       employeeStatus: ['active'],
       notes: ['']
-    }, {
-      validators: this.isEditMode()
-        ? []
-        : [FormValidators.passwordMatch('password', 'confirmPassword')]
     });
 
     // Add password fields for both create and edit mode
-    // In create mode: password is optional but has min length requirement
-    // In edit mode: password is completely optional (only validate if user wants to change it)
+    // Password is completely optional with no validation in both modes
     this.employeeForm.addControl('password', this.fb.control('', baseConfig['password'] || []));
     this.employeeForm.addControl('confirmPassword', this.fb.control('', baseConfig['confirmPassword'] || []));
 
