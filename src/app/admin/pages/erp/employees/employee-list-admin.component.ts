@@ -238,6 +238,36 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
     return FormHelpers.getFieldError(this.employeeForm, fieldName);
   }
 
+  getFieldLabels(): { [key: string]: string } {
+    return {
+      employeeCode: 'รหัสพนักงาน',
+      branchId: 'สาขา',
+      firstNameTh: 'ชื่อ (ไทย)',
+      lastNameTh: 'นามสกุล (ไทย)',
+      firstNameEn: 'ชื่อ (อังกฤษ)',
+      lastNameEn: 'นามสกุล (อังกฤษ)',
+      email: 'อีเมล',
+      phone: 'เบอร์โทร',
+      dateOfBirth: 'วันเกิด',
+      nationality: 'สัญชาติ',
+      idCardNumber: 'เลขบัตรประชาชน',
+      passportNumber: 'เลขพาสปอร์ต',
+      address: 'ที่อยู่',
+      position: 'ตำแหน่ง',
+      employmentType: 'ประเภทการจ้าง',
+      salary: 'เงินเดือน',
+      dailyRate: 'ค่าแรงรายวัน',
+      bankAccountNumber: 'เลขที่บัญชี',
+      hireDate: 'วันที่เริ่มงาน',
+      workPermitStartDate: 'วันที่เริ่มใบอนุญาต',
+      workPermitEndDate: 'วันที่หมดอายุใบอนุญาต',
+      hasSocialSecurity: 'มีประกันสังคม',
+      employeeStatus: 'สถานะ',
+      password: 'รหัสผ่าน',
+      confirmPassword: 'ยืนยันรหัสผ่าน'
+    };
+  }
+
   loadEmployees(): void {
     this.loading.set(true);
     this.employeesService.employeesGetAllEmployees().subscribe({
@@ -438,7 +468,8 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
       if (this.employeeForm.pending) {
         this.notificationService.error('กำลังตรวจสอบข้อมูล กรุณารอสักครู่...');
       } else {
-        this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
+        const errorSummary = FormHelpers.getValidationSummary(this.employeeForm, this.getFieldLabels());
+        this.notificationService.error(errorSummary);
       }
       return;
     }
@@ -514,7 +545,8 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
       if (this.employeeForm.pending) {
         this.notificationService.error('กำลังตรวจสอบข้อมูล กรุณารอสักครู่...');
       } else {
-        this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
+        const errorSummary = FormHelpers.getValidationSummary(this.employeeForm, this.getFieldLabels());
+        this.notificationService.error(errorSummary);
       }
       return;
     }

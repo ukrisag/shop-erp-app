@@ -314,4 +314,27 @@ export class FormHelpers {
     this.markFormGroupTouched(formGroup);
     return formGroup.valid;
   }
+
+  /**
+   * Gets a summary message of all validation errors
+   * Returns a string listing all invalid fields with their error messages
+   */
+  static getValidationSummary(formGroup: FormGroup, fieldLabels?: { [key: string]: string }): string {
+    const errors: string[] = [];
+
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      if (control && control.invalid && control.errors) {
+        const label = fieldLabels?.[key] || key;
+        const errorMsg = this.getFieldError(formGroup, key);
+        errors.push(`• ${label}: ${errorMsg}`);
+      }
+    });
+
+    if (errors.length === 0) {
+      return 'กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง';
+    }
+
+    return `พบข้อผิดพลาด:\n${errors.join('\n')}`;
+  }
 }
