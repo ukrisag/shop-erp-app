@@ -152,11 +152,13 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
         : [FormValidators.passwordMatch('password', 'confirmPassword')]
     });
 
-    // Add password fields and async validators ONLY for create mode
-    if (!this.isEditMode()) {
-      this.employeeForm.addControl('password', this.fb.control('', baseConfig['password'] || []));
-      this.employeeForm.addControl('confirmPassword', this.fb.control('', baseConfig['confirmPassword'] || []));
+    // Add password fields for both create and edit mode
+    // In create mode: password is optional but has min length requirement
+    // In edit mode: password is completely optional (only validate if user wants to change it)
+    this.employeeForm.addControl('password', this.fb.control('', baseConfig['password'] || []));
+    this.employeeForm.addControl('confirmPassword', this.fb.control('', baseConfig['confirmPassword'] || []));
 
+    if (!this.isEditMode()) {
       // Add async validators for create mode (reduced debounce time to 300ms for better UX)
       // Note: employeeCode uniqueness check removed per user request
       this.employeeForm.get('idCardNumber')?.setAsyncValidators([
@@ -561,6 +563,7 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
       firstNameEn: formValue.firstNameEn || undefined,
       lastNameEn: formValue.lastNameEn || undefined,
       email: formValue.email || undefined,
+      password: formValue.password || undefined, // Optional - only sent if user wants to change password
       phone: formValue.phone || undefined,
       dateOfBirth: formValue.dateOfBirth || undefined,
       nationality: formValue.nationality || undefined,
