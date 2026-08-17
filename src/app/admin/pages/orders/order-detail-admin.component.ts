@@ -172,19 +172,17 @@ export class OrderDetailAdminComponent implements OnInit {
   getStatusClass(status: string | null | undefined): string {
     switch (status) {
       case 'pending_payment':
-        return 'px-3 py-1 text-sm font-semibold rounded-full bg-yellow-100 text-yellow-800';
+        return 'badge badge-warning text-xs sm:text-sm !py-1 !px-3';
       case 'confirmed':
-        return 'px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800';
       case 'processing':
-        return 'px-3 py-1 text-sm font-semibold rounded-full bg-purple-100 text-purple-800';
+        return 'badge badge-gold text-xs sm:text-sm !py-1 !px-3';
       case 'shipped':
-        return 'px-3 py-1 text-sm font-semibold rounded-full bg-indigo-100 text-indigo-800';
       case 'delivered':
-        return 'px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800';
+        return 'badge badge-success text-xs sm:text-sm !py-1 !px-3';
       case 'cancelled':
-        return 'px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800';
+        return 'badge badge-error text-xs sm:text-sm !py-1 !px-3';
       default:
-        return 'px-3 py-1 text-sm font-semibold rounded-full bg-gray-100 text-gray-800';
+        return 'badge badge-gray text-xs sm:text-sm !py-1 !px-3';
     }
   }
 

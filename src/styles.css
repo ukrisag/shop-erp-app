@@ -1,137 +1,409 @@
-/* You can add global styles to this file, and also import other style files */
+/* ==========================================================================
+   Apple-Inspired Global Styles & Design System: "เครื่องครัวแสงทอง" (Golden Light)
+   Shop ERP & Kitchenware Store
+   Full Dark & Light Mode Across All Components
+   ========================================================================== */
 
 /* Import Local Fonts */
 @import './assets/fonts/prompt.css';
 
-/* Import Design System - must come before @tailwind directives */
+/* Import Design System - before @tailwind directives */
 @import './styles/design-system.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom global styles */
+/* Base Reset & Apple Typography */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 body {
-  font-family: 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-  background-attachment: fixed;
+  font-family: 'Prompt', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  background-color: #f5f5f7;
+  color: #1d1d1f;
   min-height: 100vh;
+  letter-spacing: -0.015em;
+  overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Animated gradient background for hero sections */
-.gradient-bg {
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
-  animation: gradient-shift 15s ease infinite;
+html.dark body {
+  background-color: #000000;
+  color: #f5f5f7;
 }
 
-/* Alternative Hero Backgrounds - เลือกได้เลย! */
-
-/* Option 1: Paint Strokes Pattern */
-.paint-strokes-bg {
-  background-color: #1e293b;
-  background-image:
-    linear-gradient(135deg, rgba(99, 102, 241, 0.1) 25%, transparent 25%),
-    linear-gradient(225deg, rgba(139, 92, 246, 0.1) 25%, transparent 25%),
-    linear-gradient(45deg, rgba(236, 72, 153, 0.1) 25%, transparent 25%),
-    linear-gradient(315deg, rgba(59, 130, 246, 0.1) 25%, transparent 25%);
-  background-size: 80px 80px;
-  background-position: 0 0, 0 40px, 40px -40px, -40px 0;
+/* Headings Tracking */
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.025em;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
-/* Option 2: Color Splash Effect */
-.color-splash-bg {
-  background:
-    radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, rgba(139, 92, 246, 0.3) 0%, transparent 50%),
-    linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+/* Custom Scrollbar - Sleek & Minimal */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-/* Option 3: Mesh Gradient */
-.mesh-gradient-bg {
-  background:
-    radial-gradient(at 40% 20%, hsla(228, 100%, 74%, 1) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 1) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 1) 0px, transparent 50%),
-    radial-gradient(at 80% 50%, hsla(340, 100%, 76%, 1) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, hsla(22, 100%, 77%, 1) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, hsla(242, 100%, 70%, 1) 0px, transparent 50%),
-    radial-gradient(at 0% 0%, hsla(343, 100%, 76%, 1) 0px, transparent 50%);
-  background-color: #1e1b4b;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-/* Option 4: Geometric Pattern */
-.geometric-bg {
-  background-color: #312e81;
-  background-image:
-    repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255, 255, 255, 0.03) 35px, rgba(255, 255, 255, 0.03) 70px),
-    repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(255, 255, 255, 0.03) 35px, rgba(255, 255, 255, 0.03) 70px);
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
 }
 
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Subtle pattern overlay */
-.pattern-bg {
-  background-image:
-    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.05) 10px, rgba(255,255,255,.05) 20px),
-    repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255,255,255,.05) 10px, rgba(255,255,255,.05) 20px);
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
 }
 
-/* Custom component classes */
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* ==========================================================================
+   Apple Glassmorphism & Surface Utilities (with Dark Mode)
+   ========================================================================== */
+
+@layer utilities {
+  /* Apple Navigation Glass */
+  .apple-nav-glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  html.dark .apple-nav-glass {
+    background: rgba(22, 22, 23, 0.85);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .apple-nav-glass-dark {
+    background: rgba(22, 22, 23, 0.8);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Apple Card Glass */
+  .apple-card {
+    background: #ffffff;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.08);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, background-color 0.25s ease;
+  }
+
+  html.dark .apple-card {
+    background: #1d1d1f;
+    color: #f5f5f7;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .apple-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.12);
+  }
+
+  html.dark .apple-card:hover {
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .apple-card-static {
+    background: #ffffff;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 0 1px rgba(0, 0, 0, 0.08);
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+  }
+
+  html.dark .apple-card-static {
+    background: #1d1d1f;
+    color: #f5f5f7;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Bento Box Card */
+  .apple-bento-card {
+    background: #ffffff;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html.dark .apple-bento-card {
+    background: #1d1d1f;
+    color: #f5f5f7;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .apple-bento-card:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  }
+
+  html.dark .apple-bento-card:hover {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .apple-bento-card-dark {
+    background: #1d1d1f;
+    color: #ffffff;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .apple-bento-card-dark:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* ==========================================================================
+   Apple Buttons & "แสงทอง" (Golden Light) Theme
+   ========================================================================== */
+
 @layer components {
-  .btn-primary {
-    @apply bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-all duration-300 hover:shadow-lg hover:scale-105;
+  /* "แสงทอง" Primary Pill Button (Golden Radiance) */
+  .apple-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    color: #ffffff;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    box-shadow: 0 2px 10px rgba(217, 119, 6, 0.3);
   }
 
-  .btn-secondary {
-    @apply bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition-all duration-300 hover:shadow-md;
+  .apple-pill-btn:hover {
+    background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+    transform: scale(1.02);
+    box-shadow: 0 4px 16px rgba(217, 119, 6, 0.45);
   }
 
-  .card {
-    @apply bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+  .apple-pill-btn:active {
+    transform: scale(0.98);
   }
 
-  .card-interactive {
-    @apply bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer;
+  /* Apple Secondary Pill Button (Light/Frosted/Dark) */
+  .apple-pill-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #1d1d1f;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.2;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    outline: none;
   }
 
-  .input-field {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all duration-200;
+  html.dark .apple-pill-btn-secondary {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #f5f5f7;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .apple-pill-btn-secondary:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    transform: scale(1.02);
+  }
+
+  html.dark .apple-pill-btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.16);
+  }
+
+  .apple-pill-btn-secondary:active {
+    transform: scale(0.98);
+  }
+
+  /* Apple White / Gold Pill Button (for Dark Backgrounds) */
+  .apple-pill-btn-white {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: #ffffff;
+    color: #1d1d1f;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 0.75rem 1.75rem;
+    border-radius: 9999px;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .apple-pill-btn-white:hover {
+    background-color: #fef3c7;
+    color: #92400e;
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(217, 119, 6, 0.3);
+  }
+
+  /* Apple Ghost Dark Pill Button */
+  .apple-pill-btn-ghost-dark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.2;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .apple-pill-btn-ghost-dark:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.02);
+  }
+
+  /* "แสงทอง" Link with Chevron */
+  .apple-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #d97706;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+
+  html.dark .apple-link {
+    color: #fbbf24;
+  }
+
+  .apple-link:hover {
+    color: #b45309;
+    text-decoration: underline;
+  }
+
+  html.dark .apple-link:hover {
+    color: #fcd34d;
+  }
+
+  .apple-link svg {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .apple-link:hover svg {
+    transform: translateX(3px);
+  }
+
+  /* Apple Pill Badges */
+  .apple-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+  }
+
+  .apple-badge-gold {
+    background: rgba(217, 119, 6, 0.12);
+    color: #d97706;
+  }
+
+  html.dark .apple-badge-gold {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+  }
+
+  .apple-badge-blue {
+    background: rgba(0, 113, 227, 0.1);
+    color: #0071e3;
+  }
+
+  .apple-badge-orange {
+    background: rgba(245, 99, 0, 0.1);
+    color: #f56300;
+  }
+
+  .apple-badge-green {
+    background: rgba(52, 199, 89, 0.12);
+    color: #248a3d;
+  }
+
+  .apple-badge-gray {
+    background: rgba(0, 0, 0, 0.06);
+    color: #6e6e73;
+  }
+
+  html.dark .apple-badge-gray {
+    background: rgba(255, 255, 255, 0.1);
+    color: #86868b;
+  }
+
+  .apple-badge-dark {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    backdrop-filter: blur(8px);
   }
 }
 
-/* Animations */
-@keyframes slide-in {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
+/* ==========================================================================
+   Apple Animations & Transitions
+   ========================================================================== */
 
-@keyframes fade-in {
+@keyframes apple-fade-up {
   from {
     opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -139,185 +411,127 @@ body {
   }
 }
 
-@keyframes bounce-in {
-  0% {
+@keyframes apple-scale-in {
+  from {
     opacity: 0;
-    transform: scale(0.3);
+    transform: scale(0.96);
   }
-  50% {
+  to {
     opacity: 1;
-    transform: scale(1.05);
-  }
-  70% {
-    transform: scale(0.9);
-  }
-  100% {
     transform: scale(1);
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-@keyframes pulse-soft {
+@keyframes apple-ambient-pulse {
   0%, 100% {
-    opacity: 1;
+    opacity: 0.3;
+    transform: scale(1);
   }
   50% {
-    opacity: 0.8;
+    opacity: 0.5;
+    transform: scale(1.08);
   }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+.animate-apple-fade-up {
+  animation: apple-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@keyframes blob {
-  0%, 100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
+.animate-apple-scale {
+  animation: apple-scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.animate-blob {
-  animation: blob 7s infinite;
+.animate-ambient-glow {
+  animation: apple-ambient-pulse 8s ease-in-out infinite;
 }
 
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
-.animate-slide-in {
-  animation: slide-in 0.3s ease-out;
-}
-
-.animate-fade-in {
-  animation: fade-in 0.2s ease-out;
-}
-
-.animate-slide-up {
-  animation: slide-up 0.4s ease-out;
-}
-
-.animate-bounce-in {
-  animation: bounce-in 0.5s ease-out;
-}
-
-.animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  background-size: 1000px 100%;
-  animation: shimmer 2s infinite;
-}
-
-.animate-pulse-soft {
-  animation: pulse-soft 2s ease-in-out infinite;
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-/* Hover glow effect */
-.glow-on-hover {
-  position: relative;
-  overflow: hidden;
-}
-
-.glow-on-hover::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.glow-on-hover:hover::before {
-  width: 300px;
-  height: 300px;
-}
-
-/* Smooth page transitions */
-.page-transition {
-  animation: fade-in 0.3s ease-in-out;
-}
-
-/* Loading skeleton */
-.skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-/* Stagger children animations */
-.stagger-children > * {
-  animation: slide-up 0.4s ease-out backwards;
-}
-
-.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
-.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
-.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
-.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
-.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
-.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
-
-/* Brand carousel infinite scroll */
-@keyframes scroll-brands {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.brand-scroll-container {
-  overflow: hidden;
-  padding: 1rem 0;
-}
-
-.brand-scroll-track {
-  animation: scroll-brands 30s linear infinite;
-  will-change: transform;
-}
-
-.brand-scroll-track:hover {
-  animation-play-state: paused;
-}
-
-/* Toast/Notification z-index - above everything */
+/* Toast/Notification z-index */
 .toast-container,
 .notification-container,
 [class*="toast"],
-[class*="notification"] {
-  z-index: 9999 !important;
+[class*="notification"],
+.swal2-container {
+  z-index: 99999 !important;
 }
 
-/* Ensure toasts are above header */
-.swal2-container {
-  z-index: 9999 !important;
+/* ==========================================================================
+   Table Row Hover Disabled Globally (Clean Stable View - No Color Change)
+   ========================================================================== */
+
+/* Light Mode: Keep solid white on hover */
+table tbody tr,
+table tbody tr:hover,
+table tbody tr[class*="hover:bg-"],
+table tbody tr[class*="hover:bg-"]:hover,
+table tbody tr.hover\:bg-gray-50,
+table tbody tr.hover\:bg-gray-50:hover,
+tbody tr,
+tbody tr:hover,
+tr,
+tr:hover,
+tr.hover\:bg-gray-50,
+tr.hover\:bg-gray-50:hover,
+tr.hover\:bg-gray-100:hover,
+tr.hover\:bg-slate-50:hover,
+tr.hover\:bg-blue-50:hover {
+  background-color: #ffffff !important;
+  transition: none !important;
 }
+
+/* Dark Mode: Keep solid #161617 on hover */
+html.dark table tbody tr,
+html.dark table tbody tr:hover,
+html.dark table tbody tr[class*="hover:bg-"],
+html.dark table tbody tr[class*="hover:bg-"]:hover,
+html.dark table tbody tr.hover\:bg-gray-50,
+html.dark table tbody tr.hover\:bg-gray-50:hover,
+html.dark tbody tr,
+html.dark tbody tr:hover,
+html.dark tr,
+html.dark tr:hover,
+html.dark tr.hover\:bg-gray-50,
+html.dark tr.hover\:bg-gray-50:hover,
+html.dark tr.hover\:bg-gray-100:hover,
+html.dark tr.hover\:bg-slate-50:hover,
+html.dark tr.hover\:bg-blue-50:hover,
+:is(html.dark) table tbody tr,
+:is(html.dark) table tbody tr:hover,
+:is(html.dark) tbody tr,
+:is(html.dark) tbody tr:hover,
+:is(html.dark) tr,
+:is(html.dark) tr:hover,
+:is(html.dark) tr.hover\:bg-gray-50,
+:is(html.dark) tr.hover\:bg-gray-50:hover,
+:is(.dark) table tbody tr,
+:is(.dark) table tbody tr:hover,
+:is(.dark) tbody tr,
+:is(.dark) tbody tr:hover,
+:is(.dark) tr,
+:is(.dark) tr:hover,
+:is(.dark) .data-table tbody tr,
+:is(.dark) .data-table tbody tr:hover {
+  background-color: #161617 !important;
+  transition: none !important;
+}
+
+table tbody tr > td,
+table tbody tr:hover > td,
+tbody tr > td,
+tbody tr:hover > td,
+tr > td,
+tr:hover > td,
+html.dark table tbody tr > td,
+html.dark table tbody tr:hover > td,
+html.dark tbody tr > td,
+html.dark tbody tr:hover > td,
+:is(html.dark) table tbody tr > td,
+:is(html.dark) table tbody tr:hover > td,
+:is(.dark) table tbody tr > td,
+:is(.dark) table tbody tr:hover > td {
+  background-color: transparent !important;
+  transition: none !important;
+}
+
+
+
+

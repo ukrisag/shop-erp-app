@@ -1,21 +1,28 @@
-<div class="container mx-auto px-4 py-6">
+<div class="p-6">
   <!-- Header -->
-  <div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">จัดการค่า Passport Fee</h1>
-    <p class="text-gray-600 mt-2">จัดการและติดตามการหักค่า Passport Fee รายเดือนของพนักงานต่างด้าว</p>
+  <div class="mb-6 flex items-center gap-4">
+    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#d97706] to-[#b45309] flex items-center justify-center shadow-apple-gold flex-shrink-0 text-white">
+      <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+      </svg>
+    </div>
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold text-[#1d1d1f] dark:text-[#f5f5f7] mb-1">จัดการค่า Passport Fee</h1>
+      <p class="text-[#86868b]">จัดการและติดตามการหักค่า Passport Fee รายเดือนของพนักงานต่างด้าว</p>
+    </div>
   </div>
 
   <!-- Tab Navigation -->
-  <nav class="flex border-b border-gray-200 mb-6 -mb-px">
+  <nav class="flex border-b border-black/[0.06] dark:border-white/[0.08] mb-6 -mb-px">
     <button
       (click)="switchTab('all')"
-      [class]="activeTab() === 'all' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+      [class]="activeTab() === 'all' ? 'border-[#d97706] text-[#d97706] dark:border-[#fbbf24] dark:text-[#fbbf24]' : 'border-transparent text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] hover:border-black/20'"
       class="py-4 px-6 border-b-2 font-medium text-sm transition-colors">
       รายการทั้งหมด
     </button>
     <button
       (click)="switchTab('active')"
-      [class]="activeTab() === 'active' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+      [class]="activeTab() === 'active' ? 'border-[#d97706] text-[#d97706] dark:border-[#fbbf24] dark:text-[#fbbf24]' : 'border-transparent text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] hover:border-black/20'"
       class="py-4 px-6 border-b-2 font-medium text-sm transition-colors">
       รายการที่ใช้งาน
       @if (activeRecords().length > 0 && activeTab() === 'active') {
@@ -95,19 +102,19 @@
 
   <!-- Summary Cards -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-      <div class="text-sm text-blue-600 mb-1">ยอดรวมที่ใช้งาน</div>
-      <div class="text-2xl font-bold text-blue-900">{{ formatCurrency(totalActiveAmount()) }} ฿</div>
+    <div class="p-4 rounded-2xl bg-blue-50 dark:bg-[#1a1a1c] border border-blue-100 dark:border-white/[0.08]">
+      <div class="text-xs text-blue-600 dark:text-[#60a5fa] font-semibold uppercase tracking-wider mb-1">ยอดรวมที่ใช้งาน</div>
+      <div class="text-2xl font-bold text-blue-900 dark:text-[#f5f5f7]">{{ formatCurrency(totalActiveAmount()) }} ฿</div>
     </div>
 
-    <div class="bg-orange-50 rounded-lg p-4 border border-orange-200">
-      <div class="text-sm text-orange-600 mb-1">ยอดคงเหลือรวม</div>
-      <div class="text-2xl font-bold text-orange-900">{{ formatCurrency(totalRemainingBalance()) }} ฿</div>
+    <div class="p-4 rounded-2xl bg-orange-50 dark:bg-[#1a1a1c] border border-orange-100 dark:border-white/[0.08]">
+      <div class="text-xs text-orange-600 dark:text-[#fb923c] font-semibold uppercase tracking-wider mb-1">ยอดคงเหลือรวม</div>
+      <div class="text-2xl font-bold text-orange-900 dark:text-[#f5f5f7]">{{ formatCurrency(totalRemainingBalance()) }} ฿</div>
     </div>
 
-    <div class="bg-green-50 rounded-lg p-4 border border-green-200">
-      <div class="text-sm text-green-600 mb-1">ยอดหักรายเดือนรวม</div>
-      <div class="text-2xl font-bold text-green-900">{{ formatCurrency(totalMonthlyDeductions()) }} ฿</div>
+    <div class="p-4 rounded-2xl bg-green-50 dark:bg-[#1a1a1c] border border-green-100 dark:border-white/[0.08]">
+      <div class="text-xs text-green-600 dark:text-[#4ade80] font-semibold uppercase tracking-wider mb-1">ยอดหักรายเดือนรวม</div>
+      <div class="text-2xl font-bold text-green-900 dark:text-[#f5f5f7]">{{ formatCurrency(totalMonthlyDeductions()) }} ฿</div>
     </div>
   </div>
 

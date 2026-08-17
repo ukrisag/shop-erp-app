@@ -51,9 +51,8 @@ button[class*="rounded-full"] {
   user-select: none;
 }
 
-/* Hover effects for table rows */
-tr.hover\:bg-gray-50:hover {
-  background-color: rgb(249 250 251);
+/* Hover effects for table rows handled globally in admin-styles.css */
+tr {
   transition: background-color 0.15s ease-in-out;
 }
 

@@ -46,25 +46,25 @@ export class AdminDashboardComponent implements OnInit {
       title: 'ยอดขายวันนี้',
       value: '฿0',
       icon: '💰',
-      color: 'bg-blue-500'
+      color: 'bg-[#d97706]'
     },
     {
       title: 'คำสั่งซื้อใหม่',
       value: '0',
       icon: '🛒',
-      color: 'bg-green-500'
+      color: 'bg-[#34c759]'
     },
     {
       title: 'สินค้าทั้งหมด',
       value: '0',
       icon: '📦',
-      color: 'bg-purple-500'
+      color: 'bg-[#d97706]'
     },
     {
       title: 'ผู้ใช้งาน',
       value: '0',
       icon: '👥',
-      color: 'bg-orange-500'
+      color: 'bg-[#ea580c]'
     }
   ]);
 
@@ -85,14 +85,9 @@ export class AdminDashboardComponent implements OnInit {
       products: this.productService.getProducts({ page: 1, limit: 1 })
     }).subscribe({
       next: (data) => {
-        console.log('Dashboard data loaded:', data);
         const allOrders: OrderDto[] = (data.orders as any)?.data || [];
         const totalUsers = (data.users as any)?.total || 0;
         const totalProducts = data.products.total || 0;
-
-        console.log('All orders:', allOrders);
-        console.log('Total users:', totalUsers);
-        console.log('Total products:', totalProducts);
 
         // Calculate today's sales (excluding cancelled orders)
         const today = new Date();
@@ -113,25 +108,25 @@ export class AdminDashboardComponent implements OnInit {
             title: 'ยอดขายวันนี้',
             value: `฿${todaySales.toLocaleString('th-TH')}`,
             icon: '💰',
-            color: 'bg-blue-500'
+            color: 'bg-[#d97706]'
           },
           {
             title: 'คำสั่งซื้อใหม่',
             value: newOrders.toString(),
             icon: '🛒',
-            color: 'bg-green-500'
+            color: 'bg-[#34c759]'
           },
           {
             title: 'สินค้าทั้งหมด',
             value: totalProducts.toString(),
             icon: '📦',
-            color: 'bg-purple-500'
+            color: 'bg-[#d97706]'
           },
           {
             title: 'ผู้ใช้งาน',
             value: totalUsers.toString(),
             icon: '👥',
-            color: 'bg-orange-500'
+            color: 'bg-[#ea580c]'
           }
         ]);
 
@@ -146,12 +141,10 @@ export class AdminDashboardComponent implements OnInit {
 
         // Generate sales chart data (last 7 days)
         const chartData = this.generateSalesChartData(allOrders);
-        console.log('Sales chart data:', chartData);
         this.salesChartData.set(chartData);
 
         // Generate order status data
         const statusData = this.generateOrderStatusData(allOrders);
-        console.log('Order status data:', statusData);
         this.orderStatusData.set(statusData);
 
         this.loading.set(false);
@@ -195,7 +188,6 @@ export class AdminDashboardComponent implements OnInit {
       });
     }
 
-    console.log('Paid statuses used:', paidStatuses);
     return chartData;
   }
 
@@ -217,7 +209,6 @@ export class AdminDashboardComponent implements OnInit {
       percentage = 8;
     }
 
-    console.log(`Bar height for amount ${amount}: ${percentage}% (max: ${max})`);
     return percentage;
   }
 
@@ -225,19 +216,17 @@ export class AdminDashboardComponent implements OnInit {
     switch (status) {
       case 'pending':
       case 'pending_payment':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-[#ea580c]/15 text-[#c2410c] dark:text-[#fb923c]';
       case 'confirmed':
-        return 'bg-blue-100 text-blue-800';
       case 'processing':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-[#d97706]/15 text-[#d97706] dark:text-[#fbbf24]';
       case 'shipped':
-        return 'bg-indigo-100 text-indigo-800';
       case 'delivered':
-        return 'bg-green-100 text-green-800';
+        return 'bg-[#34c759]/15 text-[#248a3d] dark:text-[#34c759]';
       case 'cancelled':
-        return 'bg-red-100 text-red-800';
+        return 'bg-[#ff3b30]/15 text-[#d70015] dark:text-[#ff3b30]';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-black/[0.06] dark:bg-white/10 text-[#6e6e73] dark:text-[#86868b]';
     }
   }
 
@@ -264,13 +253,13 @@ export class AdminDashboardComponent implements OnInit {
 
   generateOrderStatusData(orders: OrderDto[]): OrderStatusData[] {
     const statusConfig = [
-      { status: 'pending', label: 'รอดำเนินการ', color: 'bg-yellow-500' },
-      { status: 'pending_payment', label: 'รอชำระเงิน', color: 'bg-orange-500' },
-      { status: 'confirmed', label: 'ยืนยันแล้ว', color: 'bg-blue-500' },
-      { status: 'processing', label: 'กำลังเตรียมสินค้า', color: 'bg-purple-500' },
-      { status: 'shipped', label: 'จัดส่งแล้ว', color: 'bg-indigo-500' },
-      { status: 'delivered', label: 'จัดส่งสำเร็จ', color: 'bg-green-500' },
-      { status: 'cancelled', label: 'ยกเลิก', color: 'bg-red-500' }
+      { status: 'pending', label: 'รอดำเนินการ', color: 'bg-[#ea580c]' },
+      { status: 'pending_payment', label: 'รอชำระเงิน', color: 'bg-[#ea580c]' },
+      { status: 'confirmed', label: 'ยืนยันแล้ว', color: 'bg-[#d97706]' },
+      { status: 'processing', label: 'กำลังเตรียมสินค้า', color: 'bg-[#d97706]' },
+      { status: 'shipped', label: 'จัดส่งแล้ว', color: 'bg-[#34c759]' },
+      { status: 'delivered', label: 'จัดส่งสำเร็จ', color: 'bg-[#34c759]' },
+      { status: 'cancelled', label: 'ยกเลิก', color: 'bg-[#ff3b30]' }
     ];
 
     const totalOrders = orders.length;

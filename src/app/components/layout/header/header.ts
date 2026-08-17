@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ElementRef, ViewChild, HostListener, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ElementRef, ViewChild, HostListener, signal, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +7,7 @@ import { CartService } from '../../../services/cart.service';
 import { ProductService } from '../../../services/product.service';
 import { AuthService } from '../../../services/auth.service';
 import { EmployeeAuthService } from '../../../services/employee-auth.service';
+import { ThemeService } from '../../../services/theme.service';
 import { Product } from '../../../models/product.model';
 import { UserDto } from '../../../services/openapi-client/model/models';
 import { EmployeeAuthDto } from '../../../models/employee.model';
@@ -39,6 +40,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private searchSubject = new Subject<string>();
   private lastScrollY = 0;
+
+  themeService = inject(ThemeService);
 
   constructor(
     public cartService: CartService,
@@ -74,6 +77,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.searchSubject.complete();
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 
   @HostListener('window:scroll')
@@ -142,7 +149,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private openUserMenu() {
     this.isUserMenuOpen = true;
-    // No animations needed - instant display
   }
 
   private closeUserMenu() {
@@ -220,6 +226,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     console.warn('No one is logged in');
+  }
+
+  getUserInitial(): string {
+    const name = this.currentEmployee?.fullName || this.currentUser?.fullName || 'U';
+    return name.charAt(0).toUpperCase();
   }
 
   getProductImageUrl(product: Product): string {

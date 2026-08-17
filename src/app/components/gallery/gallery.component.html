@@ -1,216 +1,185 @@
-<!-- Hero Section - ใช้ pattern เดียวกับหน้าอื่นๆ -->
-<div class="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-  <!-- Background Image Overlay -->
-  <div class="absolute inset-0">
-    <img
-      src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=2000"
-      alt="Gallery background"
-      class="w-full h-full object-cover opacity-10"
-    />
-    <div class="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-gray-800/90 to-gray-900/95"></div>
-  </div>
+<!-- Apple-Inspired Photo Gallery: "เครื่องครัวแสงทอง" -->
+<div class="min-h-screen bg-[#f5f5f7] dark:bg-[#000000] py-10 sm:py-16 transition-colors duration-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-  <!-- Animated Mesh Gradient Overlay -->
-  <div class="absolute inset-0 opacity-20">
-    <div class="absolute top-0 -left-4 w-96 h-96 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-    <div class="absolute top-0 -right-4 w-96 h-96 bg-red-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-    <div class="absolute -bottom-8 left-20 w-96 h-96 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
-  </div>
+    <!-- Breadcrumb -->
+    <nav class="flex items-center space-x-2 text-xs text-[#86868b] mb-6">
+      <a routerLink="/" class="hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors">หน้าแรก</a>
+      <span>/</span>
+      <span class="text-[#1d1d1f] dark:text-[#f5f5f7] font-medium">ผลงาน</span>
+    </nav>
 
-  <!-- Dot Pattern Overlay -->
-  <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 30px 30px;"></div>
-
-  <!-- Hero Content -->
-  <div class="relative">
-    <div class="container mx-auto px-4 pt-20 pb-12">
-      <!-- Breadcrumbs -->
-      <nav class="breadcrumb-container mb-8 flex items-center space-x-2 text-sm text-white/80">
-        <a routerLink="/" class="hover:text-white transition-colors duration-200 flex items-center">
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-          </svg>
-          หน้าแรก
-        </a>
-        <span class="text-white/60">/</span>
-        <span class="text-white font-medium">ผลงาน</span>
-      </nav>
-
-      <!-- Hero Content -->
-      <div class="hero-content text-white mb-12">
-        <div class="inline-block mb-4">
-          <span class="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium border border-white/20">
-            คอลเลคชั่นผลงาน
-          </span>
-        </div>
-        <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-          ผลงานของเรา
-        </h1>
-        <p class="text-xl md:text-2xl text-white/90 max-w-2xl mb-8">
-          ชมผลงานการติดตั้งเครื่องครัวคุณภาพจากทีมงานมืออาชีพ พร้อมแรงบันดาลใจสำหรับร้านของคุณ
-        </p>
-      </div>
+    <!-- Header -->
+    <div class="mb-10 text-center max-w-2xl mx-auto">
+      <span class="text-xs font-semibold text-[#d97706] dark:text-[#fbbf24] uppercase tracking-wider block mb-2">ภาพผลงานจริง</span>
+      <h1 class="text-3xl sm:text-5xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+        ผลงานการติดตั้ง
+      </h1>
+      <p class="text-sm sm:text-base text-[#6e6e73] dark:text-[#86868b] mt-3">
+        ชมภาพตัวอย่างงานผลิตและติดตั้งเครื่องครัวสแตนเลสสำหรับร้านอาหารและโรงแรมชั้นนำ
+      </p>
     </div>
-  </div>
-</div>
 
-<!-- Filter Bar -->
-<section class="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
-  <div class="container mx-auto px-4">
-    <div class="filter-bar">
+    <!-- Filter Control Bar (Apple Style Sticky Frosted Bar & Dark Mode) -->
+    <div class="apple-card-static p-4 border border-black/[0.06] dark:border-white/[0.08] mb-10 flex flex-col sm:flex-row items-center justify-between gap-4 transition-colors duration-200">
       <!-- Category Filter -->
-      <div class="filter-group">
-        <label for="category-filter" class="filter-label">หมวดหมู่:</label>
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <label for="category-filter" class="text-xs font-bold text-[#1d1d1f] dark:text-[#f5f5f7] uppercase tracking-wider whitespace-nowrap">
+          หมวดหมู่:
+        </label>
         <select
           id="category-filter"
-          class="filter-select"
+          class="px-3.5 py-2 bg-[#f5f5f7] dark:bg-[#2c2c2e] rounded-xl text-xs font-medium text-[#1d1d1f] dark:text-[#f5f5f7] border border-transparent focus:border-[#d97706] dark:focus:border-[#fbbf24] outline-none cursor-pointer"
           [(ngModel)]="selectedCategory"
-          (change)="onCategoryChange()">
+          (change)="onCategoryChange()"
+        >
           <option value="">ทั้งหมด</option>
-          <option *ngFor="let category of categories()" [value]="category">
-            {{ category }}
-          </option>
+          @for (category of categories(); track category) {
+            <option [value]="category">{{ category }}</option>
+          }
         </select>
       </div>
 
-      <!-- Featured Toggle -->
-      <div class="filter-group">
-        <label class="featured-toggle">
+      <!-- Featured Toggle & Counter -->
+      <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
+        <label class="form-checkbox-container !text-xs font-medium">
           <input
             type="checkbox"
             [(ngModel)]="showFeaturedOnly"
-            (change)="onFeaturedToggle()">
-          <span class="toggle-label">แสดงเฉพาะผลงานแนะนำ</span>
+            (change)="onFeaturedToggle()"
+            class="form-checkbox"
+          />
+          <span>เฉพาะผลงานแนะนำ</span>
         </label>
-      </div>
 
-      <!-- Results Count -->
-      <div class="filter-group ml-auto">
-        <span class="results-count">{{ totalItems() }} ผลงาน</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Gallery Grid -->
-<section class="py-12 bg-gray-50">
-  <div class="container mx-auto px-4">
-    <!-- Loading Skeleton (only on initial load) -->
-    <div *ngIf="initialLoading()" class="gallery-grid">
-      <div *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]" class="skeleton-card">
-        <div class="skeleton-image"></div>
-        <div class="skeleton-text"></div>
-      </div>
-    </div>
-
-    <!-- Gallery Images -->
-    <div *ngIf="!initialLoading()" class="gallery-grid" [class.gallery-loading]="loading()">
-      <!-- Loading Overlay -->
-      <div *ngIf="loading()" class="loading-overlay">
-        <div class="spinner"></div>
-      </div>
-
-      <div
-        *ngFor="let image of images(); let i = index"
-        class="gallery-card"
-        (click)="openLightbox(i)">
-        <div class="image-wrapper">
-          <img
-            [src]="image.thumbnailUrl || image.imageUrl"
-            [alt]="image.altText || image.title"
-            class="gallery-image"
-            loading="lazy">
-          <div class="image-overlay">
-            <div class="overlay-content">
-              <h3 class="image-title">{{ image.title }}</h3>
-              <p *ngIf="image.category" class="image-category">{{ image.category }}</p>
-            </div>
-          </div>
-          <span *ngIf="image.isFeatured" class="featured-badge">แนะนำ</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div *ngIf="!initialLoading() && images().length === 0" class="empty-state">
-      <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-      </svg>
-      <h3 class="empty-title">ไม่พบผลงาน</h3>
-      <p class="empty-text">ลองเปลี่ยนตัวกรองหรือกลับมาดูใหม่ภายหลัง</p>
-    </div>
-
-    <!-- Load More Button -->
-    <div *ngIf="hasMore() && !loading()" class="load-more-section">
-      <button class="load-more-btn" (click)="loadMore()">
-        <span>โหลดเพิ่มเติม</span>
-        <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Loading More Indicator -->
-    <div *ngIf="loading() && images().length > 0" class="loading-more">
-      <div class="spinner"></div>
-      <span>กำลังโหลด...</span>
-    </div>
-  </div>
-</section>
-
-<!-- Lightbox Modal -->
-<div
-  *ngIf="showLightbox() && currentImage()"
-  class="lightbox-backdrop"
-  (click)="onLightboxBackdropClick($event)">
-  <div class="lightbox-container">
-    <!-- Close Button -->
-    <button class="lightbox-close" (click)="closeLightbox()">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-      </svg>
-    </button>
-
-    <!-- Previous Button -->
-    <button
-      *ngIf="currentImageIndex() > 0"
-      class="lightbox-nav lightbox-prev"
-      (click)="prevImage()">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-      </svg>
-    </button>
-
-    <!-- Image -->
-    <div class="lightbox-content">
-      <img
-        [src]="currentImage().imageUrl"
-        [alt]="currentImage().altText || currentImage().title"
-        class="lightbox-image">
-      <div class="lightbox-caption">
-        <h3 class="caption-title">{{ currentImage().title }}</h3>
-        <p *ngIf="currentImage().description" class="caption-description">
-          {{ currentImage().description }}
-        </p>
-        <span *ngIf="currentImage().category" class="caption-category">
-          {{ currentImage().category }}
+        <span class="text-xs font-semibold text-[#86868b] px-3 py-1 bg-[#f5f5f7] dark:bg-[#2c2c2e] rounded-full">
+          {{ totalItems() }} ผลงาน
         </span>
       </div>
     </div>
 
-    <!-- Next Button -->
+    <!-- Gallery Grid -->
+    @if (initialLoading()) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        @for (i of [1,2,3,4,5,6,7,8]; track i) {
+          <div class="aspect-square bg-white dark:bg-[#1d1d1f] rounded-3xl p-3 border border-black/[0.04] dark:border-white/[0.08] shadow-sm animate-pulse">
+            <div class="w-full h-full bg-[#f5f5f7] dark:bg-[#2c2c2e] rounded-2xl"></div>
+          </div>
+        }
+      </div>
+    } @else if (images().length === 0) {
+      <div class="apple-card-static text-center py-20 p-8 border border-black/[0.06] dark:border-white/[0.08] max-w-lg mx-auto">
+        <p class="text-base font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">ไม่พบภาพผลงาน</p>
+        <p class="text-xs text-[#86868b] mt-1">ลองเปลี่ยนตัวกรองเพื่อค้นหาผลงานอื่น</p>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        @for (image of images(); track image.id; let i = $index) {
+          <div
+            (click)="openLightbox(i)"
+            class="group relative aspect-square rounded-3xl overflow-hidden bg-white dark:bg-[#1d1d1f] border border-black/[0.06] dark:border-white/[0.08] shadow-apple dark:shadow-apple-dark hover:shadow-apple-md hover:-translate-y-1 cursor-pointer transition-all duration-300"
+          >
+            <img
+              [src]="image.thumbnailUrl || image.imageUrl"
+              [alt]="image.altText || image.title"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+              loading="lazy"
+            />
+
+            <!-- Subtle Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 text-white">
+              <span class="text-xs text-white/80 font-medium">{{ image.category || 'ผลงานติดตั้ง' }}</span>
+              <h3 class="text-sm font-bold truncate">{{ image.title }}</h3>
+            </div>
+
+            @if (image.isFeatured) {
+              <span class="absolute top-3 left-3 apple-badge apple-badge-dark text-[11px]">
+                แนะนำ
+              </span>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Load More Button -->
+      @if (hasMore() && !loading()) {
+        <div class="text-center mt-12">
+          <button
+            (click)="loadMore()"
+            class="apple-pill-btn-secondary !py-3 !px-8 text-sm font-semibold"
+          >
+            <span>โหลดผลงานเพิ่มเติม</span>
+          </button>
+        </div>
+      }
+
+      @if (loading() && images().length > 0) {
+        <div class="text-center py-8">
+          <div class="w-6 h-6 border-2 border-[#d2d2d7] dark:border-[#424245] border-t-[#d97706] dark:border-t-[#fbbf24] rounded-full animate-spin mx-auto"></div>
+        </div>
+      }
+    }
+
+  </div>
+</div>
+
+<!-- Apple Style Lightbox Modal -->
+@if (showLightbox() && currentImage()) {
+  <div
+    class="fixed inset-0 z-50 bg-black/90 backdrop-blur-2xl flex items-center justify-center p-4"
+    (click)="onLightboxBackdropClick($event)"
+  >
+    <!-- Close Button -->
     <button
-      *ngIf="currentImageIndex() < images().length - 1"
-      class="lightbox-nav lightbox-next"
-      (click)="nextImage()">
-      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      (click)="closeLightbox()"
+      class="absolute top-6 right-6 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-50"
+      aria-label="ปิด"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </button>
 
-    <!-- Image Counter -->
-    <div class="lightbox-counter">
-      {{ currentImageIndex() + 1 }} / {{ images().length }}
+    <!-- Prev Button -->
+    @if (currentImageIndex() > 0) {
+      <button
+        (click)="prevImage()"
+        class="absolute left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-50"
+        aria-label="รูปก่อนหน้า"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+    }
+
+    <!-- Next Button -->
+    @if (currentImageIndex() < images().length - 1) {
+      <button
+        (click)="nextImage()"
+        class="absolute right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-50"
+        aria-label="รูปถัดไป"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    }
+
+    <!-- Image & Caption Container -->
+    <div class="max-w-4xl max-h-[85vh] flex flex-col items-center justify-center space-y-4 animate-apple-scale" (click)="$event.stopPropagation()">
+      <img
+        [src]="currentImage()!.imageUrl"
+        [alt]="currentImage()!.altText || currentImage()!.title"
+        class="max-h-[70vh] max-w-full rounded-2xl object-contain shadow-2xl"
+      />
+      <div class="text-center text-white space-y-1">
+        <h3 class="text-lg font-bold">{{ currentImage()!.title }}</h3>
+        @if (currentImage()!.description) {
+          <p class="text-xs text-white/70 max-w-md mx-auto">{{ currentImage()!.description }}</p>
+        }
+        <span class="text-xs text-white/50 block">{{ currentImageIndex() + 1 }} / {{ images().length }}</span>
+      </div>
     </div>
   </div>
-</div>
+}

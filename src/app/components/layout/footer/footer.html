@@ -1,181 +1,124 @@
-<!-- Modern Premium Footer -->
-<footer class="relative mt-32 overflow-hidden">
-  <!-- Gradient Background -->
-  <div class="absolute inset-0 bg-gray-900"></div>
+<!-- Apple-Inspired Directory Footer: "เครื่องครัวแสงทอง" -->
+<footer class="bg-[#f5f5f7] dark:bg-[#161617] text-[#1d1d1f] dark:text-[#f5f5f7] border-t border-black/[0.08] dark:border-white/[0.08] mt-24 pt-12 pb-8 transition-colors duration-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-  <!-- Animated Background Pattern -->
-  <div class="absolute inset-0 opacity-10">
-    <div class="absolute top-0 -left-4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-    <div class="absolute top-0 -right-4 w-96 h-96 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-    <div class="absolute -bottom-8 left-20 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
-  </div>
-
-  <!-- Content -->
-  <div class="relative">
-    <!-- Main Footer Content -->
-    <div class="container mx-auto px-4 py-16">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
-
-        <!-- Brand & About - Larger Column -->
-        <div class="lg:col-span-4 footer-section">
-          <div class="mb-6">
-            <div class="text-3xl font-bold text-white mb-3 flex items-center group cursor-pointer">
-              <span class="text-white">
-                ร้านเครื่องครัวแสงทอง/ใจกล้า
-              </span>
-              <span class="text-primary-400 ml-1 group-hover:scale-125 transition-transform duration-300">.</span>
-            </div>
-            <p class="text-gray-300 leading-relaxed mb-6">
-              เครื่องครัวและอุปกรณ์ร้านอาหารคุณภาพพรีเมียม ครบวงจร พร้อมบริการที่เหนือระดับ
-            </p>
-
-            <!-- Social Media Icons -->
-            <div class="flex gap-3">
-              @for (social of socialLinks; track social.name) {
-                <a
-                  [href]="social.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="social-icon group relative w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:scale-110 transition-colors overflow-hidden"
-                  [attr.aria-label]="social.name"
-                >
-                  <div class="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <svg class="w-5 h-5 text-white relative z-10" fill="currentColor" viewBox="0 0 24 24">
-                    <path [attr.d]="social.icon"></path>
-                  </svg>
-                </a>
-              }
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Links -->
-        <div class="lg:col-span-3 footer-section">
-          <h4 class="text-white font-bold text-lg mb-6 flex items-center">
-            <span class="w-1 h-6 bg-blue-400 rounded-full mr-3"></span>
-            ช้อปปิ้ง
-          </h4>
-          <ul class="space-y-3">
-            @for (link of quickLinks; track link.label) {
-              <li>
-                <a
-                  [routerLink]="link.path"
-                  class="footer-link text-gray-300 hover:text-white transition-colors flex items-center group"
-                >
-                  <span class="w-0 h-0.5 bg-blue-500 group-hover:w-4 transition-colors mr-0 group-hover:mr-2"></span>
-                  {{ link.label }}
-                </a>
-              </li>
-            }
-          </ul>
-        </div>
-
-        <!-- "บริการลูกค้า" (Customer Service) column removed: every link it had
-             (/faq, /shipping, /returns, /track-order, /help) pointed at a page
-             that doesn't exist anywhere in the app - none of them were real. -->
-
-        <!-- Contact & Newsletter -->
-        <div class="lg:col-span-5 footer-section">
-          <h4 class="text-white font-bold text-lg mb-6 flex items-center">
-            <span class="w-1 h-6 bg-orange-400 rounded-full mr-3"></span>
-            ติดต่อเรา
-          </h4>
-
-          <!-- Contact Info -->
-          <div class="space-y-3 mb-6">
-            <a href="mailto:info@saengthong-jaikla.com" class="flex items-center text-gray-300 hover:text-white transition-colors group">
-              <div class="w-10 h-10 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center mr-3 group-hover:bg-blue-500 transition-all">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
-              </div>
-              <span class="text-sm">info@saengthong-jaikla.com</span>
-            </a>
-            <a href="tel:022773907" class="flex items-center text-gray-300 hover:text-white transition-colors group">
-              <div class="w-10 h-10 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center mr-3 group-hover:bg-blue-500 transition-all">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                </svg>
-              </div>
-              <span class="text-sm">02-277-3907</span>
-            </a>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Payment Methods & Trust Badges -->
-      <div class="mt-16 pt-8 border-t border-white/10">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div class="payment-methods">
-            <p class="text-gray-400 text-sm mb-3 text-center md:text-left">ช่องทางการชำระเงิน</p>
-            <div class="flex items-center gap-3 flex-wrap justify-center md:justify-start">
-              @for (payment of paymentMethods; track payment.name) {
-                <div
-                  class="payment-icon flex items-center gap-2 px-3 h-10 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-colors"
-                  [attr.title]="payment.name"
-                  [attr.aria-label]="payment.name"
-                >
-                  <svg class="w-5 h-5 text-white flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                    <path [attr.d]="payment.icon"></path>
-                  </svg>
-                  <span class="text-white text-xs whitespace-nowrap">{{ payment.name }}</span>
-                </div>
-              }
-            </div>
-          </div>
-
-          <div class="trust-badges flex gap-4">
-            <div class="badge px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 flex items-center gap-2">
-              <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-              </svg>
-              <span class="text-white text-sm font-medium">ปลอดภัย 100%</span>
-            </div>
-            <div class="badge px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 flex items-center gap-2">
-              <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
-                <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/>
-              </svg>
-              <span class="text-white text-sm font-medium">จัดส่งฟรี</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- Footnotes / Disclaimers (Apple Footnotes Style) -->
+    <div class="text-[12px] text-[#86868b] space-y-1.5 pb-8 border-b border-black/[0.08] dark:border-white/[0.08] leading-relaxed">
+      <p>* จัดส่งฟรีทั่วประเทศ เมื่อสั่งซื้อสินค้าตั้งแต่ ฿2,000 ขึ้นไปตามเงื่อนไขที่ร้านค้ากำหนด</p>
+      <p>** สินค้าสแตนเลสทุกชิ้นผลิตจากวัสดุ Food Grade ได้มาตรฐานความปลอดภัยสำหรับร้านอาหารและโรงแรม</p>
+      <p>*** บริการปรึกษาการออกแบบและจัดสรรพื้นที่ครัวฟรีโดยผู้เชี่ยวชาญ โทร 02-277-3907 หรือ LINE Official</p>
     </div>
 
-    <!-- Copyright Bar -->
-    <div class="copyright-bar border-t border-white/10 bg-black/20 backdrop-blur-sm">
-      <div class="container mx-auto px-4 py-6">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-          <p class="text-gray-400 text-sm text-center md:text-left">
-            <span class="text-gray-400 font-medium">
-              &copy; {{ currentYear }} ร้านเครื่องครัวแสงทอง/ใจกล้า
+    <!-- Main Directory Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 py-10">
+
+      <!-- Column 1: Store Info -->
+      <div class="col-span-2 md:col-span-1 space-y-3">
+        <h4 class="text-[13px] font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight">ร้านเครื่องครัวแสงทอง</h4>
+        <p class="text-[13px] text-[#6e6e73] dark:text-[#86868b] leading-relaxed">
+          ศูนย์รวมเครื่องครัวและอุปกรณ์สแตนเลสสำหรับร้านอาหาร คุณภาพระดับพรีเมียม พร้อมการรับประกันและบริการหลังการขาย
+        </p>
+        <div class="pt-2">
+          <a routerLink="/about" class="apple-link text-[13px]">
+            <span>เรียนรู้เพิ่มเติมเกี่ยวกับเรา</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Column 2: Shopping & Products -->
+      <div class="space-y-2.5">
+        <h4 class="text-[13px] font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight">เลือกซื้อสินค้า</h4>
+        <ul class="space-y-2 text-[13px]">
+          @for (link of quickLinks; track link.label) {
+            <li>
+              <a [routerLink]="link.path" class="text-[#6e6e73] dark:text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors">
+                {{ link.label }}
+              </a>
+            </li>
+          }
+          <li>
+            <a routerLink="/gallery" class="text-[#6e6e73] dark:text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors">
+              ผลงานการติดตั้ง
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Column 3: Contact Info -->
+      <div class="space-y-2.5">
+        <h4 class="text-[13px] font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight">ติดต่อเรา</h4>
+        <ul class="space-y-2 text-[13px] text-[#6e6e73] dark:text-[#86868b]">
+          <li>
+            <a href="tel:022773907" class="hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors flex items-center gap-1.5">
+              <span>โทร: 02-277-3907</span>
+            </a>
+          </li>
+          <li>
+            <a href="mailto:info@saengthong-jaikla.com" class="hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors">
+              info&#64;saengthong-jaikla.com
+            </a>
+          </li>
+          <li class="pt-1 text-[#86868b] leading-tight">
+            เปิดทำการ: จันทร์ - เสาร์<br />08:30 - 17:30 น.
+          </li>
+        </ul>
+      </div>
+
+      <!-- Column 4: Payment & Employee -->
+      <div class="space-y-3">
+        <h4 class="text-[13px] font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight">ช่องทางชำระเงิน</h4>
+        <div class="flex flex-wrap gap-2">
+          @for (payment of paymentMethods; track payment.name) {
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-[#1d1d1f] rounded-lg border border-black/[0.06] dark:border-white/[0.08] text-xs text-[#6e6e73] dark:text-[#86868b] shadow-sm">
+              <svg class="w-4 h-4 text-[#d97706] dark:text-[#fbbf24]" fill="currentColor" viewBox="0 0 24 24">
+                <path [attr.d]="payment.icon"></path>
+              </svg>
+              <span>{{ payment.name }}</span>
             </span>
-            <span class="mx-2">•</span>
-            สงวนลิขสิทธิ์
-          </p>
-          <div class="flex items-center gap-4 text-sm text-gray-400">
-            <a href="#" class="hover:text-white transition-colors">นโยบายความเป็นส่วนตัว</a>
-            <span>•</span>
-            <a href="#" class="hover:text-white transition-colors">เงื่อนไขการใช้งาน</a>
-            <span>•</span>
-            <a href="#" class="hover:text-white transition-colors">แผนผังเว็บไซต์</a>
-          </div>
+          }
+        </div>
+
+        <div class="pt-3">
+          <h4 class="text-[13px] font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight mb-1.5">สำหรับเจ้าหน้าที่</h4>
+          <a routerLink="/admin/login" class="text-xs text-[#86868b] hover:text-[#d97706] dark:hover:text-[#fbbf24] transition-colors">
+            เข้าสู่ระบบจัดการร้าน &rarr;
+          </a>
         </div>
       </div>
+
     </div>
+
+    <!-- Copyright & Legal Sub-Footer (Apple Style) -->
+    <div class="pt-6 border-t border-black/[0.08] dark:border-white/[0.08] flex flex-col md:flex-row items-center justify-between gap-4 text-[12px] text-[#86868b]">
+      <p>
+        Copyright &copy; {{ currentYear }} ร้านเครื่องครัวแสงทอง/ใจกล้า. สงวนลิขสิทธิ์ทุกประการ
+      </p>
+
+      <div class="flex items-center gap-4 flex-wrap justify-center">
+        <a routerLink="/about" class="hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors">เกี่ยวกับร้านค้า</a>
+        <span class="text-black/20 dark:text-white/20">|</span>
+        <a routerLink="/products" class="hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors">รายการสินค้า</a>
+        <span class="text-black/20 dark:text-white/20">|</span>
+        <a routerLink="/gallery" class="hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors">แกลเลอรี</a>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Back to Top Button -->
-  <button
-    (click)="scrollToTop()"
-    class="back-to-top fixed bottom-8 right-8 w-14 h-14 rounded-2xl bg-blue-500 text-white shadow-lg shadow-primary-500/50 flex items-center justify-center hover:scale-110 transition-colors z-50 opacity-0 pointer-events-none"
-    [class.show]="showBackToTop"
-    aria-label="Back to top"
-  >
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
-    </svg>
-  </button>
+  <!-- Apple Floating Back-To-Top Pill -->
+  @if (showBackToTop) {
+    <button
+      (click)="scrollToTop()"
+      class="fixed bottom-6 right-6 z-40 px-4 py-2.5 rounded-full bg-white/90 dark:bg-[#1d1d1f]/90 backdrop-blur-xl text-[#1d1d1f] dark:text-[#f5f5f7] border border-black/[0.08] dark:border-white/[0.1] shadow-apple-md hover:bg-white dark:hover:bg-[#2c2c2e] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2 text-xs font-medium"
+      aria-label="กลับขึ้นด้านบน"
+    >
+      <svg class="w-4 h-4 text-[#d97706] dark:text-[#fbbf24]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+      </svg>
+      <span>ด้านบน</span>
+    </button>
+  }
 </footer>

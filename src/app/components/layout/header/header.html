@@ -1,334 +1,417 @@
-<!-- Modern Premium Navigation Header -->
-<header #headerElement class="header-wrapper">
-  <div class="header-container">
-    <div class="header-content">
+<!-- Apple-Inspired Global Navigation Header: "เครื่องครัวแสงทอง" -->
+<header #headerElement class="sticky top-0 z-50 transition-all duration-300 apple-nav-glass dark:bg-[#161617]/85 dark:border-b dark:border-white/[0.08]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-14 sm:h-16 gap-4">
 
-      <!-- Logo Section -->
-      <div class="logo-section">
-        <a routerLink="/" class="logo-link">
-          <span class="logo-text">ร้านเครื่องครัวแสงทอง/ใจกล้า</span>
+      <!-- Store Brand / Logo ("แสงทอง" Golden Light Emblem) -->
+      <div class="flex-shrink-0 flex items-center">
+        <a routerLink="/" class="flex items-center gap-2.5 group text-decoration-none">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#d97706] to-[#b45309] flex items-center justify-center text-white shadow-apple-gold group-hover:scale-105 transition-transform duration-300">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </div>
+          <span class="font-bold text-[15px] sm:text-base tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7] group-hover:text-[#d97706] dark:group-hover:text-[#fbbf24] transition-colors">
+            เครื่องครัวแสงทอง
+          </span>
         </a>
       </div>
 
-      <!-- Desktop Navigation with Hover Effects -->
-      <nav class="desktop-nav">
-        <a routerLink="/" routerLinkActive="nav-link-active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
-          <span class="nav-link-text">หน้าแรก</span>
-          <span class="nav-link-underline"></span>
+      <!-- Desktop Navigation Links (Apple Style & Dark Mode) -->
+      <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+        <a
+          routerLink="/"
+          routerLinkActive="text-[#d97706] dark:text-[#fbbf24] font-semibold bg-black/[0.04] dark:bg-white/[0.08]"
+          [routerLinkActiveOptions]="{exact: true}"
+          class="px-3.5 py-1.5 rounded-full text-[14px] text-[#6e6e73] dark:text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-all duration-200"
+        >
+          หน้าแรก
         </a>
-        <a routerLink="/products" routerLinkActive="nav-link-active" class="nav-link">
-          <span class="nav-link-text">สินค้า</span>
-          <span class="nav-link-underline"></span>
+        <a
+          routerLink="/products"
+          routerLinkActive="text-[#d97706] dark:text-[#fbbf24] font-semibold bg-black/[0.04] dark:bg-white/[0.08]"
+          class="px-3.5 py-1.5 rounded-full text-[14px] text-[#6e6e73] dark:text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-all duration-200"
+        >
+          สินค้า
         </a>
-        <a routerLink="/gallery" routerLinkActive="nav-link-active" class="nav-link">
-          <span class="nav-link-text">ผลงาน</span>
-          <span class="nav-link-underline"></span>
+        <a
+          routerLink="/categories"
+          routerLinkActive="text-[#d97706] dark:text-[#fbbf24] font-semibold bg-black/[0.04] dark:bg-white/[0.08]"
+          class="px-3.5 py-1.5 rounded-full text-[14px] text-[#6e6e73] dark:text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-all duration-200"
+        >
+          หมวดหมู่
         </a>
-        <a routerLink="/about" routerLinkActive="nav-link-active" class="nav-link">
-          <span class="nav-link-text">เกี่ยวกับเรา</span>
-          <span class="nav-link-underline"></span>
+        <a
+          routerLink="/gallery"
+          routerLinkActive="text-[#d97706] dark:text-[#fbbf24] font-semibold bg-black/[0.04] dark:bg-white/[0.08]"
+          class="px-3.5 py-1.5 rounded-full text-[14px] text-[#6e6e73] dark:text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-all duration-200"
+        >
+          ผลงาน
+        </a>
+        <a
+          routerLink="/about"
+          routerLinkActive="text-[#d97706] dark:text-[#fbbf24] font-semibold bg-black/[0.04] dark:bg-white/[0.08]"
+          class="px-3.5 py-1.5 rounded-full text-[14px] text-[#6e6e73] dark:text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] hover:bg-black/[0.03] dark:hover:bg-white/[0.04] transition-all duration-200"
+        >
+          เกี่ยวกับเรา
         </a>
         @if (employeeAuthService.isAuthenticated) {
-          <a routerLink="/admin" routerLinkActive="nav-link-active" class="nav-link">
-            <span class="nav-link-text">จัดการร้าน</span>
-            <span class="nav-link-underline"></span>
+          <a
+            routerLink="/admin"
+            routerLinkActive="text-[#d97706] dark:text-[#fbbf24] font-semibold bg-black/[0.04] dark:bg-white/[0.08]"
+            class="px-3.5 py-1.5 rounded-full text-[14px] text-[#d97706] dark:text-[#fbbf24] font-medium bg-[#d97706]/10 dark:bg-[#fbbf24]/15 hover:bg-[#d97706]/20 transition-all duration-200"
+          >
+            จัดการร้าน
           </a>
         } @else {
-          <!-- Previously there was no way to reach /admin/login from the site
-               at all unless you already knew (and typed) the URL directly. -->
-          <a routerLink="/admin/login" routerLinkActive="nav-link-active" class="nav-link" title="สำหรับพนักงาน">
-            <span class="nav-link-text">เข้าสู่ระบบพนักงาน</span>
-            <span class="nav-link-underline"></span>
+          <a
+            routerLink="/admin/login"
+            routerLinkActive="text-[#d97706] dark:text-[#fbbf24] font-semibold bg-black/[0.04] dark:bg-white/[0.08]"
+            class="px-3 py-1.5 rounded-full text-[13px] text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] transition-colors"
+            title="สำหรับพนักงาน"
+          >
+            พนักงาน
           </a>
         }
       </nav>
 
-      <!-- Modern Search Bar (Desktop) -->
-      <div class="search-bar-desktop">
-        <div class="search-input-wrapper">
-          <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-          <input
-            type="text"
-            [(ngModel)]="searchQuery"
-            (input)="onSearchInput()"
-            (keyup.enter)="onSearchSubmit()"
-            placeholder="ค้นหาสินค้า..."
-            class="search-input"
-          />
-          @if (searchQuery.length > 0) {
-            <button (click)="clearSearch()" class="search-clear-btn">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
+      <!-- Search, Theme Switcher & Action Buttons -->
+      <div class="flex items-center gap-2 sm:gap-3">
+
+        <!-- Theme Toggle Button (Sun/Moon) -->
+        <button
+          (click)="toggleTheme()"
+          class="p-2 rounded-full text-[#1d1d1f] dark:text-[#f5f5f7] hover:bg-black/[0.05] dark:hover:bg-white/[0.1] transition-all focus:outline-none"
+          [attr.aria-label]="themeService.isDark() ? 'สลับเป็นโหมดสว่าง' : 'สลับเป็นโหมดมืด'"
+          [title]="themeService.isDark() ? 'สลับเป็นโหมดสว่าง (Light Mode)' : 'สลับเป็นโหมดมืด (Dark Mode)'"
+        >
+          @if (themeService.isDark()) {
+            <!-- Sun Icon -->
+            <svg class="w-5 h-5 text-[#fbbf24] transition-transform duration-300 rotate-0 hover:rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+          } @else {
+            <!-- Moon Icon -->
+            <svg class="w-5 h-5 text-[#6e6e73] transition-transform duration-300 -rotate-12 hover:rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
+          }
+        </button>
+
+        <!-- Apple Style Desktop Search Pill -->
+        <div class="hidden lg:block relative w-44 xl:w-56">
+          <div class="relative flex items-center">
+            <svg class="absolute left-3 w-4 h-4 text-[#86868b] pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              [(ngModel)]="searchQuery"
+              (input)="onSearchInput()"
+              (keyup.enter)="onSearchSubmit()"
+              placeholder="ค้นหาเครื่องครัว..."
+              class="w-full pl-9 pr-8 py-1.5 text-[13px] bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.06] dark:hover:bg-white/[0.12] focus:bg-white dark:focus:bg-[#1d1d1f] text-[#1d1d1f] dark:text-[#f5f5f7] placeholder-[#86868b] rounded-full border border-transparent focus:border-[#d97706] dark:focus:border-[#fbbf24] focus:ring-2 focus:ring-[#d97706]/20 transition-all outline-none"
+            />
+            @if (searchQuery.length > 0) {
+              <button (click)="clearSearch()" class="absolute right-2.5 text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7]">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            }
+          </div>
+
+          <!-- Instant Search Dropdown (Apple Style & Dark Mode) -->
+          @if (searchResults.length > 0 && searchQuery.length > 0) {
+            <div class="absolute top-full left-0 right-0 mt-2 bg-white/95 dark:bg-[#1d1d1f]/95 backdrop-blur-2xl rounded-2xl shadow-apple-lg border border-black/[0.08] dark:border-white/[0.1] overflow-hidden z-50 animate-apple-scale">
+              <div class="p-2 space-y-1">
+                @for (product of searchResults; track product.id) {
+                  <div
+                    (click)="goToProduct(product.slug)"
+                    class="flex items-center gap-3 p-2 rounded-xl hover:bg-[#f5f5f7] dark:hover:bg-white/[0.06] cursor-pointer transition-colors"
+                  >
+                    <img
+                      [src]="getProductImageUrl(product)"
+                      [alt]="product.name"
+                      class="w-10 h-10 object-cover rounded-lg bg-[#f5f5f7] dark:bg-[#2c2c2e] flex-shrink-0"
+                    />
+                    <div class="min-w-0 flex-1">
+                      <p class="text-xs font-medium text-[#1d1d1f] dark:text-[#f5f5f7] truncate">{{ product.name }}</p>
+                      <p class="text-xs text-[#d97706] dark:text-[#fbbf24] font-bold">฿{{ product.basePrice.toLocaleString() }}</p>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
           }
         </div>
 
-        <!-- Search Dropdown Results -->
-        @if (searchResults.length > 0 && searchQuery.length > 0) {
-          <div class="search-results-dropdown">
-            @for (product of searchResults; track product.id) {
-              <div (click)="goToProduct(product.slug)" class="search-result-item">
-                <img
-                  [src]="getProductImageUrl(product)"
-                  [alt]="product.name"
-                  class="search-result-image"
-                />
-                <div class="search-result-content">
-                  <h4 class="search-result-title">{{ product.name }}</h4>
-                  <p class="search-result-price">฿{{ product.basePrice.toLocaleString() }}</p>
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Right Section -->
-      <div class="header-actions">
-
-        <!-- Search Icon (Mobile) -->
-        <button (click)="toggleSearch()" class="action-btn md:hidden">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        <!-- Mobile Search Trigger Icon -->
+        <button
+          (click)="toggleSearch()"
+          class="lg:hidden p-2 text-[#6e6e73] dark:text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] rounded-full hover:bg-black/[0.05] dark:hover:bg-white/[0.1] transition-colors"
+          aria-label="ค้นหา"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </button>
 
-        <!-- Cart with Gradient Badge -->
-        <a routerLink="/cart" class="cart-link">
-          <div class="cart-icon-wrapper">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-            </svg>
-            @if (cartItemCount() > 0) {
-              <span class="cart-badge">
-                <span class="cart-badge-gradient"></span>
-                <span class="cart-badge-text">{{ cartItemCount() }}</span>
-              </span>
-            }
-          </div>
+        <!-- Cart / Bag (Apple Bag Style) -->
+        <a
+          routerLink="/cart"
+          class="relative p-2 text-[#6e6e73] dark:text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] rounded-full hover:bg-black/[0.05] dark:hover:bg-white/[0.1] transition-colors group"
+          aria-label="ตะกร้าสินค้า"
+        >
+          <svg class="w-5 h-5 group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          @if (cartItemCount() > 0) {
+            <span class="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-[#d97706] dark:bg-[#f59e0b] rounded-full shadow-apple-gold">
+              {{ cartItemCount() }}
+            </span>
+          }
         </a>
 
-        <!-- User Menu -->
+        <!-- User Authentication & Profile Menu -->
         @if (currentUser || currentEmployee) {
-          <div class="user-menu-wrapper" #userMenuRef>
-            <button (click)="toggleUserMenu()" class="user-menu-btn">
-              <div class="user-avatar">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
+          <div class="relative" #userMenuRef>
+            <button
+              (click)="toggleUserMenu()"
+              class="flex items-center gap-1.5 p-1.5 rounded-full hover:bg-black/[0.05] dark:hover:bg-white/[0.1] transition-colors"
+              aria-label="โปรไฟล์ผู้ใช้งาน"
+            >
+              <div class="w-7 h-7 rounded-full bg-[#1d1d1f] dark:bg-[#2c2c2e] text-white flex items-center justify-center text-xs font-semibold">
+                {{ getUserInitial() }}
               </div>
-              <svg class="user-menu-chevron" [class.rotate-180]="isUserMenuOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              <svg class="w-3.5 h-3.5 text-[#86868b] transition-transform" [class.rotate-180]="isUserMenuOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
 
+            <!-- User Dropdown (Apple Style Floating Card & Dark Mode) -->
             @if (isUserMenuOpen) {
-              <div #userDropdownRef class="user-dropdown">
-                <div class="user-dropdown-header">
-                  <div class="user-dropdown-avatar">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <p class="user-dropdown-name">{{ currentEmployee ? currentEmployee.fullName : currentUser?.fullName }}</p>
-                    <p class="user-dropdown-email">{{ currentEmployee ? currentEmployee.email : currentUser?.email }}</p>
-                  </div>
+              <div #userDropdownRef class="absolute right-0 mt-2 w-64 bg-white/95 dark:bg-[#1d1d1f]/95 backdrop-blur-2xl rounded-2xl shadow-apple-lg border border-black/[0.08] dark:border-white/[0.1] p-2 z-50 animate-apple-scale">
+                <div class="px-3 py-2.5 border-b border-black/[0.06] dark:border-white/[0.08]">
+                  <p class="text-xs text-[#86868b]">เข้าสู่ระบบในชื่อ</p>
+                  <p class="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] truncate">
+                    {{ currentEmployee ? currentEmployee.fullName : currentUser?.fullName }}
+                  </p>
+                  <p class="text-xs text-[#86868b] truncate">
+                    {{ currentEmployee ? currentEmployee.email : currentUser?.email }}
+                  </p>
                 </div>
 
-                <div class="user-dropdown-divider"></div>
+                <div class="py-1 space-y-0.5">
+                  @if (currentUser) {
+                    <a
+                      routerLink="/profile"
+                      (click)="toggleUserMenu()"
+                      class="flex items-center gap-2.5 px-3 py-2 text-sm text-[#1d1d1f] dark:text-[#f5f5f7] rounded-xl hover:bg-[#f5f5f7] dark:hover:bg-white/[0.06] transition-colors"
+                    >
+                      <svg class="w-4 h-4 text-[#86868b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span>โปรไฟล์และคำสั่งซื้อ</span>
+                    </a>
+                  }
 
-                @if (currentUser) {
-                  <a routerLink="/profile" (click)="toggleUserMenu()" class="user-dropdown-item">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                  @if (employeeAuthService.isAuthenticated) {
+                    <a
+                      routerLink="/admin"
+                      (click)="toggleUserMenu()"
+                      class="flex items-center gap-2.5 px-3 py-2 text-sm text-[#d97706] dark:text-[#fbbf24] font-medium rounded-xl hover:bg-[#d97706]/10 transition-colors"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span>ระบบจัดการร้าน</span>
+                    </a>
+                  }
+                </div>
+
+                <div class="pt-1 border-t border-black/[0.06] dark:border-white/[0.08]">
+                  <button
+                    (click)="logout()"
+                    class="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-[#ff3b30] rounded-xl hover:bg-[#ff3b30]/10 transition-colors"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
-                    <span>โปรไฟล์</span>
-                  </a>
-
-                  <div class="user-dropdown-divider"></div>
-                }
-
-                <button (click)="logout()" class="user-dropdown-item user-dropdown-logout">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                  </svg>
-                  <span>ออกจากระบบ</span>
-                </button>
+                    <span>ออกจากระบบ</span>
+                  </button>
+                </div>
               </div>
             }
           </div>
         } @else {
-          <div class="auth-buttons">
-            <a routerLink="/login" class="login-btn">
-              <span class="hidden sm:inline">เข้าสู่ระบบ</span>
-              <svg class="w-5 h-5 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
-              </svg>
+          <!-- Guest Auth Action (Apple Pill & "แสงทอง" Gold) -->
+          <div class="hidden sm:flex items-center gap-2">
+            <a
+              routerLink="/login"
+              class="px-3.5 py-1.5 text-[13px] font-medium text-[#1d1d1f] dark:text-[#f5f5f7] hover:text-[#d97706] dark:hover:text-[#fbbf24] transition-colors"
+            >
+              เข้าสู่ระบบ
             </a>
-            <a routerLink="/register" class="register-btn">
-              <span class="register-btn-gradient"></span>
-              <span class="register-btn-text hidden sm:inline">สมัครสมาชิก</span>
-              <svg class="w-5 h-5 sm:hidden relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-              </svg>
+            <a
+              routerLink="/register"
+              class="apple-pill-btn !py-1.5 !px-4 !text-[13px]"
+            >
+              สมัครสมาชิก
             </a>
           </div>
         }
 
-        <!-- Mobile Hamburger Menu -->
-        <button (click)="toggleMobileMenu()" class="hamburger-btn">
-          <span class="hamburger-line" [class.hamburger-open-1]="isMobileMenuOpen"></span>
-          <span class="hamburger-line" [class.hamburger-open-2]="isMobileMenuOpen"></span>
-          <span class="hamburger-line" [class.hamburger-open-3]="isMobileMenuOpen"></span>
+        <!-- Mobile Hamburger Toggle -->
+        <button
+          (click)="toggleMobileMenu()"
+          class="md:hidden p-2 text-[#1d1d1f] dark:text-[#f5f5f7] rounded-full hover:bg-black/[0.05] dark:hover:bg-white/[0.1] transition-colors"
+          aria-label="เปิดเมนู"
+        >
+          @if (isMobileMenuOpen) {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          } @else {
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          }
         </button>
       </div>
+
     </div>
   </div>
 
-  <!-- Mobile Menu with Smooth Animation -->
-  <div #mobileMenuRef class="mobile-menu" [class.open]="isMobileMenuOpen">
-    <div class="mobile-menu-content">
-
-      <!-- Mobile Search -->
-      <div class="mobile-search-wrapper">
-        <div class="mobile-search-input-wrapper">
-          <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-          <input
-            type="text"
-            [(ngModel)]="mobileSearchQuery"
-            (input)="onMobileSearchInput()"
-            (keyup.enter)="onMobileSearchSubmit()"
-            placeholder="ค้นหาสินค้า..."
-            class="mobile-search-input"
-          />
-        </div>
+  <!-- Mobile Slide-out Menu (Apple Style Full Screen Blur & Dark Mode) -->
+  @if (isMobileMenuOpen) {
+    <div class="md:hidden bg-white/95 dark:bg-[#161617]/95 backdrop-blur-2xl border-b border-black/[0.08] dark:border-white/[0.1] px-6 py-6 space-y-4 animate-apple-fade-up">
+      <!-- Mobile Search Input -->
+      <div class="relative">
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#86868b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          type="text"
+          [(ngModel)]="mobileSearchQuery"
+          (input)="onMobileSearchInput()"
+          (keyup.enter)="onMobileSearchSubmit()"
+          placeholder="ค้นหาเครื่องครัว..."
+          class="w-full pl-10 pr-4 py-2.5 text-sm bg-black/[0.05] dark:bg-white/[0.08] text-[#1d1d1f] dark:text-[#f5f5f7] rounded-xl outline-none focus:ring-2 focus:ring-[#d97706]/20"
+        />
       </div>
 
       <!-- Mobile Navigation Links -->
-      <nav class="mobile-nav">
-        <a routerLink="/" (click)="toggleMobileMenu()" class="mobile-nav-link">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-          </svg>
-          <span>หน้าแรก</span>
+      <nav class="space-y-1 pt-2">
+        <a
+          routerLink="/"
+          (click)="toggleMobileMenu()"
+          class="block py-2.5 px-3 text-[17px] font-medium text-[#1d1d1f] dark:text-[#f5f5f7] rounded-xl hover:bg-black/[0.03] dark:hover:bg-white/[0.06]"
+        >
+          หน้าแรก
         </a>
-        <a routerLink="/products" (click)="toggleMobileMenu()" class="mobile-nav-link">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-          </svg>
-          <span>สินค้า</span>
+        <a
+          routerLink="/products"
+          (click)="toggleMobileMenu()"
+          class="block py-2.5 px-3 text-[17px] font-medium text-[#1d1d1f] dark:text-[#f5f5f7] rounded-xl hover:bg-black/[0.03] dark:hover:bg-white/[0.06]"
+        >
+          สินค้าทั้งหมด
         </a>
-        <a routerLink="/gallery" (click)="toggleMobileMenu()" class="mobile-nav-link">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
-          <span>ผลงาน</span>
+        <a
+          routerLink="/categories"
+          (click)="toggleMobileMenu()"
+          class="block py-2.5 px-3 text-[17px] font-medium text-[#1d1d1f] dark:text-[#f5f5f7] rounded-xl hover:bg-black/[0.03] dark:hover:bg-white/[0.06]"
+        >
+          หมวดหมู่สินค้า
         </a>
-        <a routerLink="/about" (click)="toggleMobileMenu()" class="mobile-nav-link">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <span>เกี่ยวกับเรา</span>
+        <a
+          routerLink="/gallery"
+          (click)="toggleMobileMenu()"
+          class="block py-2.5 px-3 text-[17px] font-medium text-[#1d1d1f] dark:text-[#f5f5f7] rounded-xl hover:bg-black/[0.03] dark:hover:bg-white/[0.06]"
+        >
+          ผลงานของเรา
+        </a>
+        <a
+          routerLink="/about"
+          (click)="toggleMobileMenu()"
+          class="block py-2.5 px-3 text-[17px] font-medium text-[#1d1d1f] dark:text-[#f5f5f7] rounded-xl hover:bg-black/[0.03] dark:hover:bg-white/[0.06]"
+        >
+          เกี่ยวกับเรา
         </a>
         @if (employeeAuthService.isAuthenticated) {
-          <a routerLink="/admin" (click)="toggleMobileMenu()" class="mobile-nav-link">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            <span>จัดการร้าน</span>
-          </a>
-        } @else {
-          <a routerLink="/admin/login" (click)="toggleMobileMenu()" class="mobile-nav-link">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            <span>เข้าสู่ระบบพนักงาน</span>
+          <a
+            routerLink="/admin"
+            (click)="toggleMobileMenu()"
+            class="block py-2.5 px-3 text-[17px] font-semibold text-[#d97706] dark:text-[#fbbf24] bg-[#d97706]/10 rounded-xl"
+          >
+            ระบบจัดการร้าน (พนักงาน)
           </a>
         }
       </nav>
 
-      @if (currentUser || currentEmployee) {
-        <div class="mobile-user-section">
-          <div class="mobile-user-info">
-            <div class="mobile-user-avatar">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-              </svg>
-            </div>
-            <div>
-              <p class="mobile-user-name">{{ currentEmployee ? currentEmployee.fullName : currentUser?.fullName }}</p>
-              <p class="mobile-user-email">{{ currentEmployee ? currentEmployee.email : currentUser?.email }}</p>
-            </div>
+      <!-- Mobile User / Auth Section -->
+      <div class="pt-4 border-t border-black/[0.06] dark:border-white/[0.08]">
+        @if (currentUser || currentEmployee) {
+          <div class="space-y-2">
+            <p class="text-xs text-[#86868b] px-3">
+              {{ currentEmployee ? currentEmployee.fullName : currentUser?.fullName }}
+            </p>
+            @if (currentUser) {
+              <a
+                routerLink="/profile"
+                (click)="toggleMobileMenu()"
+                class="block py-2 px-3 text-sm text-[#1d1d1f] dark:text-[#f5f5f7] rounded-lg hover:bg-black/[0.03] dark:hover:bg-white/[0.06]"
+              >
+                โปรไฟล์และคำสั่งซื้อ
+              </a>
+            }
+            <button
+              (click)="logout(); toggleMobileMenu()"
+              class="w-full text-left py-2 px-3 text-sm text-[#ff3b30] font-medium rounded-lg hover:bg-[#ff3b30]/10"
+            >
+              ออกจากระบบ
+            </button>
           </div>
-
-          @if (currentUser) {
-            <a routerLink="/profile" (click)="toggleMobileMenu()" class="mobile-nav-link">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-              </svg>
-              <span>โปรไฟล์</span>
+        } @else {
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <a
+              routerLink="/login"
+              (click)="toggleMobileMenu()"
+              class="apple-pill-btn-secondary text-center"
+            >
+              เข้าสู่ระบบ
             </a>
-          }
-
-          @if (employeeAuthService.isAuthenticated) {
-            <a routerLink="/admin" (click)="toggleMobileMenu()" class="mobile-nav-link">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-              <span>จัดการระบบ</span>
+            <a
+              routerLink="/register"
+              (click)="toggleMobileMenu()"
+              class="apple-pill-btn text-center"
+            >
+              สมัครสมาชิก
             </a>
-          }
-
-          <button (click)="logout(); toggleMobileMenu()" class="mobile-nav-link mobile-logout-btn">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-            </svg>
-            <span>ออกจากระบบ</span>
-          </button>
-        </div>
-      } @else {
-        <div class="mobile-auth-section">
-          <a routerLink="/login" (click)="toggleMobileMenu()" class="mobile-login-btn">เข้าสู่ระบบ</a>
-          <a routerLink="/register" (click)="toggleMobileMenu()" class="mobile-register-btn">
-            <span class="mobile-register-gradient"></span>
-            <span class="mobile-register-text">สมัครสมาชิก</span>
-          </a>
-        </div>
-      }
+          </div>
+        }
+      </div>
     </div>
-  </div>
-
-  <!-- Mobile Menu Backdrop -->
-  @if (isMobileMenuOpen) {
-    <div class="mobile-menu-backdrop" (click)="toggleMobileMenu()"></div>
   }
 </header>
 
-<!-- Mobile Search Modal -->
+<!-- Mobile Search Modal (Apple Style & Dark Mode) -->
 @if (isSearchOpen) {
-  <div class="search-modal-overlay" (click)="toggleSearch()">
-    <div class="search-modal" (click)="$event.stopPropagation()">
-      <div class="search-modal-header">
-        <h3 class="search-modal-title">ค้นหาสินค้า</h3>
-        <button (click)="toggleSearch()" class="search-modal-close">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+  <div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-start justify-center pt-20 px-4" (click)="toggleSearch()">
+    <div class="w-full max-w-lg bg-white/95 dark:bg-[#1d1d1f]/95 backdrop-blur-2xl rounded-3xl p-6 shadow-apple-lg border border-black/[0.08] dark:border-white/[0.1] animate-apple-scale" (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">ค้นหาสินค้า</h3>
+        <button (click)="toggleSearch()" class="p-1 text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] rounded-full hover:bg-black/[0.05] dark:hover:bg-white/[0.1]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
-      <div class="search-modal-input-wrapper">
-        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      <div class="relative mb-4">
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#86868b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
         <input
           #searchInput
@@ -336,40 +419,33 @@
           [(ngModel)]="searchQuery"
           (input)="onSearchInput()"
           (keyup.enter)="onSearchSubmit()"
-          placeholder="พิมพ์เพื่อค้นหา..."
-          class="search-modal-input"
+          placeholder="พิมพ์ชื่อสินค้าหรือประเภท..."
+          class="w-full pl-10 pr-4 py-3 bg-[#f5f5f7] dark:bg-[#2c2c2e] text-[#1d1d1f] dark:text-[#f5f5f7] rounded-2xl text-sm outline-none focus:ring-2 focus:ring-[#d97706]/20 focus:bg-white dark:focus:bg-[#1d1d1f] border border-transparent focus:border-[#d97706] dark:focus:border-[#fbbf24] transition-all"
         />
       </div>
 
-      <div class="search-modal-results">
+      <!-- Modal Search Results -->
+      <div class="max-h-72 overflow-y-auto space-y-1">
         @if (searchResults.length > 0) {
           @for (product of searchResults; track product.id) {
-            <div (click)="goToProduct(product.slug)" class="search-modal-result-item">
+            <div
+              (click)="goToProduct(product.slug)"
+              class="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-[#f5f5f7] dark:hover:bg-white/[0.06] cursor-pointer transition-colors"
+            >
               <img
                 [src]="getProductImageUrl(product)"
                 [alt]="product.name"
-                class="search-modal-result-image"
+                class="w-12 h-12 object-cover rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] flex-shrink-0"
               />
-              <div class="search-modal-result-content">
-                <h4 class="search-modal-result-title">{{ product.name }}</h4>
-                <p class="search-modal-result-desc">{{ product.shortDescription }}</p>
-                <p class="search-modal-result-price">฿{{ product.basePrice.toLocaleString() }}</p>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-medium text-[#1d1d1f] dark:text-[#f5f5f7] truncate">{{ product.name }}</p>
+                <p class="text-xs text-[#d97706] dark:text-[#fbbf24] font-bold">฿{{ product.basePrice.toLocaleString() }}</p>
               </div>
             </div>
           }
         } @else if (searchQuery.trim().length > 0) {
-          <div class="search-modal-empty">
-            <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            <p class="search-modal-empty-text">ไม่พบสินค้าที่ค้นหา</p>
-          </div>
-        } @else {
-          <div class="search-modal-empty">
-            <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            <p class="search-modal-empty-text">พิมพ์คำค้นหาเพื่อเริ่มต้น</p>
+          <div class="text-center py-8 text-[#86868b] text-sm">
+            ไม่พบสินค้าที่ตรงกับ "{{ searchQuery }}"
           </div>
         }
       </div>

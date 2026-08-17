@@ -65,7 +65,8 @@ export class ExpenseListAdminComponent implements OnInit {
   searchTerm = signal('');
   selectedBranch = signal<string>('');
   selectedCategory = signal<string>('');
-  selectedMonth = signal<string>('');
+  startDate = signal<string>('');
+  endDate = signal<string>('');
   selectedPaymentMethod = signal<string>('');
 
   // Modals
@@ -104,7 +105,6 @@ export class ExpenseListAdminComponent implements OnInit {
     this.loadExpenses();
     this.loadCategories();
     this.loadBranches();
-    this.setCurrentMonth();
   }
 
   private initForm(): void {
@@ -126,13 +126,6 @@ export class ExpenseListAdminComponent implements OnInit {
 
   getFieldError(fieldName: string): string {
     return FormHelpers.getFieldError(this.expenseForm, fieldName);
-  }
-
-  setCurrentMonth(): void {
-    const now = new Date();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const year = now.getFullYear();
-    this.selectedMonth.set(`${year}-${month}`);
   }
 
   loadExpenses(): void {
@@ -201,14 +194,20 @@ export class ExpenseListAdminComponent implements OnInit {
       filtered = filtered.filter(exp => exp.categoryId?.toString() === this.selectedCategory());
     }
 
-    // Month filter
-    if (this.selectedMonth()) {
-      const [year, month] = this.selectedMonth().split('-');
+    // Date range filter
+    if (this.startDate()) {
       filtered = filtered.filter(exp => {
         if (!exp.expenseDate) return false;
-        const expDate = new Date(exp.expenseDate);
-        return expDate.getFullYear().toString() === year &&
-               (expDate.getMonth() + 1).toString().padStart(2, '0') === month;
+        const expDate = exp.expenseDate.split('T')[0];
+        return expDate >= this.startDate();
+      });
+    }
+
+    if (this.endDate()) {
+      filtered = filtered.filter(exp => {
+        if (!exp.expenseDate) return false;
+        const expDate = exp.expenseDate.split('T')[0];
+        return expDate <= this.endDate();
       });
     }
 
@@ -236,8 +235,19 @@ export class ExpenseListAdminComponent implements OnInit {
     this.applyFilters();
   }
 
-  onMonthFilterChange(value: string): void {
-    this.selectedMonth.set(value);
+  onStartDateChange(value: string): void {
+    this.startDate.set(value);
+    this.applyFilters();
+  }
+
+  onEndDateChange(value: string): void {
+    this.endDate.set(value);
+    this.applyFilters();
+  }
+
+  clearDateFilters(): void {
+    this.startDate.set('');
+    this.endDate.set('');
     this.applyFilters();
   }
 

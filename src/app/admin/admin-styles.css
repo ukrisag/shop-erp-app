@@ -1,462 +1,1039 @@
 /**
- * Admin Design System Styles
- * ใช้กับทุกหน้า Admin
+ * Apple macOS / iPadOS Pro Admin Design System: "เครื่องครัวแสงทอง" (Golden Light)
+ * Unified styles for all Admin & ERP interfaces
+ * Unified Button Palette & Pure Black (#000000) Dark Mode Support
  */
 
 /* ========================================
-   PAGE LAYOUT
+   GLOBAL PURE BLACK CANVAS FOR DARK MODE
    ======================================== */
 
+html.dark,
+html.dark body,
+:is(.dark) .admin-layout,
+:is(.dark) .main-wrapper,
+:is(.dark) .main-content,
+:is(.dark) .admin-page,
+:is(.dark) .main-content .p-6,
+:is(.dark) .main-content > div {
+  background-color: #000000 !important;
+  color: #f5f5f7 !important;
+}
+
 .admin-page {
-  @apply min-h-screen bg-gray-50 p-4 sm:p-6;
+  min-height: 100vh;
+  background-color: #f5f5f7;
+  padding: 1.5rem 1rem;
+  font-family: inherit;
+  color: #1d1d1f;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.page-header {
-  @apply bg-white rounded-xl shadow-sm p-4 sm:p-6 mb-6;
+@media (min-width: 640px) {
+  .admin-page {
+    padding: 1.5rem 2rem;
+  }
 }
 
-.page-header-content {
-  @apply flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4;
-}
-
-.page-title {
-  @apply text-2xl font-bold text-gray-900;
-}
-
-.page-description {
-  @apply text-sm text-gray-600 mt-1;
-}
-
-.page-actions {
-  @apply flex items-center gap-3 flex-wrap;
-}
-
-.page-content {
-  @apply bg-white rounded-xl shadow-sm;
+:is(.dark) .admin-page {
+  background-color: #000000 !important;
+  color: #f5f5f7 !important;
 }
 
 /* ========================================
-   BUTTONS
+   UNIFIED BUTTON PALETTE (Cohesive Apple System)
    ======================================== */
 
 .btn {
-  @apply px-4 py-2.5 rounded-lg font-medium
-         transition-all duration-200
-         flex items-center justify-center gap-2
-         disabled:opacity-50 disabled:cursor-not-allowed
-         shadow-sm hover:shadow;
+  padding: 0.5rem 1.125rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  outline: none;
+  border: 1px solid transparent;
+  cursor: pointer;
 }
 
-.btn-primary {
-  @apply btn bg-blue-600 text-white
-         hover:bg-blue-700 active:bg-blue-800;
+.btn:active {
+  transform: scale(0.98);
 }
 
-.btn-secondary {
-  @apply btn bg-white text-gray-700 border border-gray-300
-         hover:bg-gray-50 active:bg-gray-100;
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
 }
 
-.btn-success {
-  @apply btn bg-green-600 text-white
-         hover:bg-green-700 active:bg-green-800;
+/* 1. Primary Action Button - "แสงทอง" Golden Radiance */
+.btn-primary,
+button.bg-primary-600,
+button.bg-blue-600,
+button.bg-blue-500,
+a.bg-primary-600,
+a.bg-blue-600,
+a.bg-blue-500,
+button[type="submit"]:not(.btn-secondary):not(.btn-danger) {
+  background-image: none !important;
+  background-color: #d97706 !important;
+  color: #ffffff !important;
+  border-radius: 9999px !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  padding: 0.5rem 1.25rem !important;
+  box-shadow: 0 2px 10px rgba(217, 119, 6, 0.28) !important;
+  border: 1px solid transparent !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.375rem !important;
+  transition: all 0.2s ease !important;
 }
 
-.btn-warning {
-  @apply btn bg-amber-600 text-white
-         hover:bg-amber-700 active:bg-amber-800;
+.btn-primary:hover,
+button.bg-primary-600:hover,
+button.bg-blue-600:hover,
+button.bg-blue-500:hover,
+a.bg-primary-600:hover,
+a.bg-blue-600:hover,
+a.bg-blue-500:hover,
+button[type="submit"]:not(.btn-secondary):not(.btn-danger):hover {
+  background-image: none !important;
+  background-color: #b45309 !important;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4) !important;
 }
 
-.btn-danger {
-  @apply btn bg-red-600 text-white
-         hover:bg-red-700 active:bg-red-800;
+/* 2. Secondary / Action / Export Pill - Sleek Apple Frosted Neutral */
+.btn-secondary,
+button.bg-green-600,
+a.bg-green-600,
+button.bg-red-600,
+a.bg-red-600,
+a[class*="bg-blue-50"],
+button[class*="bg-blue-50"],
+.table-actions button:not(.btn-danger) {
+  background-color: #f5f5f7 !important;
+  color: #1d1d1f !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 9999px !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  padding: 0.5rem 1rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.375rem !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
 }
 
+.btn-secondary:hover,
+button.bg-green-600:hover,
+a.bg-green-600:hover,
+button.bg-red-600:hover,
+a.bg-red-600:hover,
+a[class*="bg-blue-50"]:hover,
+button[class*="bg-blue-50"]:hover,
+.table-actions button:not(.btn-danger):hover {
+  background-color: #ebebeb !important;
+  color: #000000 !important;
+}
+
+:is(.dark) .btn-secondary,
+:is(.dark) button.bg-green-600,
+:is(.dark) a.bg-green-600,
+:is(.dark) button.bg-red-600,
+:is(.dark) a.bg-red-600,
+:is(.dark) a[class*="bg-blue-50"],
+:is(.dark) button[class*="bg-blue-50"],
+:is(.dark) .table-actions button:not(.btn-danger) {
+  background-color: #242426 !important;
+  color: #f5f5f7 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+:is(.dark) .btn-secondary:hover,
+:is(.dark) button.bg-green-600:hover,
+:is(.dark) a.bg-green-600:hover,
+:is(.dark) button.bg-red-600:hover,
+:is(.dark) a.bg-red-600:hover,
+:is(.dark) a[class*="bg-blue-50"]:hover,
+:is(.dark) button[class*="bg-blue-50"]:hover,
+:is(.dark) .table-actions button:not(.btn-danger):hover {
+  background-color: #323236 !important;
+  color: #ffffff !important;
+}
+
+/* 3. Destructive Action - Subtle Apple Red Pill */
+.btn-danger,
+button.bg-red-500,
+.table-actions button[class*="text-red"] {
+  background-color: rgba(255, 59, 48, 0.12) !important;
+  color: #d70015 !important;
+  border: 1px solid rgba(255, 59, 48, 0.2) !important;
+  border-radius: 9999px !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  padding: 0.5rem 1rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.375rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-danger:hover,
+button.bg-red-500:hover,
+.table-actions button[class*="text-red"]:hover {
+  background-color: rgba(255, 59, 48, 0.22) !important;
+}
+
+:is(.dark) .btn-danger,
+:is(.dark) button.bg-red-500,
+:is(.dark) .table-actions button[class*="text-red"] {
+  background-color: rgba(255, 59, 48, 0.2) !important;
+  color: #ff3b30 !important;
+  border-color: rgba(255, 59, 48, 0.3) !important;
+}
+
+/* Sizing Helpers */
 .btn-sm {
-  @apply px-3 py-1.5 text-sm;
+  padding: 0.35rem 0.75rem !important;
+  font-size: 0.75rem !important;
 }
 
 .btn-lg {
-  @apply px-8 py-3 text-base;
-}
-
-.btn-icon {
-  @apply w-10 h-10 p-2;
+  padding: 0.625rem 1.5rem !important;
+  font-size: 0.875rem !important;
 }
 
 /* ========================================
-   CARDS
+   CARDS & SURFACES (Pure Black Elevation)
    ======================================== */
 
-.card {
-  @apply bg-white rounded-xl shadow-sm overflow-hidden;
+.card,
+.page-header,
+.page-content,
+.filters-bar,
+.main-content div[class*="bg-white.rounded-lg.shadow"],
+.main-content .bg-white.rounded-lg,
+.main-content .bg-white.shadow,
+.admin-page div[class*="bg-white"] {
+  background-color: #ffffff;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.05), 0 0 1px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
 }
 
-.card-header {
-  @apply px-4 sm:px-6 py-4 border-b border-gray-200 bg-gray-50;
+:is(.dark) .card,
+:is(.dark) .page-header,
+:is(.dark) .page-content,
+:is(.dark) .filters-bar,
+:is(.dark) .main-content div[class*="bg-white.rounded-lg.shadow"],
+:is(.dark) .main-content .bg-white.rounded-lg,
+:is(.dark) .main-content .bg-white.shadow,
+:is(.dark) .admin-page div[class*="bg-white"] {
+  background-color: #161617 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.6) !important;
+  color: #f5f5f7 !important;
 }
 
-.card-title {
-  @apply text-lg font-semibold text-gray-900;
+/* Apple Bento Stats Cards */
+.stats-card,
+div[class*="bg-gradient-to-br from-"] {
+  background-image: none !important;
+  background-color: #ffffff !important;
+  border-radius: 1.5rem !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.05) !important;
+  padding: 1.25rem 1.5rem !important;
+  transition: all 0.2s ease !important;
 }
 
-.card-body {
-  @apply p-4 sm:p-6;
+:is(.dark) .stats-card,
+:is(.dark) div[class*="bg-gradient-to-br from-"] {
+  background-color: #161617 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.6) !important;
 }
 
-.card-footer {
-  @apply px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50;
+div[class*="bg-gradient-to-br from-"] p[class*="text-2xl"],
+div[class*="bg-gradient-to-br from-"] p[class*="text-3xl"],
+div[class*="bg-gradient-to-br from-"] .stats-value {
+  color: #1d1d1f !important;
 }
 
-/* Stats Card */
-.stats-card {
-  @apply bg-white rounded-xl shadow-sm p-6
-         hover:shadow-md transition-shadow duration-200
-         flex items-start gap-4;
+:is(.dark) div[class*="bg-gradient-to-br from-"] p[class*="text-2xl"],
+:is(.dark) div[class*="bg-gradient-to-br from-"] p[class*="text-3xl"],
+:is(.dark) div[class*="bg-gradient-to-br from-"] .stats-value {
+  color: #f5f5f7 !important;
 }
 
+div[class*="bg-gradient-to-br from-"] p[class*="text-sm"],
+div[class*="bg-gradient-to-br from-"] p[class*="text-xs"],
+div[class*="bg-gradient-to-br from-"] .stats-label {
+  color: #86868b !important;
+}
+
+div[class*="bg-gradient-to-br from-"] div[class*="rounded-full flex"],
 .stats-icon {
-  @apply w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0;
+  background-color: rgba(217, 119, 6, 0.1) !important;
+  color: #d97706 !important;
+  border-radius: 1rem !important;
 }
 
-.stats-content {
-  @apply flex-1;
+:is(.dark) div[class*="bg-gradient-to-br from-"] div[class*="rounded-full flex"],
+:is(.dark) .stats-icon {
+  background-color: rgba(251, 191, 36, 0.15) !important;
+  color: #fbbf24 !important;
 }
 
-.stats-label {
-  @apply text-sm font-medium text-gray-600;
+/* Header Gradient Title Icons: Perfectly Proportioned Golden Emblem */
+div[class*="w-14 h-14"],
+div[class*="w-16 h-16"],
+div[class*="w-36 h-36"],
+div[class*="w-12 h-12"],
+.page-title-icon {
+  width: 3.75rem !important;  /* 60px */
+  height: 3.75rem !important; /* 60px */
+  background-image: linear-gradient(135deg, #d97706, #b45309) !important;
+  border-radius: 1.125rem !important;
+  box-shadow: 0 4px 16px rgba(217, 119, 6, 0.35) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  flex-shrink: 0 !important;
+  padding: 0 !important;
 }
 
-.stats-value {
-  @apply text-2xl font-bold text-gray-900 mt-1;
+div[class*="w-14 h-14"] svg,
+div[class*="w-16 h-16"] svg,
+div[class*="w-36 h-36"] svg,
+div[class*="w-12 h-12"] svg,
+.page-title-icon svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none !important;
+  width: 2.25rem !important;  /* 36px */
+  height: 2.25rem !important; /* 36px */
+  stroke-width: 2.3 !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25)) !important;
+  opacity: 1 !important;
+  display: block !important;
 }
 
-.stats-change {
-  @apply text-sm font-medium mt-1 flex items-center gap-1;
-}
-
-.stats-change.positive {
-  @apply text-green-600;
-}
-
-.stats-change.negative {
-  @apply text-red-600;
+:is(.dark) div[class*="w-14 h-14"] svg,
+:is(.dark) div[class*="w-16 h-16"] svg,
+:is(.dark) div[class*="w-36 h-36"] svg,
+:is(.dark) div[class*="w-12 h-12"] svg,
+:is(.dark) .page-title-icon svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  fill: none !important;
+  width: 2.25rem !important;
+  height: 2.25rem !important;
 }
 
 /* ========================================
-   FILTERS BAR
+   FORMS & CONTROLS ("แสงทอง" Gold Focus Ring & Dark Mode)
    ======================================== */
-
-.filters-bar {
-  @apply bg-white rounded-xl shadow-sm p-4 sm:p-6 mb-6 space-y-4;
-}
-
-.filters-row {
-  @apply flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between;
-}
-
-.filters-grid {
-  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4;
-}
-
-.filters-actions {
-  @apply flex items-center gap-3 flex-wrap;
-}
-
-/* ========================================
-   FORMS
-   ======================================== */
-
-.form-group {
-  @apply space-y-1.5;
-}
-
-.form-label {
-  @apply block text-sm font-medium text-gray-700;
-}
 
 .form-input,
 .form-select,
-.form-textarea {
-  @apply w-full px-3 py-2.5
-         border border-gray-300 rounded-lg
-         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-         text-sm transition-all duration-200;
+.form-textarea,
+.admin-page input[type="text"],
+.admin-page input[type="email"],
+.admin-page input[type="password"],
+.admin-page input[type="number"],
+.admin-page input[type="date"],
+.admin-page select,
+.admin-page textarea,
+.main-content input[type="text"],
+.main-content input[type="email"],
+.main-content input[type="password"],
+.main-content input[type="number"],
+.main-content input[type="date"],
+.main-content select,
+.main-content textarea {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background-color: #f5f5f7;
+  color: #1d1d1f;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
-.form-input:disabled,
-.form-select:disabled,
-.form-textarea:disabled {
-  @apply bg-gray-50 cursor-not-allowed opacity-60;
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus,
+.admin-page input:focus,
+.admin-page select:focus,
+.admin-page textarea:focus,
+.main-content input:focus,
+.main-content select:focus,
+.main-content textarea:focus {
+  background-color: #ffffff;
+  border-color: #d97706;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
 }
 
-.form-error {
-  @apply text-sm text-red-600 mt-1;
+:is(.dark) .form-input,
+:is(.dark) .form-select,
+:is(.dark) .form-textarea,
+:is(.dark) .admin-page input[type="text"],
+:is(.dark) .admin-page input[type="email"],
+:is(.dark) .admin-page input[type="password"],
+:is(.dark) .admin-page input[type="number"],
+:is(.dark) .admin-page input[type="date"],
+:is(.dark) .admin-page select,
+:is(.dark) .admin-page textarea,
+:is(.dark) .main-content input[type="text"],
+:is(.dark) .main-content input[type="email"],
+:is(.dark) .main-content input[type="password"],
+:is(.dark) .main-content input[type="number"],
+:is(.dark) .main-content input[type="date"],
+:is(.dark) .main-content select,
+:is(.dark) .main-content textarea {
+  background-color: #242426 !important;
+  color: #f5f5f7 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-.form-help {
-  @apply text-sm text-gray-500 mt-1;
-}
-
-/* Search Bar */
-.search-bar {
-  @apply relative w-full sm:w-96;
-}
-
-.search-icon {
-  @apply absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none;
-}
-
-.search-input {
-  @apply w-full pl-10 pr-4 py-2.5
-         border border-gray-300 rounded-lg
-         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-         text-sm;
+:is(.dark) .form-input:focus,
+:is(.dark) .form-select:focus,
+:is(.dark) .form-textarea:focus,
+:is(.dark) .admin-page input:focus,
+:is(.dark) .admin-page select:focus,
+:is(.dark) .admin-page textarea:focus,
+:is(.dark) .main-content input:focus,
+:is(.dark) .main-content select:focus,
+:is(.dark) .main-content textarea:focus {
+  background-color: #1d1d1f !important;
+  border-color: #fbbf24 !important;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2) !important;
 }
 
 /* ========================================
-   TABLES
+   TABLES (Apple Clean Style & Pure Black Dark Mode)
    ======================================== */
 
-.table-container {
-  @apply overflow-x-auto rounded-lg border border-gray-200;
+.table-container,
+.overflow-x-auto {
+  border-radius: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background-color: #ffffff;
+  overflow: hidden;
 }
 
-.data-table {
-  @apply w-full min-w-full divide-y divide-gray-200;
+:is(.dark) .table-container,
+:is(.dark) .overflow-x-auto {
+  background-color: #161617 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-.data-table thead {
-  @apply bg-gray-50;
+.data-table,
+.main-content table,
+.admin-page table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.8125rem;
 }
 
-.data-table th {
-  @apply px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider;
+.data-table thead,
+.main-content thead,
+.admin-page thead {
+  background-color: #fbfbfd;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.data-table tbody {
-  @apply bg-white divide-y divide-gray-200;
+:is(.dark) .data-table thead,
+:is(.dark) .main-content thead,
+:is(.dark) .admin-page thead {
+  background-color: #121212 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-.data-table tbody tr {
-  @apply hover:bg-gray-50 transition-colors duration-150;
+.data-table th,
+.main-content th,
+.admin-page th {
+  padding: 0.875rem 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #86868b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
-.data-table td {
-  @apply px-4 sm:px-6 py-4 text-sm text-gray-900 whitespace-nowrap;
+.data-table tbody tr,
+.main-content tbody tr,
+.admin-page tbody tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  background-color: #ffffff;
+  transition: background-color 0.15s ease;
 }
 
-.table-actions {
-  @apply flex items-center gap-2;
+:is(.dark) .data-table tbody tr,
+:is(.dark) .main-content tbody tr,
+:is(.dark) .admin-page tbody tr {
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+  background-color: #161617 !important;
+}
+
+/* Table row hover disabled globally (No color change on hover) */
+.data-table tbody tr,
+.data-table tbody tr:hover,
+.main-content tbody tr,
+.main-content tbody tr:hover,
+.admin-page tbody tr,
+.admin-page tbody tr:hover,
+table tbody tr,
+table tbody tr:hover,
+table tbody tr[class*="hover:bg-"],
+table tbody tr[class*="hover:bg-"]:hover,
+table tbody tr.hover\:bg-gray-50,
+table tbody tr.hover\:bg-gray-50:hover,
+tbody tr,
+tbody tr:hover,
+tr,
+tr:hover,
+tr[class*="hover:bg-"],
+tr[class*="hover:bg-"]:hover,
+tr.hover\:bg-gray-50,
+tr.hover\:bg-gray-50:hover,
+tr.hover\:bg-gray-100:hover,
+tr.hover\:bg-slate-50:hover,
+tr.hover\:bg-blue-50:hover {
+  background-color: #ffffff !important;
+  transition: none !important;
+}
+
+:is(.dark) .data-table tbody tr,
+:is(.dark) .data-table tbody tr:hover,
+:is(.dark) .main-content tbody tr,
+:is(.dark) .main-content tbody tr:hover,
+:is(.dark) .admin-page tbody tr,
+:is(.dark) .admin-page tbody tr:hover,
+:is(.dark) table tbody tr,
+:is(.dark) table tbody tr:hover,
+:is(.dark) tbody tr,
+:is(.dark) tbody tr:hover,
+:is(.dark) tr,
+:is(.dark) tr:hover,
+:is(.dark) table tr[class*="hover:bg-"],
+:is(.dark) table tr[class*="hover:bg-"]:hover,
+:is(.dark) tr.hover\:bg-gray-50,
+:is(.dark) tr.hover\:bg-gray-50:hover,
+:is(.dark) tr.hover\:bg-gray-100:hover,
+:is(.dark) tr.hover\:bg-slate-50:hover,
+:is(.dark) tr.hover\:bg-blue-50:hover,
+html.dark table tbody tr,
+html.dark table tbody tr:hover,
+html.dark tbody tr,
+html.dark tbody tr:hover,
+html.dark tr,
+html.dark tr:hover,
+html.dark tr.hover\:bg-gray-50,
+html.dark tr.hover\:bg-gray-50:hover,
+:is(html.dark) table tbody tr,
+:is(html.dark) table tbody tr:hover,
+:is(html.dark) tbody tr,
+:is(html.dark) tbody tr:hover,
+:is(html.dark) tr,
+:is(html.dark) tr:hover,
+:is(html.dark) tr.hover\:bg-gray-50,
+:is(html.dark) tr.hover\:bg-gray-50:hover {
+  background-color: #161617 !important;
+  transition: none !important;
+}
+
+.data-table td,
+.main-content td,
+.admin-page td {
+  padding: 0.875rem 1.25rem;
+  color: #1d1d1f;
+  background-color: transparent !important;
+  transition: none !important;
+}
+
+:is(.dark) .data-table td,
+:is(.dark) .main-content td,
+:is(.dark) .admin-page td,
+:is(.dark) table tbody tr > td,
+:is(.dark) table tbody tr:hover > td,
+html.dark table tbody tr > td,
+html.dark table tbody tr:hover > td {
+  color: #f5f5f7 !important;
+  background-color: transparent !important;
+  transition: none !important;
 }
 
 /* ========================================
-   BADGES & TAGS
+   BADGES & TAGS ("แสงทอง" System Tints)
    ======================================== */
 
 .badge {
-  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-.badge-success {
-  @apply bg-green-100 text-green-800;
+.badge-success,
+span[class*="bg-green-100 text-green-800"] {
+  background-color: rgba(52, 199, 89, 0.15) !important;
+  color: #248a3d !important;
+  border-radius: 9999px !important;
+}
+:is(.dark) .badge-success,
+:is(.dark) span[class*="bg-green-100 text-green-800"] {
+  color: #34c759 !important;
 }
 
-.badge-warning {
-  @apply bg-amber-100 text-amber-800;
+.badge-warning,
+span[class*="bg-orange-100 text-orange-800"],
+span[class*="bg-yellow-100 text-yellow-800"] {
+  background-color: rgba(234, 88, 12, 0.15) !important;
+  color: #c2410c !important;
+  border-radius: 9999px !important;
+}
+:is(.dark) .badge-warning,
+:is(.dark) span[class*="bg-orange-100 text-orange-800"],
+:is(.dark) span[class*="bg-yellow-100 text-yellow-800"] {
+  color: #fb923c !important;
 }
 
-.badge-error {
-  @apply bg-red-100 text-red-800;
+.badge-error,
+span[class*="bg-red-100 text-red-800"] {
+  background-color: rgba(255, 59, 48, 0.15) !important;
+  color: #d70015 !important;
+  border-radius: 9999px !important;
+}
+:is(.dark) .badge-error,
+:is(.dark) span[class*="bg-red-100 text-red-800"] {
+  color: #ff3b30 !important;
 }
 
-.badge-info {
-  @apply bg-blue-100 text-blue-800;
+.badge-info,
+.badge-gold,
+span[class*="bg-blue-100 text-blue-800"],
+span[class*="bg-purple-100 text-purple-800"],
+span[class*="bg-indigo-100 text-indigo-800"] {
+  background-color: rgba(217, 119, 6, 0.15) !important;
+  color: #d97706 !important;
+  border-radius: 9999px !important;
+}
+:is(.dark) .badge-info,
+:is(.dark) .badge-gold,
+:is(.dark) span[class*="bg-blue-100 text-blue-800"],
+:is(.dark) span[class*="bg-purple-100 text-purple-800"],
+:is(.dark) span[class*="bg-indigo-100 text-indigo-800"] {
+  color: #fbbf24 !important;
 }
 
-.badge-gray {
-  @apply bg-gray-100 text-gray-800;
+.badge-gray,
+span[class*="bg-gray-100 text-gray-800"] {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  color: #6e6e73 !important;
+  border-radius: 9999px !important;
 }
-
-/* ========================================
-   LOADING STATES
-   ======================================== */
-
-.loading-container {
-  @apply flex flex-col items-center justify-center py-12 gap-3;
-}
-
-.spinner {
-  @apply animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-600;
-}
-
-.loading-text {
-  @apply text-gray-600 text-sm;
-}
-
-/* ========================================
-   EMPTY STATES
-   ======================================== */
-
-.empty-state {
-  @apply flex flex-col items-center justify-center py-12 px-4 text-center;
-}
-
-.empty-icon {
-  @apply w-16 h-16 text-gray-400 mb-4;
-}
-
-.empty-title {
-  @apply text-lg font-semibold text-gray-900 mb-2;
-}
-
-.empty-description {
-  @apply text-sm text-gray-600 mb-6 max-w-md;
-}
-
-/* ========================================
-   PAGINATION
-   ======================================== */
-
-.pagination {
-  @apply flex items-center justify-between px-4 sm:px-6 py-3 bg-white border-t border-gray-200;
-}
-
-.pagination-info {
-  @apply text-sm text-gray-700;
-}
-
-.pagination-buttons {
-  @apply flex items-center gap-2;
-}
-
-.pagination-btn {
-  @apply px-3 py-2 text-sm font-medium text-gray-700
-         bg-white border border-gray-300 rounded-lg
-         hover:bg-gray-50
-         disabled:opacity-50 disabled:cursor-not-allowed
-         transition-colors duration-200;
-}
-
-.pagination-btn.active {
-  @apply bg-blue-600 text-white border-blue-600 hover:bg-blue-700;
+:is(.dark) .badge-gray,
+:is(.dark) span[class*="bg-gray-100 text-gray-800"] {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #86868b !important;
 }
 
 /* ========================================
-   TABS
+   MODALS (Uniform Consistent Apple System & Pure Black Dark Mode)
    ======================================== */
 
-.tabs {
-  @apply flex border-b border-gray-200 gap-2 mb-6;
+.modal-overlay,
+.modal-backdrop,
+.admin-page div[class*="fixed inset-0"],
+.main-content div[class*="fixed inset-0"],
+div[class*="fixed inset-0"][class*="z-50"],
+div[class*="fixed inset-0"][class*="z-40"] {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  background-color: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1.5rem 1rem !important;
+  overflow-y: auto !important;
 }
 
-.tab {
-  @apply px-4 py-2 text-sm font-medium text-gray-600
-         border-b-2 border-transparent
-         hover:text-gray-900 hover:border-gray-300
-         transition-all duration-200;
+@media (min-width: 640px) {
+  .modal-overlay,
+  .modal-backdrop,
+  .admin-page div[class*="fixed inset-0"],
+  .main-content div[class*="fixed inset-0"],
+  div[class*="fixed inset-0"][class*="z-50"] {
+    padding: 3rem 1.5rem !important;
+  }
 }
 
-.tab.active {
-  @apply text-blue-600 border-blue-600;
+/* Modal Window Container - Centered, uniform distance from top & bottom */
+.modal,
+.modal-content,
+.modal-container,
+.admin-page div[class*="fixed inset-0"] > div[class*="bg-white"],
+.main-content div[class*="fixed inset-0"] > div[class*="bg-white"],
+div[class*="fixed inset-0"][class*="z-50"] > div[class*="bg-white"],
+.modal-overlay > div,
+.modal-backdrop > div {
+  background-color: #ffffff !important;
+  border-radius: 1.75rem !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.25), 0 0 1px rgba(0, 0, 0, 0.12) !important;
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+  max-height: calc(100vh - 4.5rem) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* ========================================
-   MODALS
-   ======================================== */
-
-.modal-overlay {
-  @apply fixed inset-0 bg-black bg-opacity-50 z-50
-         flex items-center justify-center p-4;
+:is(.dark) .modal,
+:is(.dark) .modal-content,
+:is(.dark) .modal-container,
+:is(.dark) .admin-page div[class*="fixed inset-0"] > div[class*="bg-white"],
+:is(.dark) .main-content div[class*="fixed inset-0"] > div[class*="bg-white"],
+:is(.dark) div[class*="fixed inset-0"][class*="z-50"] > div[class*="bg-white"],
+:is(.dark) .modal-overlay > div,
+:is(.dark) .modal-backdrop > div {
+  background-color: #161617 !important;
+  color: #f5f5f7 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.7) !important;
 }
 
-.modal {
-  @apply bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden;
+@media (min-width: 640px) {
+  .modal,
+  .modal-content,
+  .modal-container,
+  .admin-page div[class*="fixed inset-0"] > div[class*="bg-white"],
+  .main-content div[class*="fixed inset-0"] > div[class*="bg-white"],
+  div[class*="fixed inset-0"][class*="z-50"] > div[class*="bg-white"],
+  .modal-overlay > div,
+  .modal-backdrop > div {
+    max-height: calc(100vh - 6rem) !important;
+  }
 }
 
-.modal-header {
-  @apply px-6 py-4 border-b border-gray-200 flex items-center justify-between;
+.modal-header,
+.admin-page div[class*="fixed inset-0"] > div[class*="bg-white"] > div:first-child:not(.p-6):not(.modal-body),
+div[class*="fixed inset-0"][class*="z-50"] > div[class*="bg-white"] > div:first-child:not(.p-6):not(.modal-body) {
+  padding: 1.25rem 1.5rem !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background-color: #fbfbfd !important;
+  flex-shrink: 0 !important;
 }
 
-.modal-title {
-  @apply text-xl font-semibold text-gray-900;
+:is(.dark) .modal-header,
+:is(.dark) .admin-page div[class*="fixed inset-0"] > div[class*="bg-white"] > div:first-child:not(.p-6):not(.modal-body),
+:is(.dark) div[class*="fixed inset-0"][class*="z-50"] > div[class*="bg-white"] > div:first-child:not(.p-6):not(.modal-body) {
+  background-color: #121212 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.modal-title,
+.admin-page div[class*="fixed inset-0"] > div[class*="bg-white"] h2,
+.admin-page div[class*="fixed inset-0"] > div[class*="bg-white"] h3,
+div[class*="fixed inset-0"][class*="z-50"] > div[class*="bg-white"] h2,
+div[class*="fixed inset-0"][class*="z-50"] > div[class*="bg-white"] h3 {
+  font-size: 1.125rem !important;
+  font-weight: 700 !important;
+  color: #1d1d1f !important;
+  margin-bottom: 0 !important;
+}
+
+:is(.dark) .modal-title,
+:is(.dark) .admin-page div[class*="fixed inset-0"] > div[class*="bg-white"] h2,
+:is(.dark) .admin-page div[class*="fixed inset-0"] > div[class*="bg-white"] h3,
+:is(.dark) div[class*="fixed inset-0"][class*="z-50"] > div[class*="bg-white"] h2,
+:is(.dark) div[class*="fixed inset-0"][class*="z-50"] > div[class*="bg-white"] h3 {
+  color: #f5f5f7 !important;
 }
 
 .modal-close {
-  @apply p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200;
+  width: 2rem !important;
+  height: 2rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 9999px !important;
+  color: #86868b !important;
+  transition: all 0.2s ease !important;
 }
 
-.modal-body {
-  @apply px-6 py-6 overflow-y-auto;
+.modal-close:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  color: #1d1d1f !important;
+}
+
+:is(.dark) .modal-close:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.modal-body,
+.admin-page div[class*="fixed inset-0"] > div[class*="bg-white"] > form,
+.admin-page div[class*="fixed inset-0"] > div[class*="bg-white"] > .p-6,
+div[class*="fixed inset-0"][class*="z-50"] > div[class*="bg-white"] > form,
+div[class*="fixed inset-0"][class*="z-50"] > div[class*="bg-white"] > .p-6 {
+  padding: 1.5rem !important;
+  overflow-y: auto !important;
+  flex: 1 1 auto !important;
 }
 
 .modal-footer {
-  @apply px-6 py-4 border-t border-gray-200 flex items-center justify-end gap-3;
+  padding: 1rem 1.5rem !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+  background-color: #fbfbfd !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 0.625rem !important;
+  flex-shrink: 0 !important;
 }
 
-/* ========================================
-   UTILITIES
-   ======================================== */
-
-.text-muted {
-  @apply text-gray-600;
+:is(.dark) .modal-footer {
+  background-color: #121212 !important;
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-.text-primary {
-  @apply text-blue-600;
+/* ==========================================================================
+   "แสงทอง" Unified Brand Palette Overrides (Eliminates Blue / Green / Purple bleed)
+   ========================================================================== */
+
+/* 1. Headings - Crisp & Solid (Removes Blue/Green Gradient text) */
+.main-content h1[class*="bg-clip-text"],
+.admin-page h1[class*="bg-clip-text"],
+.main-content [class*="from-blue-600 to-indigo-600"],
+.main-content [class*="from-green-600 to-emerald-600"] {
+  background: none !important;
+  -webkit-text-fill-color: initial !important;
+  color: #1d1d1f !important;
 }
 
-.text-success {
-  @apply text-green-600;
+:is(.dark) .main-content h1[class*="bg-clip-text"],
+:is(.dark) .admin-page h1[class*="bg-clip-text"],
+:is(.dark) .main-content [class*="from-blue-600 to-indigo-600"],
+:is(.dark) .main-content [class*="from-green-600 to-emerald-600"] {
+  color: #f5f5f7 !important;
 }
 
-.text-warning {
-  @apply text-amber-600;
+/* 2. Interactive Text & Links (Blue / Indigo -> Warm Amber Gold) */
+.main-content a[class*="text-blue-"],
+.main-content button[class*="text-blue-"],
+.main-content [class*="text-blue-600"],
+.main-content [class*="text-blue-700"],
+.main-content [class*="text-indigo-600"],
+.admin-page a[class*="text-blue-"],
+.admin-page button[class*="text-blue-"],
+.admin-page [class*="text-blue-600"],
+.admin-page [class*="text-blue-700"],
+.admin-page [class*="text-indigo-600"] {
+  color: #d97706 !important;
 }
 
-.text-danger {
-  @apply text-red-600;
+.main-content a[class*="text-blue-"]:hover,
+.main-content button[class*="text-blue-"]:hover,
+.admin-page a[class*="text-blue-"]:hover,
+.admin-page button[class*="text-blue-"]:hover {
+  color: #b45309 !important;
 }
 
-.bg-primary {
-  @apply bg-blue-600;
+:is(.dark) .main-content a[class*="text-blue-"],
+:is(.dark) .main-content button[class*="text-blue-"],
+:is(.dark) .main-content [class*="text-blue-600"],
+:is(.dark) .main-content [class*="text-blue-700"],
+:is(.dark) .main-content [class*="text-indigo-600"],
+:is(.dark) .admin-page a[class*="text-blue-"],
+:is(.dark) .admin-page button[class*="text-blue-"],
+:is(.dark) .admin-page [class*="text-blue-600"],
+:is(.dark) .admin-page [class*="text-blue-700"],
+:is(.dark) .admin-page [class*="text-indigo-600"] {
+  color: #fbbf24 !important;
 }
 
-.bg-success {
-  @apply bg-green-600;
+:is(.dark) .main-content a[class*="text-blue-"]:hover,
+:is(.dark) .main-content button[class*="text-blue-"]:hover,
+:is(.dark) .admin-page a[class*="text-blue-"]:hover,
+:is(.dark) .admin-page button[class*="text-blue-"]:hover {
+  color: #f59e0b !important;
 }
 
-.bg-warning {
-  @apply bg-amber-600;
+/* 3. Tab Navigation (Blue Borders -> Gold Borders) */
+.main-content nav button[class*="border-blue-"],
+.admin-page nav button[class*="border-blue-"],
+.main-content nav [class*="border-blue-500"] {
+  border-color: #d97706 !important;
+  color: #d97706 !important;
 }
 
-.bg-danger {
-  @apply bg-red-600;
+:is(.dark) .main-content nav button[class*="border-blue-"],
+:is(.dark) .admin-page nav button[class*="border-blue-"],
+:is(.dark) .main-content nav [class*="border-blue-500"] {
+  border-color: #fbbf24 !important;
+  color: #fbbf24 !important;
 }
 
-/* Divider */
-.divider {
-  @apply border-t border-gray-200 my-6;
+/* 4. Action & Outline Buttons (Blue/Green Outlines -> Sleek Gold / Frosted Neutral) */
+.main-content button[class*="border-blue-"],
+.main-content a[class*="border-blue-"],
+.admin-page button[class*="border-blue-"],
+.admin-page a[class*="border-blue-"] {
+  border-color: #d97706 !important;
+  color: #d97706 !important;
 }
 
-/* Section */
-.section {
-  @apply mb-6;
+.main-content button[class*="border-blue-"]:hover,
+.main-content a[class*="border-blue-"]:hover,
+.admin-page button[class*="border-blue-"]:hover,
+.admin-page a[class*="border-blue-"]:hover {
+  background-color: rgba(217, 119, 6, 0.08) !important;
+  border-color: #b45309 !important;
+  color: #b45309 !important;
 }
 
-.section-title {
-  @apply text-lg font-semibold text-gray-900 mb-4;
+:is(.dark) .main-content button[class*="border-blue-"],
+:is(.dark) .main-content a[class*="border-blue-"],
+:is(.dark) .admin-page button[class*="border-blue-"],
+:is(.dark) .admin-page a[class*="border-blue-"] {
+  border-color: rgba(251, 191, 36, 0.4) !important;
+  color: #fbbf24 !important;
 }
 
-/* Grid Layouts */
-.grid-2 {
-  @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+/* 5. Blue / Green Buttons (bg-blue-600, bg-indigo-600, bg-green-600 -> Unified Gold Primary / Frosted Secondary) */
+.main-content button.bg-blue-600,
+.main-content button.bg-indigo-600,
+.main-content button.bg-blue-500,
+.main-content a.bg-blue-600,
+.main-content a.bg-indigo-600,
+.admin-page button.bg-blue-600,
+.admin-page button.bg-indigo-600,
+.admin-page a.bg-blue-600 {
+  background-color: #d97706 !important;
+  color: #ffffff !important;
 }
 
-.grid-3 {
-  @apply grid grid-cols-1 lg:grid-cols-3 gap-6;
+.main-content button.bg-blue-600:hover,
+.main-content button.bg-indigo-600:hover,
+.admin-page button.bg-blue-600:hover,
+.admin-page button.bg-indigo-600:hover {
+  background-color: #b45309 !important;
 }
 
-.grid-4 {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+.main-content [class*="bg-blue-50"],
+.admin-page [class*="bg-blue-50"] {
+  background-color: rgba(217, 119, 6, 0.08) !important;
+  color: #d97706 !important;
+}
+
+:is(.dark) .main-content [class*="bg-blue-50"],
+:is(.dark) .admin-page [class*="bg-blue-50"] {
+  background-color: rgba(251, 191, 36, 0.12) !important;
+  color: #fbbf24 !important;
+}
+
+/* 6. Form Checkbox & Radio Focus (Blue -> Gold) */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: #d97706 !important;
+}
+
+input[type="checkbox"]:focus,
+input[type="radio"]:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.25) !important;
+}
+
+/* 7. Apple-Grade Datepicker & Date Inputs (Unified across all ERP pages) */
+input[type="date"],
+input[type="month"],
+input[type="datetime-local"] {
+  font-family: inherit !important;
+  font-size: 0.875rem !important;
+  color: #1d1d1f !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  border-radius: 0.75rem !important;
+  padding: 0.5rem 0.875rem !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  color-scheme: light;
+}
+
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="datetime-local"]:focus {
+  outline: none !important;
+  border-color: #d97706 !important;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.2) !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  cursor: pointer !important;
+  padding: 4px !important;
+  opacity: 0.7 !important;
+  transition: opacity 0.2s ease, transform 0.2s ease !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="month"]::-webkit-calendar-picker-indicator:hover,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1 !important;
+  transform: scale(1.1) !important;
+}
+
+/* Dark Mode Datepicker */
+:is(.dark) input[type="date"],
+:is(.dark) input[type="month"],
+:is(.dark) input[type="datetime-local"],
+:is(.dark) .admin-page input[type="date"],
+:is(.dark) .admin-page input[type="month"],
+:is(.dark) .admin-page input[type="datetime-local"] {
+  color: #f5f5f7 !important;
+  background-color: #161617 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color-scheme: dark !important;
+}
+
+:is(.dark) input[type="date"]:focus,
+:is(.dark) input[type="month"]:focus,
+:is(.dark) input[type="datetime-local"]:focus {
+  border-color: #fbbf24 !important;
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.25) !important;
+}
+
+:is(.dark) input[type="date"]::-webkit-calendar-picker-indicator,
+:is(.dark) input[type="month"]::-webkit-calendar-picker-indicator,
+:is(.dark) input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.9) brightness(1.2) !important;
+  opacity: 0.8 !important;
 }

@@ -1,201 +1,334 @@
-<div>
-  <!-- Hero with Modern Background -->
-  <section class="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-    <!-- Background Image Overlay -->
-    <div class="absolute inset-0">
-      <img
-        src="https://images.unsplash.com/photo-1562259949-e8e7689d7828?q=80&w=2000"
-        alt="Kitchenware background"
-        class="w-full h-full object-cover opacity-10"
-      />
-      <div class="absolute inset-0 bg-gradient-to-br from-gray-900/95 via-gray-800/90 to-gray-900/95"></div>
-    </div>
+<div class="space-y-16 sm:space-y-24 bg-[#f5f5f7] dark:bg-[#000000] pb-16 transition-colors duration-200">
 
-    <!-- Animated Mesh Gradient Overlay -->
-    <div class="absolute inset-0 opacity-20">
-      <div class="absolute top-0 -left-4 w-96 h-96 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-      <div class="absolute top-0 -right-4 w-96 h-96 bg-red-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-      <div class="absolute -bottom-8 left-20 w-96 h-96 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
-    </div>
+  <!-- =========================================================================
+       1. Apple-Style Cinematic Hero Section (Keynote Style: "แสงทอง" Golden Light)
+       ========================================================================= -->
+  <section class="relative overflow-hidden bg-[#000000] text-white pt-16 pb-20 sm:pt-24 sm:pb-32">
+    <!-- Ambient Spotlight Glow ("แสงทอง" Golden Amber Glow) -->
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-[#d97706]/35 via-[#f59e0b]/25 to-transparent rounded-full filter blur-[120px] pointer-events-none animate-ambient-glow"></div>
+    <div class="absolute bottom-0 right-10 w-[400px] h-[300px] bg-gradient-to-tl from-[#ea580c]/20 to-transparent rounded-full filter blur-[100px] pointer-events-none"></div>
 
-    <!-- Dot Pattern Overlay -->
-    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 30px 30px;"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="text-center max-w-4xl mx-auto space-y-6">
 
-    <!-- Hero Accent (Removed Logo) -->
-    <div class="absolute right-0 top-0 bottom-0 w-1/2 hidden lg:block">
-      <div class="relative h-full flex items-center justify-center p-8">
-        <div class="hero-logo relative z-10 animate-fade-in">
-          <div class="relative bg-white/95 backdrop-blur-xl rounded-3xl p-12 shadow-2xl">
-            <!-- Decorative corner accent -->
-            <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-orange-500 to-red-500 rounded-bl-3xl rounded-tr-3xl opacity-10"></div>
-            <div class="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-orange-500 to-yellow-500 rounded-tr-3xl rounded-bl-3xl opacity-10"></div>
-
-            <!-- Store Name -->
-            <div class="relative z-10 text-center">
-              <h2 class="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-4">
-                ร้านเครื่องครัว<br/>แสงทอง/ใจกล้า
-              </h2>
-              <p class="text-gray-600 text-lg">ศูนย์รวมเครื่องครัวคุณภาพ</p>
-            </div>
-          </div>
+        <!-- Top Pill Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 backdrop-blur-md text-xs sm:text-sm font-medium tracking-wide text-white/90 shadow-sm animate-apple-fade-up">
+          <span class="w-2 h-2 rounded-full bg-[#f59e0b] animate-pulse"></span>
+          <span>ร้านเครื่องครัวแสงทอง &bull; ศูนย์รวมเครื่องครัวสแตนเลสคุณภาพสูง</span>
         </div>
-      </div>
-    </div>
 
-    <div class="container mx-auto px-4 py-20 md:py-32 relative z-10">
-      <div class="max-w-3xl">
-        <h1 class="hero-title text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg leading-tight">
-          เครื่องครัวคุณภาพพรีเมียม<br/>
-          <span class="text-white">สำหรับทุกร้านอาหาร</span>
+        <!-- Main Headline (Apple Typography & "แสงทอง" Golden Radiance) -->
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.1] animate-apple-fade-up" style="animation-delay: 0.1s;">
+          เครื่องครัวระดับโปร.<br />
+          <span class="bg-gradient-to-r from-[#fbbf24] via-[#fde68a] to-[#ffffff] bg-clip-text text-transparent">
+            เพื่อทุกความอร่อยที่สมบูรณ์แบบ
+          </span>
         </h1>
-        <p class="hero-subtitle text-xl text-white/90 mb-8 drop-shadow leading-relaxed">
-          อุปกรณ์คุณภาพจากแบรนด์ชั้นนำ<br/>
-          จัดส่งเร็วทั่วประเทศ ฟรีเมื่อซื้อครบ ฿2,000
+
+        <!-- Subtitle -->
+        <p class="text-lg sm:text-xl text-[#86868b] max-w-2xl mx-auto leading-relaxed animate-apple-fade-up font-normal" style="animation-delay: 0.2s;">
+          อุปกรณ์สแตนเลส SUS304 เกรดอาหาร ทนทาน ไร้สนิม ออกแบบเพื่อร้านอาหาร โรงแรม และครัวมืออาชีพ จัดส่งฟรีทั่วประเทศเมื่อช้อปครบ ฿2,000
         </p>
-        <div class="hero-buttons flex flex-wrap gap-4">
-          <a routerLink="/products" class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl font-bold hover:shadow-2xl  transition-colors  group">
-            <span>เลือกซื้อเลย</span>
-            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+
+        <!-- CTA Buttons (Apple Pill Style & "แสงทอง" Gold) -->
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-4 animate-apple-fade-up" style="animation-delay: 0.3s;">
+          <a routerLink="/products" class="apple-pill-btn !py-3.5 !px-8 !text-base font-semibold">
+            <span>เลือกซื้อสินค้าเลย</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
             </svg>
           </a>
-          <a routerLink="/products" class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-xl text-white px-6 py-4 rounded-2xl font-semibold border-2 border-white/30 hover:bg-white/20 hover:border-white/50 transition-colors">
-            <span>ดูสินค้าทั้งหมด</span>
+          <a routerLink="/about" class="apple-pill-btn-ghost-dark !py-3.5 !px-7 !text-base">
+            <span>เกี่ยวกับเรา</span>
           </a>
         </div>
+
       </div>
+
+      <!-- Interactive Spotlight Feature Tabs (Apple Pro Experience) -->
+      <div class="mt-16 sm:mt-24 max-w-4xl mx-auto">
+        <!-- Tab Selectors -->
+        <div class="flex justify-center p-1 bg-white/10 backdrop-blur-xl rounded-full border border-white/15 max-w-lg mx-auto mb-8">
+          @for (tab of spotlightHighlights; track tab.id; let idx = $index) {
+            <button
+              (click)="setSpotlight(idx)"
+              class="flex-1 py-2 px-4 rounded-full text-xs sm:text-sm font-medium transition-all duration-300"
+              [class.bg-white]="activeSpotlight() === idx"
+              [class.text-[#1d1d1f]]="activeSpotlight() === idx"
+              [class.shadow-md]="activeSpotlight() === idx"
+              [class.text-white/70]="activeSpotlight() !== idx"
+              [class.hover:text-white]="activeSpotlight() !== idx"
+            >
+              {{ tab.title }}
+            </button>
+          }
+        </div>
+
+        <!-- Active Feature Card -->
+        @for (item of spotlightHighlights; track item.id; let idx = $index) {
+          @if (activeSpotlight() === idx) {
+            <div class="bg-[#161617]/90 backdrop-blur-2xl rounded-3xl p-6 sm:p-10 border border-white/10 shadow-apple-dark text-left transition-all duration-400 animate-apple-scale flex flex-col md:flex-row items-center gap-6 sm:gap-8">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-[#d97706] to-[#b45309] flex items-center justify-center text-3xl sm:text-4xl flex-shrink-0 shadow-apple-gold">
+                <span>{{ item.icon }}</span>
+              </div>
+              <div class="space-y-2 flex-1">
+                <span class="text-xs font-bold tracking-wider text-[#fbbf24] uppercase">{{ item.badge }}</span>
+                <h3 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">{{ item.title }}</h3>
+                <p class="text-sm sm:text-base text-white/90 font-medium">{{ item.subtitle }}</p>
+                <p class="text-xs sm:text-sm text-[#86868b] leading-relaxed">{{ item.description }}</p>
+              </div>
+              <div class="flex-shrink-0">
+                <a routerLink="/products" class="apple-pill-btn-ghost-dark !text-xs !py-2.5 !px-5">
+                  ดูสินค้าที่เกี่ยวข้อง &rarr;
+                </a>
+              </div>
+            </div>
+          }
+        }
+      </div>
+
     </div>
-    <!-- Decorative shapes -->
-    <div class="absolute top-20 right-20 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-float"></div>
-    <div class="absolute bottom-20 left-20 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-float" style="animation-delay: 1s;"></div>
   </section>
 
-  <!-- Featured Products -->
-  <section class="section-animate container mx-auto px-4 py-20">
-    <div class="text-center mb-16">
-      <div class="inline-block">
-        <span class="text-sm font-semibold text-primary-600 uppercase tracking-wider mb-2 block">คัดสรรมาเพื่อคุณ</span>
-        <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">สินค้าแนะนำ</h2>
-        <div class="w-24 h-1.5 bg-blue-500 mx-auto rounded-full"></div>
+
+  <!-- =========================================================================
+       2. Apple Bento Feature Highlights Grid
+       ========================================================================= -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+      <span class="text-xs font-semibold text-[#d97706] dark:text-[#fbbf24] uppercase tracking-wider block mb-2">ทำไมต้องเลือกเรา</span>
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+        มาตรฐานระดับพรีเมียม.<br />เพื่อการใช้งานที่ยาวนาน.
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <!-- Bento Card 1: SUS304 Food Grade -->
+      <div class="apple-bento-card flex flex-col justify-between group">
+        <div class="space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-[#d97706]/10 text-[#d97706] dark:bg-[#fbbf24]/15 dark:text-[#fbbf24] flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+            🛡️
+          </div>
+          <span class="apple-badge apple-badge-gold">SUS304 FOOD GRADE</span>
+          <h3 class="text-xl font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">สแตนเลสแท้ 100%</h3>
+          <p class="text-sm text-[#6e6e73] dark:text-[#86868b] leading-relaxed">
+            ไม่เป็นสนิม ปลอดภัยต่อสุขภาพ ทนความร้อนและกรดด่าง สำหรับงานครัวหนักทุกวัน
+          </p>
+        </div>
+        <div class="pt-6 border-t border-black/[0.04] dark:border-white/[0.06] mt-6">
+          <span class="text-xs text-[#86868b]">รับประกันคุณภาพเนื้อสแตนเลส</span>
+        </div>
       </div>
+
+      <!-- Bento Card 2: Heavy Duty -->
+      <div class="apple-bento-card flex flex-col justify-between group">
+        <div class="space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-[#ea580c]/10 text-[#ea580c] flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+            ⚡
+          </div>
+          <span class="apple-badge apple-badge-orange">HEAVY DUTY</span>
+          <h3 class="text-xl font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">โครงสร้างแข็งแกร่ง</h3>
+          <p class="text-sm text-[#6e6e73] dark:text-[#86868b] leading-relaxed">
+            เชื่อมแน่นหนา ไร้รอยต่อคม รับน้ำหนักได้สูง ใช้งานต่อเนื่อง 24 ชั่วโมงได้อย่างมั่นใจ
+          </p>
+        </div>
+        <div class="pt-6 border-t border-black/[0.04] dark:border-white/[0.06] mt-6">
+          <span class="text-xs text-[#86868b]">ผ่านการทดสอบมาตรฐานอุตสาหกรรม</span>
+        </div>
+      </div>
+
+      <!-- Bento Card 3: Free Delivery -->
+      <div class="apple-bento-card flex flex-col justify-between group">
+        <div class="space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-[#34c759]/10 text-[#248a3d] dark:text-[#34c759] flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+            🚚
+          </div>
+          <span class="apple-badge apple-badge-green">FAST SHIPPING</span>
+          <h3 class="text-xl font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">จัดส่งด่วนทั่วประเทศ</h3>
+          <p class="text-sm text-[#6e6e73] dark:text-[#86868b] leading-relaxed">
+            จัดส่งรวดเร็ว ปลอดภัย ฟรีค่าจัดส่งเมื่อสั่งซื้อสินค้าครบ ฿2,000 บาทขึ้นไป
+          </p>
+        </div>
+        <div class="pt-6 border-t border-black/[0.04] dark:border-white/[0.06] mt-6">
+          <span class="text-xs text-[#86868b]">แพ็คกันกระแทกอย่างดีทุกชิ้น</span>
+        </div>
+      </div>
+
+      <!-- Bento Card 4: Custom Orders & Warranty -->
+      <div class="apple-bento-card flex flex-col justify-between group">
+        <div class="space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-[#86868b]/10 text-[#1d1d1f] dark:text-[#f5f5f7] flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
+            📐
+          </div>
+          <span class="apple-badge apple-badge-gray">CONSULTATION</span>
+          <h3 class="text-xl font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">ปรึกษา & สั่งทำ</h3>
+          <p class="text-sm text-[#6e6e73] dark:text-[#86868b] leading-relaxed">
+            มีทีมงานผู้เชี่ยวชาญให้คำแนะนำ จัดสรรพื้นที่ครัว พร้อมบริการสั่งทำตามสเปกเฉพาะ
+          </p>
+        </div>
+        <div class="pt-6 border-t border-black/[0.04] dark:border-white/[0.06] mt-6">
+          <span class="text-xs text-[#86868b]">ปรึกษาฟรี โทร 02-277-3907</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- =========================================================================
+       3. Apple Store Featured Products Grid
+       ========================================================================= -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-12 gap-4">
+      <div>
+        <span class="text-xs font-semibold text-[#d97706] dark:text-[#fbbf24] uppercase tracking-wider block mb-1">คัดสรรพิเศษ</span>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+          สินค้าแนะนำ
+        </h2>
+      </div>
+      <a routerLink="/products" class="apple-link font-semibold text-sm">
+        <span>ดูสินค้าทั้งหมด</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
     </div>
 
     @if (loading()) {
-      <div class="flex justify-center py-12">
-        <div class="relative">
-          <div class="animate-spin h-16 w-16 border-4 border-gradient-to-r from-primary-600 to-secondary-600 border-t-transparent rounded-full"></div>
-          <div class="absolute top-0 left-0 animate-ping h-16 w-16 border-4 border-primary-400 border-t-transparent rounded-full opacity-20"></div>
-        </div>
-      </div>
-    } @else if (featuredProducts().length > 0) {
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        @for (product of featuredProducts(); track product.id) {
-          <div class="product-card-animate">
-            <app-product-card [product]="product"></app-product-card>
+      <!-- Apple Clean Loading Skeleton -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        @for (item of [1,2,3,4]; track item) {
+          <div class="bg-white dark:bg-[#1d1d1f] rounded-3xl p-6 border border-black/[0.04] dark:border-white/[0.08] shadow-sm animate-pulse space-y-4">
+            <div class="aspect-square bg-[#f5f5f7] dark:bg-[#2c2c2e] rounded-2xl"></div>
+            <div class="h-4 bg-[#f5f5f7] dark:bg-[#2c2c2e] rounded-full w-3/4"></div>
+            <div class="h-5 bg-[#f5f5f7] dark:bg-[#2c2c2e] rounded-full w-1/2"></div>
           </div>
         }
       </div>
+    } @else if (featuredProducts().length > 0) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        @for (product of featuredProducts(); track product.id) {
+          <app-product-card [product]="product"></app-product-card>
+        }
+      </div>
     } @else {
-      <div class="text-center py-16 bg-white rounded-2xl border border-gray-100">
-        <div class="text-7xl mb-4">🎨</div>
-        <p class="text-gray-600 text-lg mb-2">ไม่พบสินค้าแนะนำ</p>
-        <p class="text-sm text-gray-400">ตรวจสอบ Console (F12) เพื่อดู error</p>
+      <div class="apple-card-static text-center py-16 p-8 border border-black/[0.06] dark:border-white/[0.08]">
+        <div class="text-5xl mb-3">🍳</div>
+        <p class="text-base font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">ไม่พบสินค้าแนะนำ</p>
+        <p class="text-sm text-[#86868b] mt-1">กรุณากลับมาตรวจสอบใหม่อีกครั้ง</p>
       </div>
     }
   </section>
 
-  <!-- Brands -->
-  <section class="section-animate bg-gray-50 py-20">
-    <div class="container mx-auto px-4">
-      <div class="text-center mb-12">
-        <h3 class="text-sm uppercase tracking-widest text-primary-600 mb-3 font-bold">แบรนด์คุณภาพ</h3>
-        <p class="text-2xl font-semibold text-gray-700">พันธมิตรของเรา</p>
+
+  <!-- =========================================================================
+       4. Apple-Style Bestsellers Showcase
+       ========================================================================= -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-12 gap-4">
+      <div>
+        <span class="text-xs font-semibold text-[#ea580c] uppercase tracking-wider block mb-1">ยอดนิยมตลอดกาล</span>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-[#1d1d1f] dark:text-[#f5f5f7]">
+          สินค้าขายดี
+        </h2>
       </div>
+      <a routerLink="/products" class="apple-link font-semibold text-sm">
+        <span>ดูสินค้าขายดีทั้งหมด</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+
+    @if (loading()) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        @for (item of [1,2,3,4]; track item) {
+          <div class="bg-white dark:bg-[#1d1d1f] rounded-3xl p-6 border border-black/[0.04] dark:border-white/[0.08] shadow-sm animate-pulse space-y-4">
+            <div class="aspect-square bg-[#f5f5f7] dark:bg-[#2c2c2e] rounded-2xl"></div>
+            <div class="h-4 bg-[#f5f5f7] dark:bg-[#2c2c2e] rounded-full w-3/4"></div>
+            <div class="h-5 bg-[#f5f5f7] dark:bg-[#2c2c2e] rounded-full w-1/2"></div>
+          </div>
+        }
+      </div>
+    } @else if (bestsellerProducts().length > 0) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        @for (product of bestsellerProducts(); track product.id) {
+          <app-product-card [product]="product"></app-product-card>
+        }
+      </div>
+    } @else {
+      <div class="apple-card-static text-center py-16 p-8 border border-black/[0.06] dark:border-white/[0.08]">
+        <p class="text-base font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">ไม่พบสินค้าขายดี</p>
+      </div>
+    }
+  </section>
+
+
+  <!-- =========================================================================
+       5. Brand Partners Showcase (Apple Grayscale Grid)
+       ========================================================================= -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="apple-card-static p-8 sm:p-12 border border-black/[0.06] dark:border-white/[0.08] text-center">
+      <div class="mb-8">
+        <span class="text-xs font-bold text-[#86868b] uppercase tracking-widest block mb-1">พันธมิตรของเรา</span>
+        <h3 class="text-2xl font-bold text-[#1d1d1f] dark:text-[#f5f5f7]">แบรนด์เครื่องครัวชั้นนำที่ไว้วางใจ</h3>
+      </div>
+
       @if (brands().length > 0) {
-        <div class="grid grid-cols-3 md:grid-cols-5 gap-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 sm:gap-6">
           @for (brand of brands(); track brand.id) {
             <a
               [routerLink]="['/products']"
               [queryParams]="{brandId: brand.id}"
-              class="brand-logo flex items-center justify-center p-8 bg-white/80 backdrop-blur-sm hover:bg-blue-50   transition-colors rounded-2xl group h-28 shadow-sm hover:shadow-xl border border-gray-100 hover:border-primary-200"
+              class="flex items-center justify-center p-6 bg-[#f5f5f7] dark:bg-[#2c2c2e] hover:bg-white dark:hover:bg-[#3a3a3c] rounded-2xl border border-transparent hover:border-black/[0.08] dark:hover:border-white/[0.1] hover:shadow-apple-sm transition-all duration-300 group h-24"
             >
               <img
                 [src]="brand.logoUrl"
                 [alt]="brand.name"
                 appImageFallback="https://placehold.co/200x80/e5e7eb/6b7280/png?text=Brand"
-                class="max-h-16 max-w-full w-auto object-contain opacity-50 group-hover:opacity-100 transition-colors filter grayscale group-hover:grayscale-0"
+                class="max-h-12 max-w-full object-contain filter grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
               />
             </a>
           }
         </div>
       } @else {
-        <div class="text-center py-12 bg-white rounded-2xl border border-gray-100">
-          <p class="text-gray-500">ไม่พบแบรนด์</p>
-        </div>
+        <p class="text-sm text-[#86868b]">กำลังอัปเดตข้อมูลแบรนด์พันธมิตร</p>
       }
     </div>
   </section>
 
-  <!-- Bestsellers -->
-  <section class="section-animate container mx-auto px-4 py-20">
-    <div class="flex items-center justify-between mb-12">
-      <div>
-        <span class="text-sm font-semibold text-accent-600 uppercase tracking-wider mb-2 block">ยอดนิยม</span>
-        <h2 class="text-4xl font-bold text-gray-900">สินค้าขายดี</h2>
-      </div>
-      <a routerLink="/products" class="hidden md:inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold group">
-        <span>ดูทั้งหมด</span>
-        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-        </svg>
-      </a>
-    </div>
-    @if (bestsellerProducts().length > 0) {
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        @for (product of bestsellerProducts(); track product.id) {
-          <div class="product-card-animate">
-            <app-product-card [product]="product"></app-product-card>
-          </div>
-        }
-      </div>
-    } @else {
-      <div class="text-center py-16 bg-white rounded-2xl border border-gray-100">
-        <p class="text-gray-600 text-lg mb-2">ไม่พบสินค้าขายดี</p>
-        <p class="text-sm text-gray-400">ตรวจสอบ Console (F12) เพื่อดู error</p>
-      </div>
-    }
-  </section>
 
-  <!-- CTA -->
-  <section class="section-animate relative overflow-hidden bg-blue-600 my-16">
-    <!-- Decorative elements -->
-    <div class="absolute inset-0 opacity-20">
-      <div class="absolute top-0 left-1/4 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
-      <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-white rounded-full filter blur-3xl"></div>
-    </div>
+  <!-- =========================================================================
+       6. Apple Callout CTA Section ("แสงทอง" Golden Light)
+       ========================================================================= -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="relative overflow-hidden rounded-4xl bg-[#1d1d1f] text-white p-8 sm:p-16 lg:p-20 shadow-apple-lg border border-white/10">
+      <!-- Ambient Glow Accent ("แสงทอง" Golden Radiance) -->
+      <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-bl from-[#d97706]/30 via-transparent to-transparent rounded-full filter blur-[80px] pointer-events-none"></div>
 
-    <div class="container mx-auto px-4 py-24 relative z-10">
-      <div class="max-w-3xl mx-auto text-center text-white">
-        <h2 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-          เริ่มต้นโปรเจกต์ของคุณ<br/>
-          <span class="text-orange-500">วันนี้เลย</span>
+      <div class="max-w-2xl relative z-10 space-y-6">
+        <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 text-xs font-semibold text-white/90 border border-white/15">
+          บริการสั่งทำพิเศษ &bull; Custom Kitchenware
+        </span>
+        <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+          เริ่มต้นสร้างครัวในฝัน<br />
+          <span class="text-[#fbbf24]">กับผู้เชี่ยวชาญแสงทองวันนี้</span>
         </h2>
-        <p class="text-xl text-white/90 mb-10 leading-relaxed">
-          จัดส่งฟรีทั่วประเทศ เมื่อสั่งซื้อครบ ฿2,000<br/>
-          <span class="text-sm text-white/75">พร้อมบริการให้คำปรึกษาจากผู้เชี่ยวชาญ</span>
+        <p class="text-base sm:text-lg text-[#86868b] leading-relaxed">
+          รับออกแบบ ผลิต และติดตั้งเครื่องครัวสแตนเลสสำหรับร้านอาหาร ผับ บาร์ โรงอาหาร และโรงแรม ครบวงจร
         </p>
-        <div class="flex flex-wrap gap-4 justify-center">
-          <a routerLink="/products" class="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-2xl font-bold hover:shadow-2xl transition-colors  group">
-            <span>เริ่มช้อปปิ้ง</span>
-            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-            </svg>
+
+        <div class="flex flex-wrap gap-4 pt-2">
+          <a routerLink="/products" class="apple-pill-btn !py-3 !px-7 font-semibold">
+            <span>ดูสินค้าทั้งหมด</span>
           </a>
-          <a routerLink="/about" class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-xl text-white px-6 py-4 rounded-2xl font-semibold border-2 border-white/30 hover:bg-white/20 hover:border-white/50 transition-colors">
-            <span>เกี่ยวกับเรา</span>
+          <a routerLink="/about" class="apple-pill-btn-ghost-dark !py-3 !px-7">
+            <span>ติดต่อเรา / สอบถาม</span>
           </a>
         </div>
       </div>
     </div>
   </section>
+
 </div>

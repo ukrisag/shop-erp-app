@@ -3,9 +3,9 @@
   <div class="header-section mb-6">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div class="flex items-start gap-4">
-        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg flex-shrink-0">
-          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#d97706] to-[#b45309] flex items-center justify-center shadow-apple-gold flex-shrink-0 text-white">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
           </svg>
         </div>
         <div>
@@ -17,7 +17,7 @@
         @if (activeTab() === 'accounts') {
           <button
             (click)="openAddAccountModal()"
-            class="btn-primary px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 justify-center">
+            class="btn-primary flex items-center gap-2 justify-center">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
@@ -26,7 +26,7 @@
         } @else {
           <button
             (click)="openAddTransactionModal()"
-            class="btn-primary px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 justify-center">
+            class="btn-primary flex items-center gap-2 justify-center">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
@@ -39,23 +39,27 @@
 
   <!-- Tabs -->
   <div class="tabs-section mb-6">
-    <div class="border-b border-gray-200">
+    <div class="border-b border-black/[0.06] dark:border-white/[0.08]">
       <nav class="-mb-px flex space-x-8">
         <button
           (click)="switchTab('accounts')"
-          [class.border-blue-500]="activeTab() === 'accounts'"
-          [class.text-blue-600]="activeTab() === 'accounts'"
+          [class.border-[#d97706]]="activeTab() === 'accounts'"
+          [class.text-[#d97706]]="activeTab() === 'accounts'"
+          [class.dark:border-[#fbbf24]]="activeTab() === 'accounts'"
+          [class.dark:text-[#fbbf24]]="activeTab() === 'accounts'"
           [class.border-transparent]="activeTab() !== 'accounts'"
-          [class.text-gray-500]="activeTab() !== 'accounts'"
+          [class.text-[#86868b]]="activeTab() !== 'accounts'"
           class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
           บัญชีธนาคาร
         </button>
         <button
           (click)="switchTab('transactions')"
-          [class.border-blue-500]="activeTab() === 'transactions'"
-          [class.text-blue-600]="activeTab() === 'transactions'"
+          [class.border-[#d97706]]="activeTab() === 'transactions'"
+          [class.text-[#d97706]]="activeTab() === 'transactions'"
+          [class.dark:border-[#fbbf24]]="activeTab() === 'transactions'"
+          [class.dark:text-[#fbbf24]]="activeTab() === 'transactions'"
           [class.border-transparent]="activeTab() !== 'transactions'"
-          [class.text-gray-500]="activeTab() !== 'transactions'"
+          [class.text-[#86868b]]="activeTab() !== 'transactions'"
           class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
           ธุรกรรมธนาคาร
         </button>

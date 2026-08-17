@@ -6,6 +6,8 @@ import { AuthService } from '../../../services/auth.service';
 import { EmployeeAuthService } from '../../../services/employee-auth.service';
 import { PermissionService } from '../../../services/permission.service';
 import { NotificationService } from '../../../services/notification.service';
+import { ThemeService } from '../../../services/theme.service';
+import { EmployeeAuthDto } from '../../../models/employee.model';
 
 @Component({
   selector: 'app-admin-header',
@@ -21,12 +23,13 @@ export class AdminHeaderComponent implements OnDestroy {
   authService = inject(AuthService);
   employeeAuthService = inject(EmployeeAuthService);
   permissionService = inject(PermissionService);
+  themeService = inject(ThemeService);
   private router = inject(Router);
   private notificationService = inject(NotificationService);
 
-  isUserMenuOpen = signal(false);
+  isProfileMenuOpen = false;
   searchQuery = '';
-  notificationCount = 3; // Mock notification count
+  notificationCount = 3;
   private clickListener?: (event: Event) => void;
 
   constructor() {
@@ -42,9 +45,9 @@ export class AdminHeaderComponent implements OnDestroy {
   private setupClickOutside(): void {
     this.clickListener = (event: Event) => {
       const target = event.target as HTMLElement;
-      const userMenu = document.querySelector('.user-menu');
-      if (this.isUserMenuOpen() && userMenu && !userMenu.contains(target)) {
-        this.isUserMenuOpen.set(false);
+      const userMenu = document.querySelector('[#profileMenuRef]');
+      if (this.isProfileMenuOpen && userMenu && !userMenu.contains(target)) {
+        this.isProfileMenuOpen = false;
       }
     };
     document.addEventListener('click', this.clickListener);
@@ -54,12 +57,16 @@ export class AdminHeaderComponent implements OnDestroy {
     this.toggleSidebar.emit();
   }
 
-  toggleNotifications(): void {
-    console.log('Toggle notifications');
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
-  toggleUserMenu(): void {
-    this.isUserMenuOpen.update(value => !value);
+  toggleProfileMenu(): void {
+    this.isProfileMenuOpen = !this.isProfileMenuOpen;
+  }
+
+  closeProfileMenu(): void {
+    this.isProfileMenuOpen = false;
   }
 
   onSearchFocus(): void {
@@ -70,12 +77,13 @@ export class AdminHeaderComponent implements OnDestroy {
     // Search blurred
   }
 
-  get userName(): string {
-    const employee = this.employeeAuthService.currentEmployeeValue;
-    if (employee) {
-      return employee.fullName || employee.email || 'Admin';
-    }
-    return 'Admin';
+  get currentEmployee(): EmployeeAuthDto | null {
+    return this.employeeAuthService.currentEmployeeValue;
+  }
+
+  getUserInitials(): string {
+    const name = this.currentEmployee?.fullName || this.currentEmployee?.email || 'A';
+    return name.charAt(0).toUpperCase();
   }
 
   get userRole(): string {
@@ -83,6 +91,7 @@ export class AdminHeaderComponent implements OnDestroy {
   }
 
   logout(): void {
+    this.isProfileMenuOpen = false;
     this.notificationService.confirm(
       'คุณต้องการออกจากระบบหรือไม่?',
       () => {

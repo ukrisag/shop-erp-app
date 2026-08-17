@@ -5,9 +5,9 @@ button {
   transition: all 0.2s ease-in-out;
 }
 
-/* Table hover effects */
-tbody tr:hover {
-  background-color: rgba(249, 250, 251, 0.5);
+/* Table hover effects handled globally in admin-styles.css */
+tbody tr {
+  transition: background-color 0.15s ease-in-out;
 }
 
 /* Modal overlay animation */
