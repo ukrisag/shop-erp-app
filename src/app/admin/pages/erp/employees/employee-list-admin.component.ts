@@ -152,7 +152,7 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
         : [FormValidators.passwordMatch('password', 'confirmPassword')]
     });
 
-    // Add password fields for create mode
+    // Add password fields and async validators ONLY for create mode
     if (!this.isEditMode()) {
       this.employeeForm.addControl('password', this.fb.control('', baseConfig['password'] || []));
       this.employeeForm.addControl('confirmPassword', this.fb.control('', baseConfig['confirmPassword'] || []));
@@ -161,21 +161,12 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
       this.employeeForm.get('employeeCode')?.setAsyncValidators([
         AsyncValidators.uniqueEmployeeCode(this.employeesService, undefined, 300)
       ]);
-      // Email is optional - no uniqueness check needed
       this.employeeForm.get('idCardNumber')?.setAsyncValidators([
         AsyncValidators.uniqueIdCard(this.employeesService, undefined, 300)
       ]);
-    } else if (this.selectedEmployee()) {
-      // For edit mode, skip self-check in async validators (reduced debounce time to 300ms)
-      const currentId = this.selectedEmployee()?.id;
-      this.employeeForm.get('employeeCode')?.setAsyncValidators([
-        AsyncValidators.uniqueEmployeeCode(this.employeesService, currentId, 300)
-      ]);
-      // Email is optional - no uniqueness check needed
-      this.employeeForm.get('idCardNumber')?.setAsyncValidators([
-        AsyncValidators.uniqueIdCard(this.employeesService, currentId, 300)
-      ]);
     }
+    // Note: No async validators in edit mode - employeeCode is readonly,
+    // and idCardNumber shouldn't trigger uniqueness checks during edit
   }
 
   private setupDynamicValidation(): void {
