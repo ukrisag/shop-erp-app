@@ -248,10 +248,10 @@
     </form>
 
     <div class="modal-footer">
-      <button type="button" class="btn-secondary" (click)="closeModal()">ยกเลิก</button>
+      <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50" (click)="closeModal()">ยกเลิก</button>
       <button
         type="button"
-        class="btn-primary"
+        class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
         (click)="saveImage()"
         [disabled]="uploadingImage() || (imageForm.get('title')?.invalid)">
         <span *ngIf="uploadingImage()">กำลังบันทึก...</span>
@@ -277,8 +277,8 @@
       <p class="text-danger">การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn-secondary" (click)="closeDeleteModal()">ยกเลิก</button>
-      <button type="button" class="btn-danger" (click)="confirmDelete()">ลบ</button>
+      <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50" (click)="closeDeleteModal()">ยกเลิก</button>
+      <button type="button" class="px-4 py-2 bg-danger-600 text-white rounded-lg hover:bg-danger-700" (click)="confirmDelete()">ลบ</button>
     </div>
   </div>
 </div>

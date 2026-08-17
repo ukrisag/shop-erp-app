@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MaterialRequisitionsService, BranchesService, EmployeesService, ProductsService } from '../../../../services/openapi-client';
 import {
   CreateMaterialRequisitionDto,
@@ -11,6 +11,8 @@ import {
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
 import { formatThaiDate } from '../../../../utils/thai-date.helper';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { FormValidators } from '../../../../utils/form-validators';
 
 // Editable row shape for the items UI - keeps productName/productSku around
 // purely for display (selected-product preview), separate from the
@@ -65,7 +67,7 @@ interface BranchDto {
 @Component({
   selector: 'app-material-requisition-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './material-requisition-admin.component.html',
   styleUrls: ['./material-requisition-admin.component.css']
 })
@@ -87,16 +89,9 @@ export class MaterialRequisitionAdminComponent implements OnInit {
   isEditMode = signal(false);
   selectedRequisition = signal<MaterialRequisitionDto | null>(null);
 
-  requisitionForm: any = {
-    branchId: null,
-    requestedBy: null,
-    requisitionDate: '',
-    purpose: '',
-    salesOrderId: null,
-    status: 'pending',
-    notes: '',
-    items: [] as RequisitionItemFormRow[]
-  };
+  // Reactive form
+  requisitionForm!: FormGroup;
+  requisitionItems: RequisitionItemFormRow[] = [];
 
   currentPage = signal(1);
   itemsPerPage = signal(10);
@@ -115,8 +110,32 @@ export class MaterialRequisitionAdminComponent implements OnInit {
     private branchesService: BranchesService,
     private employeesService: EmployeesService,
     private productsService: ProductsService,
-    private notificationService: NotificationService
-  ) {}
+    private notificationService: NotificationService,
+    private fb: FormBuilder
+  ) {
+    this.initForm();
+  }
+
+  private initForm(): void {
+    const today = new Date().toISOString().split('T')[0];
+    this.requisitionForm = this.fb.group({
+      branchId: [null, Validators.required],
+      requestedBy: [null, Validators.required],
+      requisitionDate: [today, Validators.required],
+      purpose: ['', Validators.maxLength(500)],
+      salesOrderId: [null],
+      status: ['pending', Validators.required],
+      notes: ['', Validators.maxLength(1000)]
+    });
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.requisitionForm, fieldName);
+  }
+
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.requisitionForm, fieldName);
+  }
 
   ngOnInit(): void {
     this.loadRequisitions();
@@ -223,56 +242,56 @@ export class MaterialRequisitionAdminComponent implements OnInit {
     this.isEditMode.set(false);
     this.selectedRequisition.set(null);
     const today = new Date().toISOString().split('T')[0];
-    this.requisitionForm = {
+    this.requisitionForm.reset({
       branchId: null,
       requestedBy: null,
       requisitionDate: today,
       purpose: '',
       salesOrderId: null,
       status: 'pending',
-      notes: '',
-      items: []
-    };
+      notes: ''
+    });
+    this.requisitionItems = [];
     this.showModal.set(true);
   }
 
   openEditModal(requisition: MaterialRequisitionDto): void {
     this.isEditMode.set(true);
     this.selectedRequisition.set(requisition);
-    this.requisitionForm = {
+    this.requisitionForm.patchValue({
       branchId: requisition.branchId,
       requestedBy: requisition.requestedBy,
       requisitionDate: requisition.requisitionDate?.split('T')[0],
-      purpose: requisition.purpose,
+      purpose: requisition.purpose || '',
       salesOrderId: requisition.salesOrderId,
-      status: requisition.status,
-      notes: requisition.notes,
-      // GetAllAsync() (which populates this list) already includes items with
-      // their product, so this doesn't need a separate detail fetch.
-      items: (requisition.items || []).map(i => ({
-        productId: i.productId ?? null,
-        productName: i.productName ?? undefined,
-        productSku: i.productSku ?? undefined,
-        quantity: i.quantity ?? null
-      }))
-    };
+      status: requisition.status || 'pending',
+      notes: requisition.notes || ''
+    });
+    // GetAllAsync() (which populates this list) already includes items with
+    // their product, so this doesn't need a separate detail fetch.
+    this.requisitionItems = (requisition.items || []).map(i => ({
+      productId: i.productId ?? null,
+      productName: i.productName ?? undefined,
+      productSku: i.productSku ?? undefined,
+      quantity: i.quantity ?? null
+    }));
     this.showModal.set(true);
   }
 
   addItem(): void {
-    this.requisitionForm.items.push({ productId: null, quantity: 1 });
+    this.requisitionItems.push({ productId: null, quantity: 1 });
   }
 
   removeItem(index: number): void {
-    this.requisitionForm.items.splice(index, 1);
+    this.requisitionItems.splice(index, 1);
   }
 
   onProductSelect(index: number, productId: number | string | null): void {
     const id = productId != null ? Number(productId) : null;
-    this.requisitionForm.items[index].productId = id;
+    this.requisitionItems[index].productId = id;
     const product = this.products().find(p => p.id === id);
-    this.requisitionForm.items[index].productName = product?.name || '';
-    this.requisitionForm.items[index].productSku = product?.sku || '';
+    this.requisitionItems[index].productName = product?.name || '';
+    this.requisitionItems[index].productSku = product?.sku || '';
   }
 
   openDeleteModal(requisition: MaterialRequisitionDto): void {
@@ -281,6 +300,20 @@ export class MaterialRequisitionAdminComponent implements OnInit {
   }
 
   save(): void {
+    // Mark all fields as touched to show validation errors
+    FormHelpers.markFormGroupTouched(this.requisitionForm);
+
+    // Validate form
+    if (this.requisitionForm.invalid) {
+      return;
+    }
+
+    // Validate items
+    const items = this.buildItemsPayload();
+    if (!items) {
+      return;
+    }
+
     if (this.isEditMode()) {
       this.update();
     } else {
@@ -293,7 +326,7 @@ export class MaterialRequisitionAdminComponent implements OnInit {
    *  no items UI at all, so a material requisition could never actually be
    *  created from here. Validate + build the items payload client-side. */
   private buildItemsPayload(): CreateMaterialRequisitionItemDto[] | null {
-    const items = this.requisitionForm.items as RequisitionItemFormRow[];
+    const items = this.requisitionItems as RequisitionItemFormRow[];
     if (!items || items.length === 0) {
       this.notificationService.error('กรุณาเพิ่มรายการสินค้าอย่างน้อย 1 รายการ');
       return null;
@@ -309,13 +342,14 @@ export class MaterialRequisitionAdminComponent implements OnInit {
     const items = this.buildItemsPayload();
     if (!items) return;
 
+    const formValue = this.requisitionForm.value;
     const dto: CreateMaterialRequisitionDto = {
-      branchId: this.requisitionForm.branchId,
-      requestedBy: this.requisitionForm.requestedBy,
-      requisitionDate: this.requisitionForm.requisitionDate,
-      purpose: this.requisitionForm.purpose || undefined,
-      salesOrderId: this.requisitionForm.salesOrderId || undefined,
-      notes: this.requisitionForm.notes || undefined,
+      branchId: formValue.branchId,
+      requestedBy: formValue.requestedBy,
+      requisitionDate: formValue.requisitionDate,
+      purpose: formValue.purpose?.trim() || undefined,
+      salesOrderId: formValue.salesOrderId || undefined,
+      notes: formValue.notes?.trim() || undefined,
       items
     };
     this.requisitionsService.materialRequisitionsCreate(dto).subscribe({
@@ -340,11 +374,12 @@ export class MaterialRequisitionAdminComponent implements OnInit {
     const items = this.buildItemsPayload();
     if (!items) return;
 
+    const formValue = this.requisitionForm.value;
     const dto: UpdateMaterialRequisitionDto = {
-      requisitionDate: this.requisitionForm.requisitionDate,
-      purpose: this.requisitionForm.purpose || undefined,
-      salesOrderId: this.requisitionForm.salesOrderId || undefined,
-      notes: this.requisitionForm.notes || undefined,
+      requisitionDate: formValue.requisitionDate,
+      purpose: formValue.purpose?.trim() || undefined,
+      salesOrderId: formValue.salesOrderId || undefined,
+      notes: formValue.notes?.trim() || undefined,
       items
     };
     this.requisitionsService.materialRequisitionsUpdate(req.id!, dto).subscribe({

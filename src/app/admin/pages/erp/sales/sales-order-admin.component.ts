@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ErpSalesOrdersService, ErpSalesPaymentsService, BranchesService, ProductsService } from '../../../../services/openapi-client';
@@ -14,6 +14,8 @@ import {
 import { NotificationService } from '../../../../services/notification.service';
 import { environment } from '../../../../../environments/environment';
 import { formatThaiDate } from '../../../../utils/thai-date.helper';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { FormValidators } from '../../../../utils/form-validators';
 
 // The generated ErpSalesOrdersController/ErpSalesPaymentsController/BranchesController actions
 // return untyped IActionResult on the backend, so openapi-generator does not emit typed
@@ -104,7 +106,7 @@ interface BranchDto {
 @Component({
   selector: 'app-sales-order-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './sales-order-admin.component.html',
   styleUrls: ['./sales-order-admin.component.css']
 })
@@ -130,42 +132,15 @@ export class SalesOrderAdminComponent implements OnInit {
   showDeleteModal = signal(false);
   isEditMode = signal(false);
 
-  // Forms
-  orderForm: any = {
-    branchId: null,
-    customerId: null,
-    customerName: '',
-    customerPhone: '',
-    customerAddress: '',
-    customerTaxId: '',
-    orderDate: '',
-    orderType: 'quotation',
-    status: 'draft',
-    subtotal: 0,
-    discountAmount: 0,
-    discountPercentage: 0,
-    vatEnabled: true,
-    vatPercentage: 7,
-    depositAmount: 0,
-    deliveryAppointmentDate: '',
-    notes: '',
-    internalNotes: '',
-    items: [] as CreateErpSalesOrderItemDto[]
-  };
+  // Reactive forms
+  orderForm!: FormGroup;
+  paymentForm!: FormGroup;
 
-  paymentForm: any = {
-    salesOrderId: null,
-    branchId: null,
-    paymentDate: '',
-    paymentType: 'deposit',
-    amount: 0,
-    paymentMethod: 'transfer',
-    bankName: '',
-    accountNumber: '',
-    transferDate: '',
-    slipUrl: '',
-    notes: ''
-  };
+  // Calculated values for display
+  subtotal = 0;
+  amountBeforeVat = 0;
+  vatAmount = 0;
+  totalAmount = 0;
 
   // Pagination
   currentPage = signal(1);
@@ -207,13 +182,75 @@ export class SalesOrderAdminComponent implements OnInit {
     private router: Router,
     private notificationService: NotificationService,
     private cdr: ChangeDetectorRef,
-    private http: HttpClient
-  ) {}
+    private http: HttpClient,
+    private fb: FormBuilder
+  ) {
+    this.initForms();
+  }
 
   ngOnInit(): void {
     this.loadOrders();
     this.loadBranches();
     this.loadProducts();
+  }
+
+  private initForms(): void {
+    const today = new Date().toISOString().split('T')[0];
+
+    this.orderForm = this.fb.group({
+      branchId: [null, Validators.required],
+      customerId: [null],
+      customerName: ['', [Validators.required, Validators.maxLength(200)]],
+      customerPhone: ['', Validators.maxLength(20)],
+      customerAddress: ['', Validators.maxLength(500)],
+      customerTaxId: ['', Validators.maxLength(20)],
+      orderDate: [today, Validators.required],
+      orderType: ['quotation', Validators.required],
+      status: ['draft', Validators.required],
+      discountAmount: [0, [Validators.min(0)]],
+      discountPercentage: [0, [Validators.min(0), Validators.max(100)]],
+      vatEnabled: [true],
+      vatPercentage: [7, [Validators.min(0), Validators.max(100)]],
+      depositAmount: [0, [Validators.min(0)]],
+      deliveryAppointmentDate: [''],
+      notes: ['', Validators.maxLength(500)],
+      internalNotes: ['', Validators.maxLength(500)],
+      items: this.fb.array([])
+    });
+
+    this.paymentForm = this.fb.group({
+      salesOrderId: [null, Validators.required],
+      branchId: [null, Validators.required],
+      paymentDate: [today, Validators.required],
+      paymentType: ['deposit', Validators.required],
+      amount: [0, [Validators.required, FormValidators.positiveNumber()]],
+      paymentMethod: ['transfer', Validators.required],
+      bankName: ['', Validators.maxLength(100)],
+      accountNumber: ['', Validators.maxLength(50)],
+      transferDate: [''],
+      slipUrl: ['', Validators.maxLength(500)],
+      notes: ['', Validators.maxLength(500)]
+    });
+  }
+
+  get itemsFormArray(): FormArray {
+    return this.orderForm.get('items') as FormArray;
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.orderForm, fieldName);
+  }
+
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.orderForm, fieldName);
+  }
+
+  isPaymentFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.paymentForm, fieldName);
+  }
+
+  getPaymentFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.paymentForm, fieldName);
   }
 
   loadOrders(): void {
@@ -320,7 +357,13 @@ export class SalesOrderAdminComponent implements OnInit {
     this.isEditMode.set(false);
     this.selectedOrder.set(null);
     const today = new Date().toISOString().split('T')[0];
-    this.orderForm = {
+
+    // Clear items array
+    while (this.itemsFormArray.length) {
+      this.itemsFormArray.removeAt(0);
+    }
+
+    this.orderForm.reset({
       branchId: null,
       customerId: null,
       customerName: '',
@@ -330,7 +373,6 @@ export class SalesOrderAdminComponent implements OnInit {
       orderDate: today,
       orderType: 'quotation',
       status: 'draft',
-      subtotal: 0,
       discountAmount: 0,
       discountPercentage: 0,
       vatEnabled: true,
@@ -338,16 +380,27 @@ export class SalesOrderAdminComponent implements OnInit {
       depositAmount: 0,
       deliveryAppointmentDate: '',
       notes: '',
-      internalNotes: '',
-      items: []
-    };
+      internalNotes: ''
+    });
     this.showOrderModal.set(true);
   }
 
   openEditOrderModal(order: ErpSalesOrderDto): void {
     this.isEditMode.set(true);
     this.selectedOrder.set(order);
-    this.orderForm = {
+
+    // Clear and rebuild items array
+    while (this.itemsFormArray.length) {
+      this.itemsFormArray.removeAt(0);
+    }
+
+    if (order.items) {
+      order.items.forEach(item => {
+        this.itemsFormArray.push(this.createItemFormGroup(item));
+      });
+    }
+
+    this.orderForm.patchValue({
       branchId: order.branchId,
       customerId: order.customerId,
       customerName: order.customerName,
@@ -357,7 +410,6 @@ export class SalesOrderAdminComponent implements OnInit {
       orderDate: order.orderDate?.split('T')[0],
       orderType: order.orderType,
       status: order.status,
-      subtotal: order.subtotal,
       discountAmount: order.discountAmount,
       discountPercentage: order.discountPercentage,
       vatEnabled: order.vatEnabled,
@@ -365,10 +417,22 @@ export class SalesOrderAdminComponent implements OnInit {
       depositAmount: order.depositAmount,
       deliveryAppointmentDate: order.deliveryAppointmentDate?.split('T')[0] || '',
       notes: order.notes,
-      internalNotes: order.internalNotes,
-      items: order.items || []
-    };
+      internalNotes: order.internalNotes
+    });
     this.showOrderModal.set(true);
+  }
+
+  private createItemFormGroup(item?: any): FormGroup {
+    return this.fb.group({
+      productId: [item?.productId || null],
+      productName: [item?.productName || ''],
+      productSku: [item?.productSku || ''],
+      quantity: [item?.quantity || 1, [Validators.required, Validators.min(1)]],
+      unitPrice: [item?.unitPrice || 0, [Validators.required, Validators.min(0)]],
+      discount: [item?.discount || 0, [Validators.min(0)]],
+      totalPrice: [item?.totalPrice || 0],
+      notes: [item?.notes || '']
+    });
   }
 
   viewOrderDetails(order: ErpSalesOrderDto): void {
@@ -385,6 +449,12 @@ export class SalesOrderAdminComponent implements OnInit {
   }
 
   saveOrder(): void {
+    if (this.orderForm.invalid) {
+      FormHelpers.markFormGroupTouched(this.orderForm);
+      this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+
     if (this.isEditMode()) {
       this.updateOrder();
     } else {
@@ -393,26 +463,27 @@ export class SalesOrderAdminComponent implements OnInit {
   }
 
   createOrder(): void {
+    const formValue = this.orderForm.value;
     // Properly construct DTO with null for empty dates
     const dto: CreateErpSalesOrderDto = {
-      branchId: this.orderForm.branchId,
-      customerId: this.orderForm.customerId,
-      customerName: this.orderForm.customerName,
-      customerPhone: this.orderForm.customerPhone,
-      customerAddress: this.orderForm.customerAddress,
-      customerTaxId: this.orderForm.customerTaxId || null,
-      orderDate: this.orderForm.orderDate,
-      orderType: this.orderForm.orderType,
-      status: this.orderForm.status,
-      discountAmount: this.orderForm.discountAmount || 0,
-      discountPercentage: this.orderForm.discountPercentage || 0,
-      vatEnabled: this.orderForm.vatEnabled,
-      vatPercentage: this.orderForm.vatPercentage || 7,
-      depositAmount: this.orderForm.depositAmount || 0,
-      deliveryAppointmentDate: this.orderForm.deliveryAppointmentDate?.trim() || null,
-      notes: this.orderForm.notes || null,
-      internalNotes: this.orderForm.internalNotes || null,
-      items: this.orderForm.items
+      branchId: formValue.branchId,
+      customerId: formValue.customerId,
+      customerName: formValue.customerName,
+      customerPhone: formValue.customerPhone,
+      customerAddress: formValue.customerAddress,
+      customerTaxId: formValue.customerTaxId || null,
+      orderDate: formValue.orderDate,
+      orderType: formValue.orderType,
+      status: formValue.status,
+      discountAmount: formValue.discountAmount || 0,
+      discountPercentage: formValue.discountPercentage || 0,
+      vatEnabled: formValue.vatEnabled,
+      vatPercentage: formValue.vatPercentage || 7,
+      depositAmount: formValue.depositAmount || 0,
+      deliveryAppointmentDate: formValue.deliveryAppointmentDate?.trim() || null,
+      notes: formValue.notes || null,
+      internalNotes: formValue.internalNotes || null,
+      items: formValue.items
     };
 
     this.ordersService.erpSalesOrdersCreate(dto).subscribe({
@@ -437,23 +508,24 @@ export class SalesOrderAdminComponent implements OnInit {
     const order = this.selectedOrder();
     if (!order) return;
 
+    const formValue = this.orderForm.value;
     // Properly construct DTO with null for empty dates
     const dto: UpdateErpSalesOrderDto = {
-      customerId: this.orderForm.customerId,
-      customerName: this.orderForm.customerName,
-      customerPhone: this.orderForm.customerPhone,
-      customerAddress: this.orderForm.customerAddress,
-      customerTaxId: this.orderForm.customerTaxId || null,
-      orderDate: this.orderForm.orderDate,
-      status: this.orderForm.status,
-      discountAmount: this.orderForm.discountAmount || 0,
-      discountPercentage: this.orderForm.discountPercentage || 0,
-      vatEnabled: this.orderForm.vatEnabled,
-      vatPercentage: this.orderForm.vatPercentage || 7,
-      deliveryAppointmentDate: this.orderForm.deliveryAppointmentDate?.trim() || null,
-      notes: this.orderForm.notes || null,
-      internalNotes: this.orderForm.internalNotes || null,
-      items: this.orderForm.items
+      customerId: formValue.customerId,
+      customerName: formValue.customerName,
+      customerPhone: formValue.customerPhone,
+      customerAddress: formValue.customerAddress,
+      customerTaxId: formValue.customerTaxId || null,
+      orderDate: formValue.orderDate,
+      status: formValue.status,
+      discountAmount: formValue.discountAmount || 0,
+      discountPercentage: formValue.discountPercentage || 0,
+      vatEnabled: formValue.vatEnabled,
+      vatPercentage: formValue.vatPercentage || 7,
+      deliveryAppointmentDate: formValue.deliveryAppointmentDate?.trim() || null,
+      notes: formValue.notes || null,
+      internalNotes: formValue.internalNotes || null,
+      items: formValue.items
     };
 
     this.ordersService.erpSalesOrdersUpdate(order.id!, dto).subscribe({
@@ -496,9 +568,9 @@ export class SalesOrderAdminComponent implements OnInit {
   openAddPaymentModal(order: ErpSalesOrderDto): void {
     this.selectedOrder.set(order);
     const today = new Date().toISOString().split('T')[0];
-    this.paymentForm = {
+    this.paymentForm.reset({
       salesOrderId: order.id,
-      branchId: order.branchId,  // เพิ่ม branchId จาก order
+      branchId: order.branchId,
       paymentDate: today,
       paymentType: 'deposit',
       amount: 0,
@@ -508,7 +580,7 @@ export class SalesOrderAdminComponent implements OnInit {
       transferDate: today,
       slipUrl: '',
       notes: ''
-    };
+    });
     this.showPaymentModal.set(true);
   }
 
@@ -538,7 +610,7 @@ export class SalesOrderAdminComponent implements OnInit {
     this.http.post<any>(`${apiUrl}/api/upload/payment-slip`, formData).subscribe({
       next: (response) => {
         if (response.success && response.data) {
-          this.paymentForm.slipUrl = response.data;
+          this.paymentForm.patchValue({ slipUrl: response.data });
           this.notificationService.success('อัปโหลดสลิปสำเร็จ');
         }
         this.uploadingSlip.set(false);
@@ -552,15 +624,22 @@ export class SalesOrderAdminComponent implements OnInit {
   }
 
   savePayment(): void {
+    if (this.paymentForm.invalid) {
+      FormHelpers.markFormGroupTouched(this.paymentForm);
+      this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+
+    const formValue = this.paymentForm.value;
     // Convert empty strings to null for optional fields
     const dto: CreateErpSalesPaymentDto = {
-      ...this.paymentForm,
-      paymentMethod: this.paymentForm.paymentMethod || null,
-      bankName: this.paymentForm.bankName || null,
-      accountNumber: this.paymentForm.accountNumber || null,
-      transferDate: this.paymentForm.transferDate || null,
-      slipUrl: this.paymentForm.slipUrl || null,
-      notes: this.paymentForm.notes || null
+      ...formValue,
+      paymentMethod: formValue.paymentMethod || null,
+      bankName: formValue.bankName || null,
+      accountNumber: formValue.accountNumber || null,
+      transferDate: formValue.transferDate || null,
+      slipUrl: formValue.slipUrl || null,
+      notes: formValue.notes || null
     };
 
     this.paymentsService.erpSalesPaymentsCreate(dto).subscribe({
@@ -658,91 +737,65 @@ export class SalesOrderAdminComponent implements OnInit {
 
   // Item Management
   addItem(): void {
-    this.orderForm.items.push({
-      productId: null,
-      productName: '',
-      productSku: '',
-      quantity: 1,
-      unitPrice: 0,
-      discount: 0,
-      notes: null
-    });
+    this.itemsFormArray.push(this.createItemFormGroup());
   }
 
   onProductSelect(index: number, productId: any): void {
-    // Convert to number if it's a string (from select dropdown)
     const numericProductId = typeof productId === 'string' ? parseInt(productId, 10) : productId;
-
     const product = this.products().find(p => p.id === numericProductId);
-    console.log('Selected productId:', productId, 'Converted:', numericProductId);
-    console.log('Selected product:', product);
-    console.log('Product basePrice:', product?.basePrice);
 
     if (product) {
-      // Use setTimeout to ensure the update happens after the current digest cycle
+      const itemGroup = this.itemsFormArray.at(index) as FormGroup;
       setTimeout(() => {
-        // Update all fields
-        this.orderForm.items[index].productId = product.id;
-        this.orderForm.items[index].productName = product.name || '';
-        this.orderForm.items[index].productSku = product.sku || '';
-        this.orderForm.items[index].unitPrice = product.basePrice || 0;
-
-        console.log('Updated item unitPrice:', this.orderForm.items[index].unitPrice);
-        console.log('Full item:', this.orderForm.items[index]);
-
-        // Force update calculations
+        itemGroup.patchValue({
+          productId: product.id,
+          productName: product.name || '',
+          productSku: product.sku || '',
+          unitPrice: product.basePrice || 0
+        });
         this.updateItemTotal(index);
-
-        // Manually trigger change detection
         this.cdr.detectChanges();
       }, 0);
-    } else {
-      console.error('Product not found! ProductId:', numericProductId, 'Available products:', this.products());
     }
   }
 
   removeItem(index: number): void {
-    this.orderForm.items.splice(index, 1);
+    this.itemsFormArray.removeAt(index);
     this.calculateAmounts();
   }
 
   updateItemTotal(index: number): void {
-    const item = this.orderForm.items[index];
-    item.totalPrice = (item.quantity * item.unitPrice) - (item.discount || 0);
+    const itemGroup = this.itemsFormArray.at(index) as FormGroup;
+    const quantity = itemGroup.get('quantity')?.value || 0;
+    const unitPrice = itemGroup.get('unitPrice')?.value || 0;
+    const discount = itemGroup.get('discount')?.value || 0;
+    const totalPrice = (quantity * unitPrice) - discount;
+    itemGroup.patchValue({ totalPrice }, { emitEvent: false });
     this.calculateAmounts();
   }
 
   calculateAmounts(): void {
-    // Calculate subtotal from items
-    const subtotal = this.orderForm.items.reduce((sum: number, item: any) => {
+    const items = this.itemsFormArray.value;
+    this.subtotal = items.reduce((sum: number, item: any) => {
       const itemTotal = (item.quantity || 0) * (item.unitPrice || 0) - (item.discount || 0);
       return sum + itemTotal;
     }, 0);
 
-    this.orderForm.subtotal = subtotal;
+    const discountAmount = this.orderForm.get('discountAmount')?.value || 0;
+    const discountPercentage = this.orderForm.get('discountPercentage')?.value || 0;
 
-    const discountAmount = this.orderForm.discountAmount || 0;
-    const discountPercentage = this.orderForm.discountPercentage || 0;
-
-    // Calculate discount
     let totalDiscount = discountAmount;
     if (discountPercentage > 0) {
-      totalDiscount += (subtotal * discountPercentage) / 100;
+      totalDiscount += (this.subtotal * discountPercentage) / 100;
     }
 
-    const amountBeforeVat = subtotal - totalDiscount;
+    this.amountBeforeVat = this.subtotal - totalDiscount;
 
-    // Calculate VAT
-    let vatAmount = 0;
-    if (this.orderForm.vatEnabled) {
-      vatAmount = (amountBeforeVat * (this.orderForm.vatPercentage || 7)) / 100;
+    this.vatAmount = 0;
+    if (this.orderForm.get('vatEnabled')?.value) {
+      this.vatAmount = (this.amountBeforeVat * (this.orderForm.get('vatPercentage')?.value || 7)) / 100;
     }
 
-    const totalAmount = amountBeforeVat + vatAmount;
-
-    // Update form (for display purposes)
-    this.orderForm.amountBeforeVat = amountBeforeVat;
-    this.orderForm.vatAmount = vatAmount;
-    this.orderForm.totalAmount = totalAmount;
+    this.totalAmount = this.amountBeforeVat + this.vatAmount;
   }
 }

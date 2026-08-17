@@ -1,6 +1,6 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { LoadingSkeletonComponent } from '../../../../components/shared/loading-skeleton/loading-skeleton.component';
 import { PassportFeeService } from '../../../../services/openapi-client/api/passportFee.service';
 import { EmployeesService } from '../../../../services/openapi-client/api/employees.service';
@@ -13,6 +13,11 @@ import {
   PassportFeeUpdateDto,
   EmployeeListDto
 } from '../../../../services/openapi-client/model/models';
+import { FormValidators } from '../../../../utils/form-validators';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { ValidationConfigs } from '../../../../utils/validation-configs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 interface BranchDto {
   id: number;
@@ -23,11 +28,12 @@ interface BranchDto {
 @Component({
   selector: 'app-passport-fee-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSkeletonComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, LoadingSkeletonComponent],
   templateUrl: './passport-fee-admin.component.html',
   styleUrls: ['./passport-fee-admin.component.css']
 })
-export class PassportFeeAdminComponent implements OnInit {
+export class PassportFeeAdminComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   // State signals
   activeTab = signal<'all' | 'active'>('all');
   passportFees = signal<PassportFeeDto[]>([]);
@@ -50,15 +56,7 @@ export class PassportFeeAdminComponent implements OnInit {
   isEditMode = signal(false);
 
   // Form data
-  passportFeeForm: any = {
-    employeeId: null,
-    branchId: null,
-    year: new Date().getFullYear(),
-    totalAmount: null,
-    totalInstallments: 12,
-    startMonth: 1,
-    notes: ''
-  };
+  passportFeeForm!: FormGroup;
 
   // Computed values
   filteredRecords = computed(() => {
@@ -104,8 +102,10 @@ export class PassportFeeAdminComponent implements OnInit {
 
   // Computed for estimated monthly deduction
   estimatedMonthlyDeduction = computed(() => {
-    if (this.passportFeeForm.totalAmount && this.passportFeeForm.totalInstallments && this.passportFeeForm.totalInstallments > 0) {
-      return Math.round((this.passportFeeForm.totalAmount / this.passportFeeForm.totalInstallments) * 100) / 100;
+    const totalAmount = this.passportFeeForm.get('totalAmount')?.value;
+    const totalInstallments = this.passportFeeForm.get('totalInstallments')?.value;
+    if (totalAmount && totalInstallments && totalInstallments > 0) {
+      return Math.round((totalAmount / totalInstallments) * 100) / 100;
     }
     return 0;
   });
@@ -126,7 +126,8 @@ export class PassportFeeAdminComponent implements OnInit {
     private passportFeeService: PassportFeeService,
     private employeesService: EmployeesService,
     private branchesService: BranchesService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private fb: FormBuilder
   ) {
     // Generate year options
     const currentYear = new Date().getFullYear();
@@ -136,9 +137,64 @@ export class PassportFeeAdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.initForm();
+    this.setupFormListeners();
     this.loadEmployees();
     this.loadBranches();
     this.loadPassportFees();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initForm(): void {
+    const currentDate = new Date();
+    this.passportFeeForm = this.fb.group({
+      employeeId: [null, ValidationConfigs.passportFee.employeeId],
+      branchId: [null, ValidationConfigs.passportFee.branchId],
+      year: [currentDate.getFullYear(), ValidationConfigs.passportFee.year],
+      totalAmount: [null, ValidationConfigs.passportFee.totalAmount],
+      totalInstallments: [12, ValidationConfigs.passportFee.totalInstallments],
+      startMonth: [currentDate.getMonth() + 1, ValidationConfigs.passportFee.startMonth],
+      monthlyDeduction: [null, ValidationConfigs.passportFee.monthlyDeduction],
+      remainingBalance: [null, ValidationConfigs.passportFee.remainingBalance],
+      notes: ['', ValidationConfigs.passportFee.notes],
+      status: ['active']
+    });
+  }
+
+  private setupFormListeners(): void {
+    // Auto-calculate monthly deduction when total amount or installments change
+    this.passportFeeForm.get('totalAmount')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.calculateMonthlyDeduction());
+
+    this.passportFeeForm.get('totalInstallments')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.calculateMonthlyDeduction());
+  }
+
+  private calculateMonthlyDeduction(): void {
+    const totalAmount = this.passportFeeForm.get('totalAmount')?.value;
+    const totalInstallments = this.passportFeeForm.get('totalInstallments')?.value;
+
+    if (totalAmount && totalInstallments && totalInstallments > 0) {
+      const monthlyDeduction = Math.ceil(totalAmount / totalInstallments);
+      this.passportFeeForm.patchValue({
+        monthlyDeduction,
+        remainingBalance: totalAmount
+      }, { emitEvent: false });
+    }
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.passportFeeForm, fieldName);
+  }
+
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.passportFeeForm, fieldName);
   }
 
   loadEmployees(): void {
@@ -240,53 +296,62 @@ export class PassportFeeAdminComponent implements OnInit {
 
     this.isEditMode.set(true);
     this.selectedRecord.set(record);
-    this.passportFeeForm = {
+
+    // Calculate monthly deduction
+    const monthlyDeduction = record.totalInstallments && record.totalInstallments > 0
+      ? Math.ceil((record.totalAmount || 0) / record.totalInstallments)
+      : 0;
+
+    this.passportFeeForm.patchValue({
       employeeId: record.employeeId,
       branchId: record.branchId,
       year: record.year,
       totalAmount: record.totalAmount,
-      totalInstallments: record.totalInstallments,
+      totalInstallments: record.totalInstallments || 12,
       startMonth: record.startMonth,
-      notes: record.notes || ''
-    };
+      monthlyDeduction: monthlyDeduction,
+      remainingBalance: record.remainingBalance,
+      notes: record.notes || '',
+      status: record.status
+    });
     this.loading.set(false);
     this.showFormModal.set(true);
   }
 
   resetForm(): void {
-    this.passportFeeForm = {
+    const currentDate = new Date();
+    this.passportFeeForm.reset({
       employeeId: null,
       branchId: null,
-      year: new Date().getFullYear(),
+      year: currentDate.getFullYear(),
       totalAmount: null,
       totalInstallments: 12,
-      startMonth: 1,
-      notes: ''
-    };
-  }
-
-  onEmployeeChange(): void {
-    // Auto-fill branch from employee
-    if (this.passportFeeForm.employeeId) {
-      const employee = this.employees().find(e => e.id === this.passportFeeForm.employeeId);
-      if (employee && employee.branchId) {
-        this.passportFeeForm.branchId = employee.branchId;
-      }
-    }
+      startMonth: currentDate.getMonth() + 1,
+      monthlyDeduction: null,
+      remainingBalance: null,
+      notes: '',
+      status: 'active'
+    });
   }
 
   savePassportFee(): void {
-    if (!this.validateForm()) {
+    // Mark all fields as touched to trigger validation display
+    FormHelpers.markFormGroupTouched(this.passportFeeForm);
+
+    // Validate form
+    if (!this.passportFeeForm.valid) {
+      this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
       return;
     }
 
     this.loading.set(true);
+    const formValue = this.passportFeeForm.value;
 
     if (this.isEditMode()) {
       const updateDto: PassportFeeUpdateDto = {
-        totalAmount: this.passportFeeForm.totalAmount,
-        totalInstallments: this.passportFeeForm.totalInstallments,
-        notes: this.passportFeeForm.notes
+        totalAmount: formValue.totalAmount,
+        totalInstallments: formValue.totalInstallments,
+        notes: formValue.notes || ''
       };
 
       this.passportFeeService.passportFeeUpdatePassportFee(this.selectedRecord()!.id!, updateDto).subscribe({
@@ -306,13 +371,13 @@ export class PassportFeeAdminComponent implements OnInit {
       });
     } else {
       const createDto: PassportFeeCreateDto = {
-        employeeId: this.passportFeeForm.employeeId,
-        branchId: this.passportFeeForm.branchId,
-        year: this.passportFeeForm.year,
-        totalAmount: this.passportFeeForm.totalAmount,
-        totalInstallments: this.passportFeeForm.totalInstallments,
-        startMonth: this.passportFeeForm.startMonth,
-        notes: this.passportFeeForm.notes
+        employeeId: formValue.employeeId,
+        branchId: formValue.branchId,
+        year: formValue.year,
+        totalAmount: formValue.totalAmount,
+        totalInstallments: formValue.totalInstallments,
+        startMonth: formValue.startMonth,
+        notes: formValue.notes || ''
       };
 
       this.passportFeeService.passportFeeCreatePassportFee(createDto).subscribe({
@@ -334,31 +399,38 @@ export class PassportFeeAdminComponent implements OnInit {
   }
 
   validateForm(): boolean {
-    if (!this.passportFeeForm.employeeId && !this.isEditMode()) {
+    const employeeId = this.passportFeeForm.get('employeeId')?.value;
+    const branchId = this.passportFeeForm.get('branchId')?.value;
+    const year = this.passportFeeForm.get('year')?.value;
+    const totalAmount = this.passportFeeForm.get('totalAmount')?.value;
+    const totalInstallments = this.passportFeeForm.get('totalInstallments')?.value;
+    const startMonth = this.passportFeeForm.get('startMonth')?.value;
+
+    if (!employeeId && !this.isEditMode()) {
       this.notificationService.error('กรุณาเลือกพนักงาน');
       return false;
     }
-    if (!this.passportFeeForm.branchId && !this.isEditMode()) {
+    if (!branchId && !this.isEditMode()) {
       this.notificationService.error('กรุณาเลือกสาขา');
       return false;
     }
-    if (!this.passportFeeForm.year) {
+    if (!year) {
       this.notificationService.error('กรุณาระบุปี');
       return false;
     }
-    if (this.passportFeeForm.year < 2020 || this.passportFeeForm.year > 2100) {
+    if (year < 2020 || year > 2100) {
       this.notificationService.error('กรุณาระบุปีระหว่าง 2020-2100');
       return false;
     }
-    if (!this.passportFeeForm.totalAmount || this.passportFeeForm.totalAmount <= 0) {
+    if (!totalAmount || totalAmount <= 0) {
       this.notificationService.error('กรุณาระบุยอดรวมที่ถูกต้อง');
       return false;
     }
-    if (!this.passportFeeForm.totalInstallments || this.passportFeeForm.totalInstallments < 1 || this.passportFeeForm.totalInstallments > 24) {
+    if (!totalInstallments || totalInstallments < 1 || totalInstallments > 24) {
       this.notificationService.error('กรุณาระบุจำนวนงวด 1-24 งวด');
       return false;
     }
-    if (!this.passportFeeForm.startMonth || this.passportFeeForm.startMonth < 1 || this.passportFeeForm.startMonth > 12) {
+    if (!startMonth || startMonth < 1 || startMonth > 12) {
       this.notificationService.error('กรุณาระบุเดือนที่เริ่มหัก 1-12');
       return false;
     }

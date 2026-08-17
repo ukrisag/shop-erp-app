@@ -1,10 +1,13 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BranchesService } from '../../../../services/openapi-client/api/branches.service';
 import { NotificationService } from '../../../../services/notification.service';
 import { CreateBranchDto } from '../../../../services/openapi-client/model/createBranchDto';
 import { UpdateBranchDto } from '../../../../services/openapi-client/model/updateBranchDto';
+import { FormValidators } from '../../../../utils/form-validators';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { ValidationConfigs } from '../../../../utils/validation-configs';
 
 // The generated BranchesController actions return untyped IActionResult on the backend,
 // so openapi-generator does not emit a typed BranchDto / ApiResponseDto<BranchDto> model.
@@ -25,7 +28,7 @@ interface BranchDto {
 @Component({
   selector: 'app-branch-list-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './branch-list-admin.component.html',
   styleUrls: ['./branch-list-admin.component.css']
 })
@@ -55,30 +58,28 @@ export class BranchListAdminComponent implements OnInit {
   showModal = signal(false);
   isEditMode = signal(false);
   currentBranch = signal<BranchDto | undefined>(undefined);
-  branchForm: any = {
-    name: '',
-    code: '',
-    address: '',
-    phone: '',
-    email: '',
-    isActive: true
-  };
-
-  // Form validation
-  formErrors = {
-    name: '',
-    code: '',
-    phone: '',
-    email: ''
-  };
+  branchForm!: FormGroup;
 
   constructor(
     private branchesService: BranchesService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
+    this.initForm();
     this.loadBranches();
+  }
+
+  private initForm(): void {
+    this.branchForm = this.fb.group({
+      code: ['', ValidationConfigs.branch.code],
+      name: ['', ValidationConfigs.branch.name],
+      address: ['', ValidationConfigs.branch.address],
+      phone: ['', ValidationConfigs.branch.phone],
+      email: ['', ValidationConfigs.branch.email],
+      isActive: [true]
+    });
   }
 
   loadBranches(): void {
@@ -172,39 +173,28 @@ export class BranchListAdminComponent implements OnInit {
   onAddNew(): void {
     this.isEditMode.set(false);
     this.currentBranch.set(undefined);
-    this.branchForm = {
-      name: '',
+    this.branchForm.reset({
       code: '',
+      name: '',
       address: '',
       phone: '',
       email: '',
       isActive: true
-    };
-    this.formErrors = {
-      name: '',
-      code: '',
-      phone: '',
-      email: ''
-    };
+    });
     this.showModal.set(true);
   }
 
   onEdit(branch: BranchDto): void {
     this.isEditMode.set(true);
     this.currentBranch.set(branch);
-    this.branchForm = {
+    this.branchForm.patchValue({
+      code: branch.code || '',
       name: branch.name || '',
       address: branch.address || '',
       phone: branch.phone || '',
       email: branch.email || '',
       isActive: branch.isActive ?? true
-    };
-    this.formErrors = {
-      name: '',
-      code: '',
-      phone: '',
-      email: ''
-    };
+    });
     this.showModal.set(true);
   }
 
@@ -276,52 +266,34 @@ export class BranchListAdminComponent implements OnInit {
     });
   }
 
-  validateForm(): boolean {
-    let isValid = true;
-    const errors = {
-      name: '',
-      code: '',
-      phone: '',
-      email: ''
-    };
-
-    if (!this.branchForm.name?.trim()) {
-      errors.name = 'กรุณากรอกชื่อสาขา';
-      isValid = false;
-    }
-
-    if (!this.isEditMode() && !this.branchForm.code?.trim()) {
-      errors.code = 'กรุณากรอกรหัสสาขา';
-      isValid = false;
-    }
-
-    if (this.branchForm.email && !this.isValidEmail(this.branchForm.email)) {
-      errors.email = 'รูปแบบอีเมลไม่ถูกต้อง';
-      isValid = false;
-    }
-
-    this.formErrors = errors;
-    return isValid;
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.branchForm, fieldName);
   }
 
-  isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.branchForm, fieldName);
   }
 
   onSaveForm(): void {
-    if (!this.validateForm()) {
+    // Mark all fields as touched to trigger validation display
+    FormHelpers.markFormGroupTouched(this.branchForm);
+
+    // Validate form
+    if (!this.branchForm.valid) {
+      this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
       return;
     }
+
+    const formValue = this.branchForm.value;
 
     if (this.isEditMode() && this.currentBranch()?.id) {
       // Update existing branch
       const updateDto: UpdateBranchDto = {
-        name: this.branchForm.name!,
-        address: this.branchForm.address || '',
-        phone: this.branchForm.phone || '',
-        email: this.branchForm.email || '',
-        isActive: this.branchForm.isActive ?? true
+        name: formValue.name!,
+        address: formValue.address || '',
+        phone: formValue.phone || '',
+        email: formValue.email || '',
+        isActive: formValue.isActive ?? true
       };
 
       this.branchesService.branchesUpdate(this.currentBranch()!.id!, updateDto).subscribe({
@@ -342,12 +314,12 @@ export class BranchListAdminComponent implements OnInit {
     } else {
       // Create new branch
       const createDto: CreateBranchDto = {
-        name: this.branchForm.name!,
-        code: this.branchForm.code!,
-        address: this.branchForm.address || '',
-        phone: this.branchForm.phone || '',
-        email: this.branchForm.email || '',
-        isActive: this.branchForm.isActive ?? true
+        name: formValue.name!,
+        code: formValue.code!,
+        address: formValue.address || '',
+        phone: formValue.phone || '',
+        email: formValue.email || '',
+        isActive: formValue.isActive ?? true
       };
 
       this.branchesService.branchesCreate(createDto).subscribe({

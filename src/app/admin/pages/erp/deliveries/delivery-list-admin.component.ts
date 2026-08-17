@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DeliveriesService, BranchesService, EmployeesService } from '../../../../services/openapi-client';
 import {
   CreateDeliveryDto,
@@ -8,6 +8,8 @@ import {
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
 import { formatThaiDate } from '../../../../utils/thai-date.helper';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { FormValidators } from '../../../../utils/form-validators';
 
 // The generated DeliveriesController/BranchesController/EmployeesController actions return
 // untyped IActionResult on the backend, so openapi-generator does not emit typed
@@ -62,7 +64,7 @@ interface EmployeeListDto {
 @Component({
   selector: 'app-delivery-list-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './delivery-list-admin.component.html',
   styleUrls: ['./delivery-list-admin.component.css']
 })
@@ -82,23 +84,8 @@ export class DeliveryListAdminComponent implements OnInit {
   isEditMode = signal(false);
   selectedDelivery = signal<DeliveryDto | null>(null);
 
-  deliveryForm: any = {
-    branchId: null,
-    ecommerceOrderId: null,
-    erpSalesOrderId: null,
-    scheduledDate: '',
-    actualDeliveryDate: null,
-    driverId: null,
-    vehicleNumber: '',
-    deliveryAddress: '',
-    contactPerson: '',
-    contactPhone: '',
-    status: 'scheduled',
-    signatureUrl: '',
-    photoUrl: '',
-    notes: '',
-    createdBy: null
-  };
+  // Reactive form
+  deliveryForm!: FormGroup;
 
   currentPage = signal(1);
   itemsPerPage = signal(10);
@@ -117,13 +104,45 @@ export class DeliveryListAdminComponent implements OnInit {
     private deliveriesService: DeliveriesService,
     private branchesService: BranchesService,
     private employeesService: EmployeesService,
-    private notificationService: NotificationService
-  ) {}
+    private notificationService: NotificationService,
+    private fb: FormBuilder
+  ) {
+    this.initForm();
+  }
 
   ngOnInit(): void {
     this.loadDeliveries();
     this.loadBranches();
     this.loadDrivers();
+  }
+
+  private initForm(): void {
+    const today = new Date().toISOString().split('T')[0];
+    this.deliveryForm = this.fb.group({
+      branchId: [null, Validators.required],
+      ecommerceOrderId: [null],
+      erpSalesOrderId: [null],
+      scheduledDate: [today, Validators.required],
+      actualDeliveryDate: [null],
+      driverId: [null],
+      vehicleNumber: ['', Validators.maxLength(20)],
+      deliveryAddress: ['', [Validators.required, Validators.maxLength(500)]],
+      contactPerson: ['', Validators.maxLength(100)],
+      contactPhone: ['', Validators.maxLength(20)],
+      status: ['scheduled', Validators.required],
+      signatureUrl: ['', Validators.maxLength(500)],
+      photoUrl: ['', Validators.maxLength(500)],
+      notes: ['', Validators.maxLength(500)],
+      createdBy: [null]
+    });
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.deliveryForm, fieldName);
+  }
+
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.deliveryForm, fieldName);
   }
 
   loadDeliveries(): void {
@@ -209,7 +228,7 @@ export class DeliveryListAdminComponent implements OnInit {
     this.isEditMode.set(false);
     this.selectedDelivery.set(null);
     const today = new Date().toISOString().split('T')[0];
-    this.deliveryForm = {
+    this.deliveryForm.reset({
       branchId: null,
       ecommerceOrderId: null,
       erpSalesOrderId: null,
@@ -225,14 +244,14 @@ export class DeliveryListAdminComponent implements OnInit {
       photoUrl: '',
       notes: '',
       createdBy: null
-    };
+    });
     this.showModal.set(true);
   }
 
   openEditModal(delivery: DeliveryDto): void {
     this.isEditMode.set(true);
     this.selectedDelivery.set(delivery);
-    this.deliveryForm = {
+    this.deliveryForm.patchValue({
       scheduledDate: delivery.scheduledDate?.split('T')[0],
       actualDeliveryDate: delivery.actualDeliveryDate?.split('T')[0] || null,
       driverId: delivery.driverId,
@@ -244,7 +263,7 @@ export class DeliveryListAdminComponent implements OnInit {
       signatureUrl: delivery.signatureUrl,
       photoUrl: delivery.photoUrl,
       notes: delivery.notes
-    };
+    });
     this.showModal.set(true);
   }
 
@@ -254,6 +273,12 @@ export class DeliveryListAdminComponent implements OnInit {
   }
 
   save(): void {
+    if (this.deliveryForm.invalid) {
+      FormHelpers.markFormGroupTouched(this.deliveryForm);
+      this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+
     if (this.isEditMode()) {
       this.update();
     } else {
@@ -262,18 +287,19 @@ export class DeliveryListAdminComponent implements OnInit {
   }
 
   create(): void {
+    const formValue = this.deliveryForm.value;
     const dto: CreateDeliveryDto = {
-      branchId: this.deliveryForm.branchId,
-      ecommerceOrderId: this.deliveryForm.ecommerceOrderId || null,
-      erpSalesOrderId: this.deliveryForm.erpSalesOrderId || null,
-      scheduledDate: this.deliveryForm.scheduledDate,
-      driverId: this.deliveryForm.driverId || null,
-      vehicleNumber: this.deliveryForm.vehicleNumber || null,
-      deliveryAddress: this.deliveryForm.deliveryAddress,
-      contactPerson: this.deliveryForm.contactPerson || null,
-      contactPhone: this.deliveryForm.contactPhone || null,
-      notes: this.deliveryForm.notes || null,
-      createdBy: this.deliveryForm.createdBy || null
+      branchId: formValue.branchId,
+      ecommerceOrderId: formValue.ecommerceOrderId || null,
+      erpSalesOrderId: formValue.erpSalesOrderId || null,
+      scheduledDate: formValue.scheduledDate,
+      driverId: formValue.driverId || null,
+      vehicleNumber: formValue.vehicleNumber || null,
+      deliveryAddress: formValue.deliveryAddress,
+      contactPerson: formValue.contactPerson || null,
+      contactPhone: formValue.contactPhone || null,
+      notes: formValue.notes || null,
+      createdBy: formValue.createdBy || null
     };
 
     this.deliveriesService.deliveriesCreate(dto).subscribe({
@@ -294,18 +320,19 @@ export class DeliveryListAdminComponent implements OnInit {
     const delivery = this.selectedDelivery();
     if (!delivery) return;
 
+    const formValue = this.deliveryForm.value;
     const dto: UpdateDeliveryDto = {
-      scheduledDate: this.deliveryForm.scheduledDate,
-      actualDeliveryDate: this.deliveryForm.actualDeliveryDate || null,
-      driverId: this.deliveryForm.driverId || null,
-      vehicleNumber: this.deliveryForm.vehicleNumber || null,
-      deliveryAddress: this.deliveryForm.deliveryAddress,
-      contactPerson: this.deliveryForm.contactPerson || null,
-      contactPhone: this.deliveryForm.contactPhone || null,
-      status: this.deliveryForm.status || null,
-      signatureUrl: this.deliveryForm.signatureUrl || null,
-      photoUrl: this.deliveryForm.photoUrl || null,
-      notes: this.deliveryForm.notes || null
+      scheduledDate: formValue.scheduledDate,
+      actualDeliveryDate: formValue.actualDeliveryDate || null,
+      driverId: formValue.driverId || null,
+      vehicleNumber: formValue.vehicleNumber || null,
+      deliveryAddress: formValue.deliveryAddress,
+      contactPerson: formValue.contactPerson || null,
+      contactPhone: formValue.contactPhone || null,
+      status: formValue.status || null,
+      signatureUrl: formValue.signatureUrl || null,
+      photoUrl: formValue.photoUrl || null,
+      notes: formValue.notes || null
     };
 
     this.deliveriesService.deliveriesUpdate(delivery.id!, dto).subscribe({

@@ -1,6 +1,6 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingSkeletonComponent } from '../../../../components/shared/loading-skeleton/loading-skeleton.component';
 import { OvertimeService } from '../../../../services/openapi-client/api/overtime.service';
 import { EmployeesService } from '../../../../services/openapi-client/api/employees.service';
@@ -12,6 +12,11 @@ import {
   OvertimeApprovalDto,
   EmployeeListDto
 } from '../../../../services/openapi-client/model/models';
+import { FormValidators } from '../../../../utils/form-validators';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { ValidationConfigs } from '../../../../utils/validation-configs';
+import { Subject } from 'rxjs';
+import { takeUntil, debounceTime } from 'rxjs/operators';
 
 interface OvertimeRecordDto {
   id: number;
@@ -36,11 +41,12 @@ interface OvertimeRecordDto {
 @Component({
   selector: 'app-overtime-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSkeletonComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, LoadingSkeletonComponent],
   templateUrl: './overtime-admin.component.html',
   styleUrls: ['./overtime-admin.component.css']
 })
-export class OvertimeAdminComponent implements OnInit {
+export class OvertimeAdminComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   // State signals
   activeTab = signal<'records' | 'pending'>('records');
   overtimeRecords = signal<OvertimeRecordDto[]>([]);
@@ -63,15 +69,7 @@ export class OvertimeAdminComponent implements OnInit {
   isEditMode = signal(false);
 
   // Form data
-  overtimeForm: any = {
-    employeeId: null,
-    overtimeDate: '',
-    startTime: '',
-    endTime: '',
-    hours: null,
-    rateMultiplier: 1.5,
-    notes: ''
-  };
+  overtimeForm!: FormGroup;
 
   // Approval form
   approvalForm = {
@@ -116,10 +114,13 @@ export class OvertimeAdminComponent implements OnInit {
   constructor(
     private overtimeService: OvertimeService,
     private employeesService: EmployeesService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
+    this.initForm();
+    this.setupFormListeners();
     this.loadEmployees();
     // setDefaultDates() must run BEFORE loadOvertimeRecords(): that call reads
     // filterForm.startDate/endDate and silently no-ops when they're unset, so
@@ -127,6 +128,67 @@ export class OvertimeAdminComponent implements OnInit {
     // until the user manually touched a filter.
     this.setDefaultDates();
     this.loadOvertimeRecords();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initForm(): void {
+    this.overtimeForm = this.fb.group({
+      employeeId: [null, ValidationConfigs.overtime.employeeId],
+      date: ['', ValidationConfigs.overtime.date],
+      startTime: ['', ValidationConfigs.overtime.startTime],
+      endTime: ['', ValidationConfigs.overtime.endTime],
+      totalHours: [0, ValidationConfigs.overtime.totalHours],
+      reason: ['', ValidationConfigs.overtime.reason],
+      status: ['pending']
+    }, {
+      validators: [FormValidators.timeRange('startTime', 'endTime')]
+    });
+  }
+
+  private setupFormListeners(): void {
+    // Auto-calculate hours when times change
+    this.overtimeForm.get('startTime')?.valueChanges
+      .pipe(takeUntil(this.destroy$), debounceTime(300))
+      .subscribe(() => this.updateTotalHours());
+
+    this.overtimeForm.get('endTime')?.valueChanges
+      .pipe(takeUntil(this.destroy$), debounceTime(300))
+      .subscribe(() => this.updateTotalHours());
+  }
+
+  private updateTotalHours(): void {
+    const totalHours = this.calculateTotalHoursFromForm();
+    this.overtimeForm.patchValue({ totalHours }, { emitEvent: false });
+  }
+
+  calculateTotalHoursFromForm(): number {
+    const startTime = this.overtimeForm.get('startTime')?.value;
+    const endTime = this.overtimeForm.get('endTime')?.value;
+
+    if (startTime && endTime) {
+      const [startHour, startMin] = startTime.split(':').map(Number);
+      const [endHour, endMin] = endTime.split(':').map(Number);
+
+      const startMinutes = startHour * 60 + startMin;
+      const endMinutes = endHour * 60 + endMin;
+
+      if (endMinutes > startMinutes) {
+        return (endMinutes - startMinutes) / 60;
+      }
+    }
+    return 0;
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.overtimeForm, fieldName);
+  }
+
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.overtimeForm, fieldName);
   }
 
   setDefaultDates(): void {
@@ -226,56 +288,52 @@ export class OvertimeAdminComponent implements OnInit {
 
     this.isEditMode.set(true);
     this.selectedRecord.set(record);
-    this.overtimeForm = {
+    this.overtimeForm.patchValue({
       employeeId: record.employeeId,
-      overtimeDate: record.overtimeDate.split('T')[0],
+      date: record.overtimeDate.split('T')[0],
       startTime: record.startTime,
       endTime: record.endTime,
-      hours: record.hours,
-      rateMultiplier: record.rateMultiplier,
-      notes: record.notes || ''
-    };
+      totalHours: record.hours,
+      reason: record.notes || '',
+      status: record.status
+    });
     this.loading.set(false);
     this.showFormModal.set(true);
   }
 
   resetForm(): void {
-    this.overtimeForm = {
+    this.overtimeForm.reset({
       employeeId: null,
-      overtimeDate: '',
+      date: '',
       startTime: '',
       endTime: '',
-      hours: null,
-      rateMultiplier: 1.5,
-      notes: ''
-    };
-  }
-
-  calculateHours(): void {
-    if (this.overtimeForm.startTime && this.overtimeForm.endTime) {
-      const start = new Date(`2000-01-01T${this.overtimeForm.startTime}`);
-      const end = new Date(`2000-01-01T${this.overtimeForm.endTime}`);
-      const diffMs = end.getTime() - start.getTime();
-      const hours = diffMs / (1000 * 60 * 60);
-      this.overtimeForm.hours = Math.round(hours * 100) / 100;
-    }
+      totalHours: 0,
+      reason: '',
+      status: 'pending'
+    });
   }
 
   saveOvertimeRecord(): void {
-    if (!this.validateForm()) {
+    // Mark all fields as touched to trigger validation display
+    FormHelpers.markFormGroupTouched(this.overtimeForm);
+
+    // Validate form
+    if (!this.overtimeForm.valid) {
+      this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
       return;
     }
 
     this.loading.set(true);
+    const formValue = this.overtimeForm.value;
 
     if (this.isEditMode()) {
       const updateDto: OvertimeRecordUpdateDto = {
-        overtimeDate: this.overtimeForm.overtimeDate,
-        startTime: this.overtimeForm.startTime,
-        endTime: this.overtimeForm.endTime,
-        hours: this.overtimeForm.hours,
-        rateMultiplier: this.overtimeForm.rateMultiplier,
-        notes: this.overtimeForm.notes
+        overtimeDate: formValue.date,
+        startTime: formValue.startTime,
+        endTime: formValue.endTime,
+        hours: formValue.totalHours,
+        rateMultiplier: 1.5, // Default multiplier
+        notes: formValue.reason
       };
 
       this.overtimeService.overtimeUpdateOvertimeRecord(this.selectedRecord()!.id, updateDto).subscribe({
@@ -292,13 +350,13 @@ export class OvertimeAdminComponent implements OnInit {
       });
     } else {
       const createDto: OvertimeRecordCreateDto = {
-        employeeId: this.overtimeForm.employeeId,
-        overtimeDate: this.overtimeForm.overtimeDate,
-        startTime: this.overtimeForm.startTime,
-        endTime: this.overtimeForm.endTime,
-        hours: this.overtimeForm.hours,
-        rateMultiplier: this.overtimeForm.rateMultiplier,
-        notes: this.overtimeForm.notes
+        employeeId: formValue.employeeId,
+        overtimeDate: formValue.date,
+        startTime: formValue.startTime,
+        endTime: formValue.endTime,
+        hours: formValue.totalHours,
+        rateMultiplier: 1.5, // Default multiplier
+        notes: formValue.reason
       };
 
       this.overtimeService.overtimeCreateOvertimeRecord(createDto).subscribe({
@@ -314,46 +372,6 @@ export class OvertimeAdminComponent implements OnInit {
         }
       });
     }
-  }
-
-  validateForm(): boolean {
-    if (!this.overtimeForm.employeeId && !this.isEditMode()) {
-      this.notificationService.error('Please select an employee');
-      return false;
-    }
-    if (!this.overtimeForm.overtimeDate) {
-      this.notificationService.error('Please specify overtime date');
-      return false;
-    }
-    if (!this.overtimeForm.startTime) {
-      this.notificationService.error('Please specify start time');
-      return false;
-    }
-    if (!this.overtimeForm.endTime) {
-      this.notificationService.error('Please specify end time');
-      return false;
-    }
-    if (!this.overtimeForm.hours) {
-      this.notificationService.error('Please calculate hours');
-      return false;
-    }
-    if (this.overtimeForm.hours <= 0) {
-      this.notificationService.error('Hours must be greater than 0');
-      return false;
-    }
-    if (this.overtimeForm.hours > 24) {
-      this.notificationService.error('Hours cannot exceed 24 hours');
-      return false;
-    }
-    if (!this.overtimeForm.rateMultiplier || this.overtimeForm.rateMultiplier < 1) {
-      this.notificationService.error('Rate multiplier must be greater than or equal to 1.0');
-      return false;
-    }
-    if (this.overtimeForm.rateMultiplier > 3) {
-      this.notificationService.error('Rate multiplier should not exceed 3.0');
-      return false;
-    }
-    return true;
   }
 
   openApprovalModal(record: OvertimeRecordDto): void {

@@ -302,15 +302,15 @@
           </button>
         </div>
 
-        <form (ngSubmit)="saveAdvanceRecord()" #advanceFormEl="ngForm" class="space-y-4">
+        <form [formGroup]="advanceForm" (ngSubmit)="saveAdvanceRecord()" class="space-y-4">
           @if (!isEditMode()) {
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">พนักงาน *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                พนักงาน <span class="text-red-500">*</span>
+              </label>
               <select
-                [(ngModel)]="advanceForm.userId"
-                (change)="onEmployeeChange()"
-                name="userId"
-                required
+                formControlName="employeeId"
+                [class.border-red-500]="isFieldInvalid('employeeId')"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option [value]="null">เลือกพนักงาน</option>
                 @for (employee of employees(); track employee.id) {
@@ -319,56 +319,57 @@
                   </option>
                 }
               </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">สาขา *</label>
-              <select
-                [(ngModel)]="advanceForm.branchId"
-                name="branchId"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option [value]="null">เลือกสาขา</option>
-                @for (branch of branches(); track branch.id) {
-                  <option [value]="branch.id">{{ branch.name }}</option>
-                }
-              </select>
+              @if (isFieldInvalid('employeeId')) {
+                <div class="text-red-500 text-sm mt-1">{{ getFieldError('employeeId') }}</div>
+              }
             </div>
           }
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">วันที่เบิก *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              วันที่เบิก <span class="text-red-500">*</span>
+            </label>
             <input
               type="date"
-              [(ngModel)]="advanceForm.advanceDate"
-              name="advanceDate"
-              required
+              formControlName="requestDate"
+              [class.border-red-500]="isFieldInvalid('requestDate')"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            @if (isFieldInvalid('requestDate')) {
+              <div class="text-red-500 text-sm mt-1">{{ getFieldError('requestDate') }}</div>
+            }
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">จำนวนเงินที่เบิก *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                จำนวนเงินที่เบิก <span class="text-red-500">*</span>
+              </label>
               <input
                 type="number"
-                [(ngModel)]="advanceForm.amount"
-                name="amount"
+                formControlName="amount"
                 step="0.01"
                 min="0"
-                required
+                [class.border-red-500]="isFieldInvalid('amount')"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              @if (isFieldInvalid('amount')) {
+                <div class="text-red-500 text-sm mt-1">{{ getFieldError('amount') }}</div>
+              }
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">หักรายเดือน *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                หักรายเดือน <span class="text-red-500">*</span>
+              </label>
               <input
                 type="number"
-                [(ngModel)]="advanceForm.monthlyDeduction"
-                name="monthlyDeduction"
+                formControlName="monthlyDeduction"
                 step="0.01"
                 min="0"
-                required
+                [class.border-red-500]="isFieldInvalid('monthlyDeduction')"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              @if (isFieldInvalid('monthlyDeduction')) {
+                <div class="text-red-500 text-sm mt-1">{{ getFieldError('monthlyDeduction') }}</div>
+              }
               @if (estimatedInstallments() > 0) {
                 <p class="mt-1 text-xs text-blue-600">
                   จำนวนงวด: {{ estimatedInstallments() }} งวด
@@ -380,11 +381,14 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">เหตุผล</label>
             <textarea
-              [(ngModel)]="advanceForm.reason"
-              name="reason"
+              formControlName="reason"
               rows="3"
+              [class.border-red-500]="isFieldInvalid('reason')"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="ระบุเหตุผลในการเบิกเงิน..."></textarea>
+            @if (isFieldInvalid('reason')) {
+              <div class="text-red-500 text-sm mt-1">{{ getFieldError('reason') }}</div>
+            }
           </div>
 
           <div class="flex justify-end gap-3 mt-6">
@@ -396,9 +400,9 @@
             </button>
             <button
               type="submit"
-              [disabled]="loading() || advanceFormEl.invalid"
+              [disabled]="loading() || advanceForm.invalid"
               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              [title]="advanceFormEl.invalid ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : ''">
+              [title]="advanceForm.invalid ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : ''">
               {{ loading() ? 'กำลังบันทึก...' : 'บันทึก' }}
             </button>
           </div>

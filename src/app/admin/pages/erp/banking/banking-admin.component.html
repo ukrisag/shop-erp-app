@@ -572,66 +572,60 @@
       </div>
 
       <div class="p-6">
-        <form (ngSubmit)="saveAccount()">
+        <form [formGroup]="accountForm" (ngSubmit)="saveAccount()">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 สาขา <span class="text-red-500">*</span>
               </label>
-              <select
-                [(ngModel)]="accountForm.branchId"
-                name="branchId"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <select formControlName="branchId" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [class.border-red-500]="isFieldInvalid(accountForm, 'branchId')">
                 <option [value]="null">เลือกสาขา</option>
                 @for (branch of branches(); track branch.id) {
                   <option [value]="branch.id">{{ branch.name }}</option>
                 }
               </select>
+              @if (isFieldInvalid(accountForm, 'branchId')) {
+                <p class="mt-1 text-sm text-red-600">{{ getFieldError(accountForm, 'branchId') }}</p>
+              }
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 ธนาคาร <span class="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                [(ngModel)]="accountForm.bankName"
-                name="bankName"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <input type="text" formControlName="bankName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [class.border-red-500]="isFieldInvalid(accountForm, 'bankName')">
+              @if (isFieldInvalid(accountForm, 'bankName')) {
+                <p class="mt-1 text-sm text-red-600">{{ getFieldError(accountForm, 'bankName') }}</p>
+              }
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 เลขที่บัญชี <span class="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                [(ngModel)]="accountForm.accountNumber"
-                name="accountNumber"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <input type="text" formControlName="accountNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [class.border-red-500]="isFieldInvalid(accountForm, 'accountNumber')">
+              @if (isFieldInvalid(accountForm, 'accountNumber')) {
+                <p class="mt-1 text-sm text-red-600">{{ getFieldError(accountForm, 'accountNumber') }}</p>
+              }
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 ชื่อบัญชี <span class="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                [(ngModel)]="accountForm.accountName"
-                name="accountName"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <input type="text" formControlName="accountName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [class.border-red-500]="isFieldInvalid(accountForm, 'accountName')">
+              @if (isFieldInvalid(accountForm, 'accountName')) {
+                <p class="mt-1 text-sm text-red-600">{{ getFieldError(accountForm, 'accountName') }}</p>
+              }
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">ประเภทบัญชี</label>
-              <select
-                [(ngModel)]="accountForm.accountType"
-                name="accountType"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <select formControlName="accountType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 @for (type of accountTypes; track type.value) {
                   <option [value]="type.value">{{ type.label }}</option>
                 }
@@ -645,13 +639,11 @@
                   ยอดเงินเริ่มต้น
                   <span class="text-xs text-gray-500 ml-2">(กรอกได้เฉพาะตอนสร้างบัญชี)</span>
                 </label>
-                <input
-                  type="number"
-                  [(ngModel)]="accountForm.initialBalance"
-                  name="initialBalance"
-                  min="0"
-                  step="0.01"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <input type="number" formControlName="initialBalance" min="0" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  [class.border-red-500]="isFieldInvalid(accountForm, 'initialBalance')">
+                @if (isFieldInvalid(accountForm, 'initialBalance')) {
+                  <p class="mt-1 text-sm text-red-600">{{ getFieldError(accountForm, 'initialBalance') }}</p>
+                }
               </div>
             }
 
@@ -664,11 +656,7 @@
                   </p>
                 </div>
                 <label class="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    [(ngModel)]="accountForm.isActive"
-                    name="isActive"
-                    class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+                  <input type="checkbox" formControlName="isActive" class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
                   <span class="text-sm font-medium text-gray-700">บัญชีใช้งาน</span>
                 </label>
               </div>
@@ -676,15 +664,10 @@
           </div>
 
           <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              (click)="closeModals()"
-              class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            <button type="button" (click)="closeModals()" class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
               ยกเลิก
             </button>
-            <button
-              type="submit"
-              class="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button type="submit" [disabled]="accountForm.invalid" class="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               {{ isEditMode() ? 'บันทึก' : 'เพิ่ม' }}
             </button>
           </div>
@@ -708,45 +691,40 @@
       </div>
 
       <div class="p-6">
-        <form (ngSubmit)="createTransaction()">
+        <form [formGroup]="transactionForm" (ngSubmit)="createTransaction()">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 บัญชีธนาคาร <span class="text-red-500">*</span>
               </label>
-              <select
-                [(ngModel)]="transactionForm.bankAccountId"
-                name="bankAccountId"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <select formControlName="bankAccountId" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [class.border-red-500]="isFieldInvalid(transactionForm, 'bankAccountId')">
                 <option [value]="null">เลือกบัญชี</option>
                 @for (account of accounts(); track account.id) {
                   <option [value]="account.id">{{ account.bankName }} - {{ account.accountNumber }}</option>
                 }
               </select>
+              @if (isFieldInvalid(transactionForm, 'bankAccountId')) {
+                <p class="mt-1 text-sm text-red-600">{{ getFieldError(transactionForm, 'bankAccountId') }}</p>
+              }
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 วันที่ <span class="text-red-500">*</span>
               </label>
-              <input
-                type="date"
-                [(ngModel)]="transactionForm.transactionDate"
-                name="transactionDate"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <input type="date" formControlName="transactionDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [class.border-red-500]="isFieldInvalid(transactionForm, 'transactionDate')">
+              @if (isFieldInvalid(transactionForm, 'transactionDate')) {
+                <p class="mt-1 text-sm text-red-600">{{ getFieldError(transactionForm, 'transactionDate') }}</p>
+              }
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 ประเภท <span class="text-red-500">*</span>
               </label>
-              <select
-                [(ngModel)]="transactionForm.transactionType"
-                name="transactionType"
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <select formControlName="transactionType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 @for (type of transactionTypes; track type.value) {
                   <option [value]="type.value">{{ type.label }}</option>
                 }
@@ -757,36 +735,28 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 จำนวนเงิน <span class="text-red-500">*</span>
               </label>
-              <input
-                type="number"
-                [(ngModel)]="transactionForm.amount"
-                name="amount"
-                required
-                min="0"
-                step="0.01"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <input type="number" formControlName="amount" min="0" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [class.border-red-500]="isFieldInvalid(transactionForm, 'amount')">
+              @if (isFieldInvalid(transactionForm, 'amount')) {
+                <p class="mt-1 text-sm text-red-600">{{ getFieldError(transactionForm, 'amount') }}</p>
+              }
             </div>
 
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700 mb-2">รายละเอียด</label>
-              <textarea
-                [(ngModel)]="transactionForm.description"
-                name="description"
-                rows="3"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+              <textarea formControlName="description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [class.border-red-500]="isFieldInvalid(transactionForm, 'description')"></textarea>
+              @if (isFieldInvalid(transactionForm, 'description')) {
+                <p class="mt-1 text-sm text-red-600">{{ getFieldError(transactionForm, 'description') }}</p>
+              }
             </div>
           </div>
 
           <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              (click)="closeModals()"
-              class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            <button type="button" (click)="closeModals()" class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
               ยกเลิก
             </button>
-            <button
-              type="submit"
-              class="flex-1 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+            <button type="submit" [disabled]="transactionForm.invalid" class="flex-1 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
               เพิ่ม
             </button>
           </div>

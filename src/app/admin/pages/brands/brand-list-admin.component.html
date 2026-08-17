@@ -321,7 +321,7 @@
       {{ isEditMode() ? 'แก้ไขแบรนด์' : 'เพิ่มแบรนด์ใหม่' }}
     </h3>
 
-    <form (ngSubmit)="onSaveForm()">
+    <form [formGroup]="brandForm" (ngSubmit)="onSaveForm()">
       <!-- Name -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -329,13 +329,14 @@
         </label>
         <input
           type="text"
-          [(ngModel)]="brandForm.name"
+          formControlName="name"
           (ngModelChange)="onNameChange()"
-          name="name"
           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          [class.border-red-500]="formErrors.name"
+          [class.border-red-500]="isFieldInvalid('name')"
         />
-        <p *ngIf="formErrors.name" class="text-red-500 text-xs mt-1">{{ formErrors.name }}</p>
+        @if (isFieldInvalid('name')) {
+          <p class="text-red-500 text-xs mt-1">{{ getFieldError('name') }}</p>
+        }
       </div>
 
       <!-- Slug -->
@@ -345,13 +346,14 @@
         </label>
         <input
           type="text"
-          [(ngModel)]="brandForm.slug"
-          name="slug"
+          formControlName="slug"
           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-          [class.border-red-500]="formErrors.slug"
+          [class.border-red-500]="isFieldInvalid('slug')"
         />
         <p class="text-gray-500 text-xs mt-1">URL-friendly identifier (จะถูกสร้างอัตโนมัติจากชื่อ)</p>
-        <p *ngIf="formErrors.slug" class="text-red-500 text-xs mt-1">{{ formErrors.slug }}</p>
+        @if (isFieldInvalid('slug')) {
+          <p class="text-red-500 text-xs mt-1">{{ getFieldError('slug') }}</p>
+        }
       </div>
 
       <!-- Logo URL -->
@@ -361,23 +363,28 @@
         </label>
         <input
           type="text"
-          [(ngModel)]="brandForm.logoUrl"
-          name="logoUrl"
+          formControlName="logoUrl"
           placeholder="https://example.com/logo.png"
           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [class.border-red-500]="isFieldInvalid('logoUrl')"
         />
         <p class="text-gray-500 text-xs mt-1">URL ของโลโก้แบรนด์</p>
+        @if (isFieldInvalid('logoUrl')) {
+          <p class="text-red-500 text-xs mt-1">{{ getFieldError('logoUrl') }}</p>
+        }
 
         <!-- Logo Preview -->
-        <div *ngIf="brandForm.logoUrl" class="mt-2">
-          <p class="text-sm text-gray-600 mb-1">ตัวอย่างโลโก้:</p>
-          <img
-            [src]="brandForm.logoUrl"
-            appImageFallback="https://placehold.co/200x200/e5e7eb/6b7280/png?text=Invalid+URL"
-            alt="Logo preview"
-            class="h-24 w-24 object-contain border border-gray-200 rounded bg-gray-50"
-          />
-        </div>
+        @if (brandForm.get('logoUrl')?.value) {
+          <div class="mt-2">
+            <p class="text-sm text-gray-600 mb-1">ตัวอย่างโลโก้:</p>
+            <img
+              [src]="brandForm.get('logoUrl')?.value"
+              appImageFallback="https://placehold.co/200x200/e5e7eb/6b7280/png?text=Invalid+URL"
+              alt="Logo preview"
+              class="h-24 w-24 object-contain border border-gray-200 rounded bg-gray-50"
+            />
+          </div>
+        }
       </div>
 
       <!-- Description -->
@@ -386,12 +393,15 @@
           คำอธิบาย
         </label>
         <textarea
-          [(ngModel)]="brandForm.description"
-          name="description"
+          formControlName="description"
           rows="3"
           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="คำอธิบายเกี่ยวกับแบรนด์..."
+          [class.border-red-500]="isFieldInvalid('description')"
         ></textarea>
+        @if (isFieldInvalid('description')) {
+          <p class="text-red-500 text-xs mt-1">{{ getFieldError('description') }}</p>
+        }
       </div>
 
       <!-- Website URL -->
@@ -401,11 +411,14 @@
         </label>
         <input
           type="url"
-          [(ngModel)]="brandForm.websiteUrl"
-          name="websiteUrl"
+          formControlName="websiteUrl"
           placeholder="https://www.example.com"
           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [class.border-red-500]="isFieldInvalid('websiteUrl')"
         />
+        @if (isFieldInvalid('websiteUrl')) {
+          <p class="text-red-500 text-xs mt-1">{{ getFieldError('websiteUrl') }}</p>
+        }
       </div>
 
       <!-- Display Order -->
@@ -415,12 +428,15 @@
         </label>
         <input
           type="number"
-          [(ngModel)]="brandForm.displayOrder"
-          name="displayOrder"
+          formControlName="displayOrder"
           min="0"
           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [class.border-red-500]="isFieldInvalid('displayOrder')"
         />
         <p class="text-gray-500 text-xs mt-1">ตัวเลขน้อยจะแสดงก่อน</p>
+        @if (isFieldInvalid('displayOrder')) {
+          <p class="text-red-500 text-xs mt-1">{{ getFieldError('displayOrder') }}</p>
+        }
       </div>
 
       <!-- Is Active -->
@@ -428,8 +444,7 @@
         <label class="flex items-center cursor-pointer">
           <input
             type="checkbox"
-            [(ngModel)]="brandForm.isActive"
-            name="isActive"
+            formControlName="isActive"
             class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
           />
           <span class="ml-2 text-sm text-gray-700">เปิดใช้งาน</span>
@@ -447,6 +462,7 @@
         </button>
         <button
           type="submit"
+          [disabled]="brandForm.invalid && brandForm.touched"
           class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
         >
           {{ isEditMode() ? 'บันทึกการแก้ไข' : 'เพิ่มแบรนด์' }}

@@ -231,15 +231,15 @@
           </button>
         </div>
 
-        <form (ngSubmit)="savePassportFee()" #passportFeeFormEl="ngForm" class="space-y-4">
+        <form [formGroup]="passportFeeForm" (ngSubmit)="savePassportFee()" class="space-y-4">
           @if (!isEditMode()) {
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">พนักงาน *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                พนักงาน <span class="text-red-500">*</span>
+              </label>
               <select
-                [(ngModel)]="passportFeeForm.employeeId"
-                (change)="onEmployeeChange()"
-                name="employeeId"
-                required
+                formControlName="employeeId"
+                [class.border-red-500]="isFieldInvalid('employeeId')"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option [value]="null">เลือกพนักงาน</option>
                 @for (employee of employees(); track employee.id) {
@@ -248,72 +248,95 @@
                   </option>
                 }
               </select>
+              @if (isFieldInvalid('employeeId')) {
+                <div class="text-red-500 text-sm mt-1">{{ getFieldError('employeeId') }}</div>
+              }
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">สาขา *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                สาขา <span class="text-red-500">*</span>
+              </label>
               <select
-                [(ngModel)]="passportFeeForm.branchId"
-                name="branchId"
-                required
+                formControlName="branchId"
+                [class.border-red-500]="isFieldInvalid('branchId')"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option [value]="null">เลือกสาขา</option>
                 @for (branch of branches(); track branch.id) {
                   <option [value]="branch.id">{{ branch.name }}</option>
                 }
               </select>
+              @if (isFieldInvalid('branchId')) {
+                <div class="text-red-500 text-sm mt-1">{{ getFieldError('branchId') }}</div>
+              }
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">ปี *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                ปี <span class="text-red-500">*</span>
+              </label>
               <select
-                [(ngModel)]="passportFeeForm.year"
-                name="year"
-                required
+                formControlName="year"
+                [class.border-red-500]="isFieldInvalid('year')"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 @for (year of yearOptions; track year) {
                   <option [value]="year">{{ year }}</option>
                 }
               </select>
+              @if (isFieldInvalid('year')) {
+                <div class="text-red-500 text-sm mt-1">{{ getFieldError('year') }}</div>
+              }
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">เดือนที่เริ่มหัก *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                เดือนที่เริ่มหัก <span class="text-red-500">*</span>
+              </label>
               <select
-                [(ngModel)]="passportFeeForm.startMonth"
-                name="startMonth"
-                required
+                formControlName="startMonth"
+                [class.border-red-500]="isFieldInvalid('startMonth')"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 @for (month of monthNames; track $index) {
                   <option [value]="$index + 1">{{ month }}</option>
                 }
               </select>
+              @if (isFieldInvalid('startMonth')) {
+                <div class="text-red-500 text-sm mt-1">{{ getFieldError('startMonth') }}</div>
+              }
             </div>
           }
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">ยอดรวมทั้งหมด *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                ยอดรวมทั้งหมด <span class="text-red-500">*</span>
+              </label>
               <input
                 type="number"
-                [(ngModel)]="passportFeeForm.totalAmount"
-                name="totalAmount"
+                formControlName="totalAmount"
                 step="0.01"
                 min="0"
-                required
+                [class.border-red-500]="isFieldInvalid('totalAmount')"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              @if (isFieldInvalid('totalAmount')) {
+                <div class="text-red-500 text-sm mt-1">{{ getFieldError('totalAmount') }}</div>
+              }
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">จำนวนงวด (1-24) *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                จำนวนงวด (1-24) <span class="text-red-500">*</span>
+              </label>
               <input
                 type="number"
-                [(ngModel)]="passportFeeForm.totalInstallments"
-                name="totalInstallments"
+                formControlName="totalInstallments"
                 min="1"
                 max="24"
-                required
+                [class.border-red-500]="isFieldInvalid('totalInstallments')"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              @if (isFieldInvalid('totalInstallments')) {
+                <div class="text-red-500 text-sm mt-1">{{ getFieldError('totalInstallments') }}</div>
+              }
               @if (estimatedMonthlyDeduction() > 0) {
                 <p class="mt-1 text-xs text-blue-600">
                   หักรายเดือน: {{ formatCurrency(estimatedMonthlyDeduction()) }} ฿
@@ -325,11 +348,14 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">หมายเหตุ</label>
             <textarea
-              [(ngModel)]="passportFeeForm.notes"
-              name="notes"
+              formControlName="notes"
               rows="3"
+              [class.border-red-500]="isFieldInvalid('notes')"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="ระบุหมายเหตุเพิ่มเติม..."></textarea>
+            @if (isFieldInvalid('notes')) {
+              <div class="text-red-500 text-sm mt-1">{{ getFieldError('notes') }}</div>
+            }
           </div>
 
           <div class="flex justify-end gap-3 mt-6">
@@ -341,9 +367,9 @@
             </button>
             <button
               type="submit"
-              [disabled]="loading() || passportFeeFormEl.invalid"
+              [disabled]="loading() || passportFeeForm.invalid"
               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              [title]="passportFeeFormEl.invalid ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : ''">
+              [title]="passportFeeForm.invalid ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : ''">
               {{ loading() ? 'กำลังบันทึก...' : 'บันทึก' }}
             </button>
           </div>

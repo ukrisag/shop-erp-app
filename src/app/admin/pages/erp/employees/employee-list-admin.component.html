@@ -325,7 +325,7 @@
       </div>
 
       <div class="p-6 max-h-[calc(100vh-12rem)] overflow-y-auto">
-        <form (ngSubmit)="saveEmployee()">
+        <form [formGroup]="employeeForm" (ngSubmit)="saveEmployee()">
           <!-- Photo Upload Section -->
           <div class="mb-6 bg-gray-50 rounded-lg p-4">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -392,130 +392,208 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">รหัสพนักงาน <span class="text-red-500">*</span></label>
                 <input
                   type="text"
-                  [(ngModel)]="employeeForm.employeeCode"
-                  name="employeeCode"
-                  required
+                  formControlName="employeeCode"
+                  [class.border-red-500]="isFieldInvalid('employeeCode')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (employeeForm.get('employeeCode')?.pending) {
+                  <div class="text-blue-500 text-sm mt-1">กำลังตรวจสอบ...</div>
+                }
+                @if (isFieldInvalid('employeeCode')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('employeeCode') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">สาขา <span class="text-red-500">*</span></label>
                 <select
-                  [(ngModel)]="employeeForm.branchId"
-                  name="branchId"
-                  required
+                  formControlName="branchId"
+                  [class.border-red-500]="isFieldInvalid('branchId')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                   <option [value]="null">เลือกสาขา</option>
                   @for (branch of branches(); track branch.id) {
                     <option [value]="branch.id">{{ branch.name }}</option>
                   }
                 </select>
+                @if (isFieldInvalid('branchId')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('branchId') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ (ไทย) <span class="text-red-500">*</span></label>
                 <input
                   type="text"
-                  [(ngModel)]="employeeForm.firstNameTh"
-                  name="firstNameTh"
-                  required
+                  formControlName="firstNameTh"
+                  [class.border-red-500]="isFieldInvalid('firstNameTh')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (isFieldInvalid('firstNameTh')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('firstNameTh') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">นามสกุล (ไทย) <span class="text-red-500">*</span></label>
                 <input
                   type="text"
-                  [(ngModel)]="employeeForm.lastNameTh"
-                  name="lastNameTh"
-                  required
+                  formControlName="lastNameTh"
+                  [class.border-red-500]="isFieldInvalid('lastNameTh')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (isFieldInvalid('lastNameTh')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('lastNameTh') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อ (อังกฤษ)</label>
                 <input
                   type="text"
-                  [(ngModel)]="employeeForm.firstNameEn"
-                  name="firstNameEn"
+                  formControlName="firstNameEn"
+                  [class.border-red-500]="isFieldInvalid('firstNameEn')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (isFieldInvalid('firstNameEn')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('firstNameEn') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">นามสกุล (อังกฤษ)</label>
                 <input
                   type="text"
-                  [(ngModel)]="employeeForm.lastNameEn"
-                  name="lastNameEn"
+                  formControlName="lastNameEn"
+                  [class.border-red-500]="isFieldInvalid('lastNameEn')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (isFieldInvalid('lastNameEn')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('lastNameEn') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">อีเมล</label>
                 <input
                   type="email"
-                  [(ngModel)]="employeeForm.email"
-                  name="email"
+                  formControlName="email"
+                  [class.border-red-500]="isFieldInvalid('email')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (employeeForm.get('email')?.pending) {
+                  <div class="text-blue-500 text-sm mt-1">กำลังตรวจสอบ...</div>
+                }
+                @if (isFieldInvalid('email')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('email') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทร</label>
                 <input
                   type="tel"
-                  [(ngModel)]="employeeForm.phone"
-                  name="phone"
+                  formControlName="phone"
+                  [class.border-red-500]="isFieldInvalid('phone')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (isFieldInvalid('phone')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('phone') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">วันเกิด</label>
                 <input
                   type="date"
-                  [(ngModel)]="employeeForm.dateOfBirth"
-                  name="dateOfBirth"
+                  formControlName="dateOfBirth"
+                  [class.border-red-500]="isFieldInvalid('dateOfBirth')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (isFieldInvalid('dateOfBirth')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('dateOfBirth') }}</div>
+                }
               </div>
+
+              @if (!isEditMode()) {
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    รหัสผ่าน
+                    <span class="text-gray-500 text-xs">(สำหรับเข้าสู่ระบบ - ไม่บังคับ)</span>
+                  </label>
+                  <input
+                    type="password"
+                    formControlName="password"
+                    placeholder="ระบุรหัสผ่านหากต้องการให้พนักงานเข้าสู่ระบบได้"
+                    [class.border-red-500]="isFieldInvalid('password')"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  @if (isFieldInvalid('password')) {
+                    <div class="text-red-500 text-sm mt-1">{{ getFieldError('password') }}</div>
+                  } @else {
+                    <p class="mt-1 text-xs text-gray-500">รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร</p>
+                  }
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">
+                    ยืนยันรหัสผ่าน
+                  </label>
+                  <input
+                    type="password"
+                    formControlName="confirmPassword"
+                    placeholder="ระบุรหัสผ่านอีกครั้ง"
+                    [class.border-red-500]="isFieldInvalid('confirmPassword')"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  @if (isFieldInvalid('confirmPassword')) {
+                    <div class="text-red-500 text-sm mt-1">{{ getFieldError('confirmPassword') }}</div>
+                  }
+                </div>
+              }
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">สัญชาติ <span class="text-red-500">*</span></label>
                 <select
-                  [(ngModel)]="employeeForm.nationality"
-                  name="nationality"
-                  required
+                  formControlName="nationality"
+                  [class.border-red-500]="isFieldInvalid('nationality')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                   @for (nat of nationalities; track nat.value) {
                     <option [value]="nat.value">{{ nat.label }}</option>
                   }
                 </select>
+                @if (isFieldInvalid('nationality')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('nationality') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">เลขบัตรประชาชน</label>
                 <input
                   type="text"
-                  [(ngModel)]="employeeForm.idCardNumber"
-                  name="idCardNumber"
+                  formControlName="idCardNumber"
                   maxlength="13"
+                  [class.border-red-500]="isFieldInvalid('idCardNumber')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (employeeForm.get('idCardNumber')?.pending) {
+                  <div class="text-blue-500 text-sm mt-1">กำลังตรวจสอบ...</div>
+                }
+                @if (isFieldInvalid('idCardNumber')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('idCardNumber') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">เลขพาสปอร์ต</label>
                 <input
                   type="text"
-                  [(ngModel)]="employeeForm.passportNumber"
-                  name="passportNumber"
+                  formControlName="passportNumber"
+                  [class.border-red-500]="isFieldInvalid('passportNumber')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (isFieldInvalid('passportNumber')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('passportNumber') }}</div>
+                }
               </div>
 
               <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">ที่อยู่</label>
                 <textarea
-                  [(ngModel)]="employeeForm.address"
-                  name="address"
+                  formControlName="address"
                   rows="2"
+                  [class.border-red-500]="isFieldInvalid('address')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                @if (isFieldInvalid('address')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('address') }}</div>
+                }
               </div>
             </div>
           </div>
@@ -533,48 +611,58 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">ตำแหน่ง</label>
                 <input
                   type="text"
-                  [(ngModel)]="employeeForm.position"
-                  name="position"
+                  formControlName="position"
+                  [class.border-red-500]="isFieldInvalid('position')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (isFieldInvalid('position')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('position') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">ประเภทการจ้าง <span class="text-red-500">*</span></label>
                 <select
-                  [(ngModel)]="employeeForm.employmentType"
-                  name="employmentType"
-                  (change)="onEmploymentTypeChange(employeeForm.employmentType)"
-                  required
+                  formControlName="employmentType"
+                  [class.border-red-500]="isFieldInvalid('employmentType')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                   @for (type of employmentTypes; track type.value) {
                     <option [value]="type.value">{{ type.label }}</option>
                   }
                 </select>
+                @if (isFieldInvalid('employmentType')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('employmentType') }}</div>
+                }
               </div>
 
-              @if (employeeForm.employmentType === 'monthly') {
+              @if (employeeForm.get('employmentType')?.value === 'monthly') {
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">เงินเดือน (บาท/เดือน)</label>
                   <input
                     type="number"
-                    [(ngModel)]="employeeForm.salary"
-                    name="salary"
+                    formControlName="salary"
                     min="0"
                     step="0.01"
+                    [class.border-red-500]="isFieldInvalid('salary')"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  @if (isFieldInvalid('salary')) {
+                    <div class="text-red-500 text-sm mt-1">{{ getFieldError('salary') }}</div>
+                  }
                 </div>
               }
 
-              @if (employeeForm.employmentType === 'daily') {
+              @if (employeeForm.get('employmentType')?.value === 'daily') {
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">ค่าแรงรายวัน (บาท/วัน)</label>
                   <input
                     type="number"
-                    [(ngModel)]="employeeForm.dailyRate"
-                    name="dailyRate"
+                    formControlName="dailyRate"
                     min="0"
                     step="0.01"
+                    [class.border-red-500]="isFieldInvalid('dailyRate')"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  @if (isFieldInvalid('dailyRate')) {
+                    <div class="text-red-500 text-sm mt-1">{{ getFieldError('dailyRate') }}</div>
+                  }
                 </div>
               }
 
@@ -582,30 +670,33 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">วันที่เริ่มงาน <span class="text-red-500">*</span></label>
                 <input
                   type="date"
-                  [(ngModel)]="employeeForm.hireDate"
-                  name="hireDate"
-                  required
+                  formControlName="hireDate"
+                  [class.border-red-500]="isFieldInvalid('hireDate')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (isFieldInvalid('hireDate')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('hireDate') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">สถานะ <span class="text-red-500">*</span></label>
                 <select
-                  [(ngModel)]="employeeForm.status"
-                  name="status"
-                  required
+                  formControlName="employeeStatus"
+                  [class.border-red-500]="isFieldInvalid('employeeStatus')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                   @for (status of statuses; track status.value) {
                     <option [value]="status.value">{{ status.label }}</option>
                   }
                 </select>
+                @if (isFieldInvalid('employeeStatus')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('employeeStatus') }}</div>
+                }
               </div>
 
               <div class="flex items-center pt-6">
                 <input
                   type="checkbox"
-                  [(ngModel)]="employeeForm.hasSocialSecurity"
-                  name="hasSocialSecurity"
+                  formControlName="hasSocialSecurity"
                   id="hasSocialSecurity"
                   class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                 <label for="hasSocialSecurity" class="ml-2 text-sm font-medium text-gray-700">
@@ -616,7 +707,7 @@
           </div>
 
           <!-- Work Permit (for foreign workers) -->
-          @if (employeeForm.nationality !== 'thai') {
+          @if (employeeForm.get('nationality')?.value !== 'thai') {
             <div class="mb-6">
               <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -629,18 +720,24 @@
                   <label class="block text-sm font-medium text-gray-700 mb-1">วันที่เริ่มใบอนุญาต</label>
                   <input
                     type="date"
-                    [(ngModel)]="employeeForm.workPermitStartDate"
-                    name="workPermitStartDate"
+                    formControlName="workPermitStartDate"
+                    [class.border-red-500]="isFieldInvalid('workPermitStartDate')"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  @if (isFieldInvalid('workPermitStartDate')) {
+                    <div class="text-red-500 text-sm mt-1">{{ getFieldError('workPermitStartDate') }}</div>
+                  }
                 </div>
 
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">วันที่หมดอายุใบอนุญาต</label>
                   <input
                     type="date"
-                    [(ngModel)]="employeeForm.workPermitEndDate"
-                    name="workPermitEndDate"
+                    formControlName="workPermitEndDate"
+                    [class.border-red-500]="isFieldInvalid('workPermitEndDate')"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  @if (isFieldInvalid('workPermitEndDate')) {
+                    <div class="text-red-500 text-sm mt-1">{{ getFieldError('workPermitEndDate') }}</div>
+                  }
                 </div>
               </div>
             </div>
@@ -659,18 +756,24 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อธนาคาร</label>
                 <input
                   type="text"
-                  [(ngModel)]="employeeForm.bankName"
-                  name="bankName"
+                  formControlName="bankName"
+                  [class.border-red-500]="isFieldInvalid('bankName')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (isFieldInvalid('bankName')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('bankName') }}</div>
+                }
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">เลขที่บัญชี</label>
                 <input
                   type="text"
-                  [(ngModel)]="employeeForm.bankAccountNumber"
-                  name="bankAccountNumber"
+                  formControlName="bankAccountNumber"
+                  [class.border-red-500]="isFieldInvalid('bankAccountNumber')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (isFieldInvalid('bankAccountNumber')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('bankAccountNumber') }}</div>
+                }
               </div>
             </div>
           </div>
@@ -679,10 +782,13 @@
           <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-1">หมายเหตุ</label>
             <textarea
-              [(ngModel)]="employeeForm.notes"
-              name="notes"
+              formControlName="notes"
               rows="3"
+              [class.border-red-500]="isFieldInvalid('notes')"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+            @if (isFieldInvalid('notes')) {
+              <div class="text-red-500 text-sm mt-1">{{ getFieldError('notes') }}</div>
+            }
           </div>
 
           <!-- Buttons -->
@@ -695,8 +801,10 @@
             </button>
             <button
               type="submit"
-              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              {{ isEditMode() ? 'บันทึก' : 'เพิ่มพนักงาน' }}
+              [disabled]="loading() || employeeForm.invalid || employeeForm.pending"
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              [title]="employeeForm.invalid ? 'กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง' : (employeeForm.pending ? 'กำลังตรวจสอบข้อมูล...' : '')">
+              {{ loading() ? 'กำลังบันทึก...' : (isEditMode() ? 'บันทึก' : 'เพิ่มพนักงาน') }}
             </button>
           </div>
         </form>

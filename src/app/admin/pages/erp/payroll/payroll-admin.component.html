@@ -387,12 +387,11 @@
       </div>
 
       <!-- Calculation Form -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div [formGroup]="calculationForm" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">ปี <span class="text-red-500">*</span></label>
           <select
-            [(ngModel)]="calculationForm.year"
-            (ngModelChange)="onCalculationPeriodChange()"
+            formControlName="year"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
             @for (year of years; track year) {
               <option [ngValue]="year">{{ year + 543 }}</option>
@@ -403,8 +402,7 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">เดือน <span class="text-red-500">*</span></label>
           <select
-            [(ngModel)]="calculationForm.month"
-            (ngModelChange)="onCalculationPeriodChange()"
+            formControlName="month"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
             @for (month of months; track month.value) {
               <option [ngValue]="month.value">{{ month.label }}</option>
@@ -415,15 +413,8 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">สาขา (ถ้าต้องการกรอง)</label>
           <select
-            [(ngModel)]="calculationForm.branchId"
+            formControlName="branchId"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-            <!-- [ngValue] not [value]: plain [value] on a native <select> option
-                 always comes back out as a STRING through ngModel, so
-                 calculationForm.branchId became "3" while employee.branchId from
-                 the API is the number 3 - `"3" === 3` is false, so the filter in
-                 getEmployeesForCalculation() matched nothing at all once any
-                 branch was picked (worked fine only on the unfiltered "ทั้งหมด"
-                 case). [ngValue] preserves the real number through the binding. -->
             <option [ngValue]="null">ทั้งหมด</option>
             @for (branch of branches(); track branch.id) {
               <option [ngValue]="branch.id">{{ branch.name }}</option>
@@ -478,7 +469,7 @@
         </div>
 
         <div class="mt-2 text-sm text-gray-600">
-          เลือกแล้ว: <span class="font-medium text-gray-900">{{ calculationForm.employeeIds.length }}</span> คน
+          เลือกแล้ว: <span class="font-medium text-gray-900">{{ calculationForm.get('employeeIds')?.value?.length || 0 }}</span> คน
         </div>
       </div>
 
@@ -486,7 +477,7 @@
       <div class="flex gap-3">
         <button
           (click)="calculatePayroll()"
-          [disabled]="loading() || (calculationForm.employeeIds.length === 0 && calculationForm.branchId === null)"
+          [disabled]="loading() || ((calculationForm.get('employeeIds')?.value?.length || 0) === 0 && calculationForm.get('branchId')?.value === null)"
           class="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
           @if (loading()) {
             <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>

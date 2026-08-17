@@ -1,17 +1,19 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdminBrandService } from '../../services/admin-brand.service';
 import { NotificationService } from '../../../services/notification.service';
 import { ReportService } from '../../../services/report.service';
 import { BrandDto } from '../../../services/openapi-client/model/brandDto';
 import { CreateBrandDto } from '../../../services/openapi-client/model/createBrandDto';
 import { ImageFallbackDirective } from '../../../directives/image-fallback.directive';
+import { FormHelpers } from '../../../utils/form-helpers';
+import { FormValidators } from '../../../utils/form-validators';
 
 @Component({
   selector: 'app-brand-list-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImageFallbackDirective],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, ImageFallbackDirective],
   templateUrl: './brand-list-admin.component.html',
   styleUrls: ['./brand-list-admin.component.css']
 })
@@ -41,27 +43,38 @@ export class BrandListAdminComponent implements OnInit {
   showModal = signal(false);
   isEditMode = signal(false);
   currentBrand = signal<BrandDto | undefined>(undefined);
-  brandForm: CreateBrandDto = {
-    name: '',
-    slug: '',
-    logoUrl: '',
-    description: '',
-    websiteUrl: '',
-    isActive: true,
-    displayOrder: 0
-  };
 
-  // Form validation
-  formErrors = {
-    name: '',
-    slug: ''
-  };
+  // Reactive form
+  brandForm!: FormGroup;
 
   constructor(
     private adminBrandService: AdminBrandService,
     private notificationService: NotificationService,
-    private reportService: ReportService
-  ) {}
+    private reportService: ReportService,
+    private fb: FormBuilder
+  ) {
+    this.initForm();
+  }
+
+  private initForm(): void {
+    this.brandForm = this.fb.group({
+      name: ['', [Validators.required, Validators.maxLength(200)]],
+      slug: ['', [Validators.required, Validators.maxLength(200)]],
+      logoUrl: ['', Validators.maxLength(500)],
+      description: ['', Validators.maxLength(1000)],
+      websiteUrl: ['', Validators.maxLength(500)],
+      isActive: [true],
+      displayOrder: [0, [Validators.min(0)]]
+    });
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.brandForm, fieldName);
+  }
+
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.brandForm, fieldName);
+  }
 
   ngOnInit(): void {
     this.loadBrands();
@@ -153,7 +166,7 @@ export class BrandListAdminComponent implements OnInit {
   onAddNew(): void {
     this.isEditMode.set(false);
     this.currentBrand.set(undefined);
-    this.brandForm = {
+    this.brandForm.reset({
       name: '',
       slug: '',
       logoUrl: '',
@@ -161,18 +174,14 @@ export class BrandListAdminComponent implements OnInit {
       websiteUrl: '',
       isActive: true,
       displayOrder: 0
-    };
-    this.formErrors = {
-      name: '',
-      slug: ''
-    };
+    });
     this.showModal.set(true);
   }
 
   onEdit(brand: BrandDto): void {
     this.isEditMode.set(true);
     this.currentBrand.set(brand);
-    this.brandForm = {
+    this.brandForm.patchValue({
       name: brand.name || '',
       slug: brand.slug || '',
       logoUrl: brand.logoUrl || '',
@@ -180,11 +189,7 @@ export class BrandListAdminComponent implements OnInit {
       websiteUrl: brand.websiteUrl || '',
       isActive: brand.isActive ?? true,
       displayOrder: brand.displayOrder || 0
-    };
-    this.formErrors = {
-      name: '',
-      slug: ''
-    };
+    });
     this.showModal.set(true);
   }
 
@@ -235,43 +240,36 @@ export class BrandListAdminComponent implements OnInit {
 
   onNameChange(): void {
     if (!this.isEditMode()) {
-      this.brandForm = {
-        ...this.brandForm,
-        slug: this.adminBrandService.generateSlug(this.brandForm.name)
-      };
+      const name = this.brandForm.get('name')?.value;
+      this.brandForm.patchValue({
+        slug: this.adminBrandService.generateSlug(name)
+      });
     }
-  }
-
-  validateForm(): boolean {
-    let isValid = true;
-    const currentForm = this.brandForm;
-    const errors = {
-      name: '',
-      slug: ''
-    };
-
-    if (!currentForm.name.trim()) {
-      errors.name = 'กรุณากรอกชื่อแบรนด์';
-      isValid = false;
-    }
-
-    if (!currentForm.slug.trim()) {
-      errors.slug = 'กรุณากรอก Slug';
-      isValid = false;
-    }
-
-    this.formErrors = errors;
-    return isValid;
   }
 
   onSaveForm(): void {
-    if (!this.validateForm()) {
+    // Mark all fields as touched to show validation errors
+    FormHelpers.markFormGroupTouched(this.brandForm);
+
+    // Validate
+    if (this.brandForm.invalid) {
       return;
     }
 
+    const formValue = this.brandForm.value;
+    const dto: CreateBrandDto = {
+      name: formValue.name.trim(),
+      slug: formValue.slug.trim(),
+      logoUrl: formValue.logoUrl?.trim() || '',
+      description: formValue.description?.trim() || '',
+      websiteUrl: formValue.websiteUrl?.trim() || '',
+      isActive: formValue.isActive,
+      displayOrder: formValue.displayOrder
+    };
+
     if (this.isEditMode() && this.currentBrand()?.id) {
       // Update existing brand
-      this.adminBrandService.updateBrand(this.currentBrand()!.id!, this.brandForm).subscribe({
+      this.adminBrandService.updateBrand(this.currentBrand()!.id!, dto).subscribe({
         next: () => {
           this.notificationService.success('อัปเดตแบรนด์เรียบร้อยแล้ว');
           this.showModal.set(false);
@@ -284,7 +282,7 @@ export class BrandListAdminComponent implements OnInit {
       });
     } else {
       // Create new brand
-      this.adminBrandService.createBrand(this.brandForm).subscribe({
+      this.adminBrandService.createBrand(dto).subscribe({
         next: () => {
           this.notificationService.success('เพิ่มแบรนด์เรียบร้อยแล้ว');
           this.showModal.set(false);

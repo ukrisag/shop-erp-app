@@ -132,39 +132,53 @@
         </button>
       </div>
       <div class="p-6">
-        <form (ngSubmit)="save()">
+        <form [formGroup]="requisitionForm" (ngSubmit)="save()">
           <div class="grid grid-cols-2 gap-4">
             <div class="col-span-2">
               <label class="block text-sm font-medium mb-2">สาขา <span class="text-red-500">*</span></label>
-              <select [(ngModel)]="requisitionForm.branchId" name="branchId" required class="w-full px-4 py-2 border rounded-lg">
+              <select formControlName="branchId" class="w-full px-4 py-2 border rounded-lg"
+                [class.border-red-500]="isFieldInvalid('branchId')">
                 <option [value]="null">เลือกสาขา</option>
                 @for (branch of branches(); track branch.id) {
                   <option [value]="branch.id">{{ branch.name }}</option>
                 }
               </select>
+              @if (isFieldInvalid('branchId')) {
+                <p class="text-red-500 text-xs mt-1">{{ getFieldError('branchId') }}</p>
+              }
             </div>
             <div>
               <label class="block text-sm font-medium mb-2">ผู้เบิก <span class="text-red-500">*</span></label>
-              <select [(ngModel)]="requisitionForm.requestedBy" name="requestedBy" required class="w-full px-4 py-2 border rounded-lg">
+              <select formControlName="requestedBy" class="w-full px-4 py-2 border rounded-lg"
+                [class.border-red-500]="isFieldInvalid('requestedBy')">
                 <option [value]="null">เลือกพนักงาน</option>
                 @for (emp of employees(); track emp.id) {
                   <option [value]="emp.id">{{ emp.fullNameTh }}</option>
                 }
               </select>
+              @if (isFieldInvalid('requestedBy')) {
+                <p class="text-red-500 text-xs mt-1">{{ getFieldError('requestedBy') }}</p>
+              }
             </div>
             <div>
               <label class="block text-sm font-medium mb-2">วันที่ <span class="text-red-500">*</span></label>
-              <input type="date" [(ngModel)]="requisitionForm.requisitionDate" name="requisitionDate" required
-                class="w-full px-4 py-2 border rounded-lg">
+              <input type="date" formControlName="requisitionDate" class="w-full px-4 py-2 border rounded-lg"
+                [class.border-red-500]="isFieldInvalid('requisitionDate')">
+              @if (isFieldInvalid('requisitionDate')) {
+                <p class="text-red-500 text-xs mt-1">{{ getFieldError('requisitionDate') }}</p>
+              }
             </div>
             <div class="col-span-2">
               <label class="block text-sm font-medium mb-2">วัตถุประสงค์</label>
-              <input type="text" [(ngModel)]="requisitionForm.purpose" name="purpose"
-                class="w-full px-4 py-2 border rounded-lg">
+              <input type="text" formControlName="purpose" class="w-full px-4 py-2 border rounded-lg"
+                [class.border-red-500]="isFieldInvalid('purpose')">
+              @if (isFieldInvalid('purpose')) {
+                <p class="text-red-500 text-xs mt-1">{{ getFieldError('purpose') }}</p>
+              }
             </div>
             <div>
               <label class="block text-sm font-medium mb-2">สถานะ</label>
-              <select [(ngModel)]="requisitionForm.status" name="status" class="w-full px-4 py-2 border rounded-lg">
+              <select formControlName="status" class="w-full px-4 py-2 border rounded-lg">
                 @for (status of statuses; track status.value) {
                   <option [value]="status.value">{{ status.label }}</option>
                 }
@@ -172,8 +186,11 @@
             </div>
             <div class="col-span-2">
               <label class="block text-sm font-medium mb-2">หมายเหตุ</label>
-              <textarea [(ngModel)]="requisitionForm.notes" name="notes" rows="3"
-                class="w-full px-4 py-2 border rounded-lg"></textarea>
+              <textarea formControlName="notes" rows="3" class="w-full px-4 py-2 border rounded-lg"
+                [class.border-red-500]="isFieldInvalid('notes')"></textarea>
+              @if (isFieldInvalid('notes')) {
+                <p class="text-red-500 text-xs mt-1">{{ getFieldError('notes') }}</p>
+              }
             </div>
           </div>
 
@@ -190,13 +207,13 @@
               </button>
             </div>
 
-            @if (requisitionForm.items.length === 0) {
+            @if (requisitionItems.length === 0) {
               <div class="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                 <p class="text-sm text-gray-600">ยังไม่มีรายการสินค้า กดปุ่ม "เพิ่มสินค้า" เพื่อเริ่มต้น</p>
               </div>
             } @else {
               <div class="space-y-3">
-                @for (item of requisitionForm.items; track $index; let i = $index) {
+                @for (item of requisitionItems; track $index; let i = $index) {
                   <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <div class="grid grid-cols-12 gap-3">
                       <div class="col-span-12 sm:col-span-7">
@@ -240,7 +257,10 @@
             <button type="button" (click)="closeModals()"
               class="flex-1 px-6 py-2 border rounded-lg hover:bg-gray-50">ยกเลิก</button>
             <button type="submit"
-              class="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">{{ isEditMode() ? 'บันทึก' : 'สร้าง' }}</button>
+              [disabled]="requisitionForm.invalid && requisitionForm.touched"
+              class="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+              {{ isEditMode() ? 'บันทึก' : 'สร้าง' }}
+            </button>
           </div>
         </form>
       </div>

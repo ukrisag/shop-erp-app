@@ -1,6 +1,6 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LoadingSkeletonComponent } from '../../../../components/shared/loading-skeleton/loading-skeleton.component';
 import { AdvanceService } from '../../../../services/openapi-client/api/advance.service';
 import { EmployeesService } from '../../../../services/openapi-client/api/employees.service';
@@ -14,6 +14,11 @@ import {
   AdvanceApprovalDto,
   EmployeeListDto
 } from '../../../../services/openapi-client/model/models';
+import { FormValidators } from '../../../../utils/form-validators';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { ValidationConfigs } from '../../../../utils/validation-configs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 interface BranchDto {
   id: number;
@@ -24,11 +29,12 @@ interface BranchDto {
 @Component({
   selector: 'app-advance-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSkeletonComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, LoadingSkeletonComponent],
   templateUrl: './advance-admin.component.html',
   styleUrls: ['./advance-admin.component.css']
 })
-export class AdvanceAdminComponent implements OnInit {
+export class AdvanceAdminComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   // State signals
   activeTab = signal<'records' | 'pending'>('records');
   advanceRecords = signal<AdvancePaymentDto[]>([]);
@@ -51,14 +57,7 @@ export class AdvanceAdminComponent implements OnInit {
   isEditMode = signal(false);
 
   // Form data
-  advanceForm: any = {
-    userId: null,
-    branchId: null,
-    advanceDate: '',
-    amount: null,
-    monthlyDeduction: null,
-    reason: ''
-  };
+  advanceForm!: FormGroup;
 
   // Approval form
   approvalForm = {
@@ -101,8 +100,10 @@ export class AdvanceAdminComponent implements OnInit {
 
   // Computed for estimated installments
   estimatedInstallments = computed(() => {
-    if (this.advanceForm.amount && this.advanceForm.monthlyDeduction && this.advanceForm.monthlyDeduction > 0) {
-      return Math.ceil(this.advanceForm.amount / this.advanceForm.monthlyDeduction);
+    const amount = this.advanceForm?.get('amount')?.value;
+    const monthlyDeduction = this.advanceForm?.get('monthlyDeduction')?.value;
+    if (amount && monthlyDeduction && monthlyDeduction > 0) {
+      return Math.ceil(amount / monthlyDeduction);
     }
     return 0;
   });
@@ -114,13 +115,55 @@ export class AdvanceAdminComponent implements OnInit {
     private advanceService: AdvanceService,
     private employeesService: EmployeesService,
     private branchesService: BranchesService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
+    this.initForm();
+    this.setupFormListeners();
     this.loadEmployees();
     this.loadBranches();
     this.loadAdvanceRecords();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initForm(): void {
+    this.advanceForm = this.fb.group({
+      employeeId: [null, ValidationConfigs.advance.employeeId],
+      amount: [null, [
+        ...ValidationConfigs.advance.amount,
+        FormValidators.positiveNumber()
+      ]],
+      requestDate: ['', ValidationConfigs.advance.requestDate],
+      reason: ['', ValidationConfigs.advance.reason],
+      monthlyDeduction: [null, [
+        ...ValidationConfigs.advance.monthlyDeduction,
+        FormValidators.monthlyDeductionVsAmount('amount')
+      ]],
+      status: ['pending']
+    });
+  }
+
+  private setupFormListeners(): void {
+    // Validate monthlyDeduction when amount changes
+    this.advanceForm.get('amount')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.advanceForm.get('monthlyDeduction')?.updateValueAndValidity();
+      });
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.advanceForm, fieldName);
+  }
+
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.advanceForm, fieldName);
   }
 
   loadEmployees(): void {
@@ -206,52 +249,48 @@ export class AdvanceAdminComponent implements OnInit {
 
     this.isEditMode.set(true);
     this.selectedRecord.set(record);
-    this.advanceForm = {
-      userId: record.userId,
-      branchId: record.branchId,
-      advanceDate: record.advanceDate ? record.advanceDate.split('T')[0] : '',
+    this.advanceForm.patchValue({
+      employeeId: record.userId,
       amount: record.amount,
+      requestDate: record.advanceDate ? record.advanceDate.split('T')[0] : '',
+      reason: record.reason || '',
       monthlyDeduction: record.monthlyDeduction,
-      reason: record.reason || ''
-    };
+      status: record.status
+    });
     this.loading.set(false);
     this.showFormModal.set(true);
   }
 
   resetForm(): void {
-    this.advanceForm = {
-      userId: null,
-      branchId: null,
-      advanceDate: '',
+    this.advanceForm.reset({
+      employeeId: null,
       amount: null,
+      requestDate: '',
+      reason: '',
       monthlyDeduction: null,
-      reason: ''
-    };
-  }
-
-  onEmployeeChange(): void {
-    // Auto-fill branch from employee
-    if (this.advanceForm.userId) {
-      const employee = this.employees().find(e => e.id === this.advanceForm.userId);
-      if (employee && employee.branchId) {
-        this.advanceForm.branchId = employee.branchId;
-      }
-    }
+      status: 'pending'
+    });
   }
 
   saveAdvanceRecord(): void {
-    if (!this.validateForm()) {
+    // Mark all fields as touched to trigger validation display
+    FormHelpers.markFormGroupTouched(this.advanceForm);
+
+    // Validate form
+    if (!this.advanceForm.valid) {
+      this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
       return;
     }
 
     this.loading.set(true);
+    const formValue = this.advanceForm.value;
 
     if (this.isEditMode()) {
       const updateDto: AdvancePaymentUpdateDto = {
-        advanceDate: this.advanceForm.advanceDate,
-        amount: this.advanceForm.amount,
-        monthlyDeduction: this.advanceForm.monthlyDeduction,
-        reason: this.advanceForm.reason
+        advanceDate: formValue.requestDate,
+        amount: formValue.amount,
+        monthlyDeduction: formValue.monthlyDeduction,
+        reason: formValue.reason
       };
 
       this.advanceService.advanceUpdateAdvance(this.selectedRecord()!.id!, updateDto).subscribe({
@@ -270,13 +309,15 @@ export class AdvanceAdminComponent implements OnInit {
         }
       });
     } else {
+      // Get employee to find branchId
+      const employee = this.employees().find(e => e.id === formValue.employeeId);
       const createDto: AdvancePaymentCreateDto = {
-        userId: this.advanceForm.userId,
-        branchId: this.advanceForm.branchId,
-        advanceDate: this.advanceForm.advanceDate,
-        amount: this.advanceForm.amount,
-        monthlyDeduction: this.advanceForm.monthlyDeduction,
-        reason: this.advanceForm.reason
+        userId: formValue.employeeId,
+        branchId: employee?.branchId || undefined,
+        advanceDate: formValue.requestDate,
+        amount: formValue.amount,
+        monthlyDeduction: formValue.monthlyDeduction,
+        reason: formValue.reason
       };
 
       this.advanceService.advanceCreateAdvance(createDto).subscribe({
@@ -295,34 +336,6 @@ export class AdvanceAdminComponent implements OnInit {
         }
       });
     }
-  }
-
-  validateForm(): boolean {
-    if (!this.advanceForm.userId && !this.isEditMode()) {
-      this.notificationService.error('Please select an employee');
-      return false;
-    }
-    if (!this.advanceForm.branchId && !this.isEditMode()) {
-      this.notificationService.error('Please select a branch');
-      return false;
-    }
-    if (!this.advanceForm.advanceDate) {
-      this.notificationService.error('Please specify advance date');
-      return false;
-    }
-    if (!this.advanceForm.amount || this.advanceForm.amount <= 0) {
-      this.notificationService.error('Please specify a valid amount');
-      return false;
-    }
-    if (!this.advanceForm.monthlyDeduction || this.advanceForm.monthlyDeduction <= 0) {
-      this.notificationService.error('Please specify a valid monthly deduction');
-      return false;
-    }
-    if (this.advanceForm.monthlyDeduction > this.advanceForm.amount) {
-      this.notificationService.error('Monthly deduction cannot exceed the advance amount');
-      return false;
-    }
-    return true;
   }
 
   openApprovalModal(record: AdvancePaymentDto): void {

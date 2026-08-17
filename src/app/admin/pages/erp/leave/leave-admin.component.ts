@@ -1,6 +1,6 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LeaveService } from '../../../../services/openapi-client/api/leave.service';
 import { EmployeesService } from '../../../../services/openapi-client/api/employees.service';
 import { NotificationService } from '../../../../services/notification.service';
@@ -12,6 +12,11 @@ import {
   LeaveBalanceDto,
   EmployeeListDto
 } from '../../../../services/openapi-client/model/models';
+import { FormValidators } from '../../../../utils/form-validators';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { ValidationConfigs } from '../../../../utils/validation-configs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 interface LeaveRecordDto {
   id: number;
@@ -35,11 +40,12 @@ interface LeaveRecordDto {
 @Component({
   selector: 'app-leave-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './leave-admin.component.html',
   styleUrls: ['./leave-admin.component.css']
 })
-export class LeaveAdminComponent implements OnInit {
+export class LeaveAdminComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   // State signals
   activeTab = signal<'records' | 'pending' | 'balance'>('records');
   leaveRecords = signal<LeaveRecordDto[]>([]);
@@ -78,14 +84,7 @@ export class LeaveAdminComponent implements OnInit {
   isEditMode = signal(false);
 
   // Form data
-  leaveForm: any = {
-    employeeId: null,
-    leaveType: 'annual',
-    startDate: '',
-    endDate: '',
-    isPaid: true,
-    reason: ''
-  };
+  leaveForm!: FormGroup;
 
   // Approval form
   approvalForm = {
@@ -145,10 +144,13 @@ export class LeaveAdminComponent implements OnInit {
   constructor(
     private leaveService: LeaveService,
     private employeesService: EmployeesService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
+    this.initForm();
+    this.setupFormListeners();
     this.loadEmployees();
     // setDefaultDates() must run BEFORE loadLeaveRecords(): that call reads
     // filterForm.startDate/endDate and silently no-ops when they're unset, so
@@ -156,6 +158,50 @@ export class LeaveAdminComponent implements OnInit {
     // until the user manually touched a filter.
     this.setDefaultDates();
     this.loadLeaveRecords();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initForm(): void {
+    this.leaveForm = this.fb.group({
+      employeeId: [null, ValidationConfigs.leave.employeeId],
+      leaveType: ['annual', ValidationConfigs.leave.leaveType],
+      startDate: ['', ValidationConfigs.leave.startDate],
+      endDate: ['', ValidationConfigs.leave.endDate],
+      totalDays: [0, ValidationConfigs.leave.totalDays],
+      reason: ['', ValidationConfigs.leave.reason]
+    }, {
+      validators: [FormValidators.dateRange('startDate', 'endDate')]
+    });
+  }
+
+  private setupFormListeners(): void {
+    // Auto-calculate total days when dates change
+    this.leaveForm.get('startDate')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.updateTotalDays());
+
+    this.leaveForm.get('endDate')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.updateTotalDays());
+
+    // Update isPaid based on leave type
+    this.leaveForm.get('leaveType')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((leaveType) => {
+        const selectedType = this.leaveTypes.find(t => t.value === leaveType);
+        if (selectedType) {
+          // Store isPaid for reference, but don't add it to form since backend expects it
+        }
+      });
+  }
+
+  private updateTotalDays(): void {
+    const totalDays = this.calculateTotalDaysFromForm();
+    this.leaveForm.patchValue({ totalDays }, { emitEvent: false });
   }
 
   setDefaultDates(): void {
@@ -263,22 +309,28 @@ export class LeaveAdminComponent implements OnInit {
     this.loadLeaveRecords();
   }
 
-  onLeaveTypeChange(): void {
-    const selectedType = this.leaveTypes.find(t => t.value === this.leaveForm.leaveType);
-    if (selectedType) {
-      this.leaveForm.isPaid = selectedType.isPaid;
-    }
-  }
+  calculateTotalDaysFromForm(): number {
+    const startDate = this.leaveForm.get('startDate')?.value;
+    const endDate = this.leaveForm.get('endDate')?.value;
 
-  calculateTotalDays(): number {
-    if (this.leaveForm.startDate && this.leaveForm.endDate) {
-      const start = new Date(this.leaveForm.startDate);
-      const end = new Date(this.leaveForm.endDate);
-      const diffTime = Math.abs(end.getTime() - start.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-      return diffDays;
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      if (end >= start) {
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        return diffDays;
+      }
     }
     return 0;
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.leaveForm, fieldName);
+  }
+
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.leaveForm, fieldName);
   }
 
   openCreateModal(): void {
@@ -296,43 +348,53 @@ export class LeaveAdminComponent implements OnInit {
 
     this.isEditMode.set(true);
     this.selectedRecord.set(record);
-    this.leaveForm = {
+    this.leaveForm.patchValue({
       employeeId: record.employeeId,
       leaveType: record.leaveType,
       startDate: record.startDate.split('T')[0],
       endDate: record.endDate.split('T')[0],
-      isPaid: record.isPaid,
+      totalDays: record.totalDays,
       reason: record.reason || ''
-    };
+    });
     this.loading.set(false);
     this.showFormModal.set(true);
   }
 
   resetForm(): void {
-    this.leaveForm = {
+    this.leaveForm.reset({
       employeeId: null,
       leaveType: 'annual',
       startDate: '',
       endDate: '',
-      isPaid: true,
+      totalDays: 0,
       reason: ''
-    };
+    });
   }
 
   saveLeaveRecord(): void {
-    if (!this.validateForm()) {
+    // Mark all fields as touched to trigger validation display
+    FormHelpers.markFormGroupTouched(this.leaveForm);
+
+    // Validate form
+    if (!this.leaveForm.valid) {
+      this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
       return;
     }
 
     this.loading.set(true);
+    const formValue = this.leaveForm.value;
+
+    // Get isPaid from leave type
+    const selectedType = this.leaveTypes.find(t => t.value === formValue.leaveType);
+    const isPaid = selectedType ? selectedType.isPaid : false;
 
     if (this.isEditMode()) {
       const updateDto: LeaveRecordUpdateDto = {
-        leaveType: this.leaveForm.leaveType,
-        startDate: this.leaveForm.startDate,
-        endDate: this.leaveForm.endDate,
-        isPaid: this.leaveForm.isPaid,
-        reason: this.leaveForm.reason
+        leaveType: formValue.leaveType,
+        startDate: formValue.startDate,
+        endDate: formValue.endDate,
+        isPaid: isPaid,
+        reason: formValue.reason
       };
 
       this.leaveService.leaveUpdateLeaveRecord(this.selectedRecord()!.id, updateDto).subscribe({
@@ -349,12 +411,12 @@ export class LeaveAdminComponent implements OnInit {
       });
     } else {
       const createDto: LeaveRecordCreateDto = {
-        employeeId: this.leaveForm.employeeId,
-        leaveType: this.leaveForm.leaveType,
-        startDate: this.leaveForm.startDate,
-        endDate: this.leaveForm.endDate,
-        isPaid: this.leaveForm.isPaid,
-        reason: this.leaveForm.reason
+        employeeId: formValue.employeeId,
+        leaveType: formValue.leaveType,
+        startDate: formValue.startDate,
+        endDate: formValue.endDate,
+        isPaid: isPaid,
+        reason: formValue.reason
       };
 
       this.leaveService.leaveCreateLeaveRecord(createDto).subscribe({
@@ -370,26 +432,6 @@ export class LeaveAdminComponent implements OnInit {
         }
       });
     }
-  }
-
-  validateForm(): boolean {
-    if (!this.leaveForm.employeeId && !this.isEditMode()) {
-      this.notificationService.error('Please select an employee');
-      return false;
-    }
-    if (!this.leaveForm.leaveType) {
-      this.notificationService.error('Please select leave type');
-      return false;
-    }
-    if (!this.leaveForm.startDate || !this.leaveForm.endDate) {
-      this.notificationService.error('Please specify start and end dates');
-      return false;
-    }
-    if (new Date(this.leaveForm.endDate) < new Date(this.leaveForm.startDate)) {
-      this.notificationService.error('End date must be greater than or equal to start date');
-      return false;
-    }
-    return true;
   }
 
   openApprovalModal(record: LeaveRecordDto): void {

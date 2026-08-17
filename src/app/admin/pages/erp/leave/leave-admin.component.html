@@ -383,15 +383,16 @@
           </button>
         </div>
 
-        <form (ngSubmit)="saveLeaveRecord()" #leaveFormEl="ngForm" class="space-y-4">
+        <form [formGroup]="leaveForm" (ngSubmit)="saveLeaveRecord()" class="space-y-4">
           @if (!isEditMode()) {
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">พนักงาน *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                พนักงาน <span class="text-red-500">*</span>
+              </label>
               <select
-                [(ngModel)]="leaveForm.employeeId"
-                name="employeeId"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                formControlName="employeeId"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                [class.border-red-500]="isFieldInvalid('employeeId')">
                 <option [value]="null">เลือกพนักงาน</option>
                 @for (employee of employees(); track employee.id) {
                   <option [value]="employee.id">
@@ -399,73 +400,80 @@
                   </option>
                 }
               </select>
+              @if (isFieldInvalid('employeeId')) {
+                <p class="text-red-500 text-sm mt-1">{{ getFieldError('employeeId') }}</p>
+              }
             </div>
           }
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">ประเภทการลา *</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              ประเภทการลา <span class="text-red-500">*</span>
+            </label>
             <select
-              [(ngModel)]="leaveForm.leaveType"
-              (change)="onLeaveTypeChange()"
-              name="leaveType"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              formControlName="leaveType"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-red-500]="isFieldInvalid('leaveType')">
               @for (type of leaveTypes; track type.value) {
                 <option [value]="type.value">{{ type.label }}</option>
               }
             </select>
+            @if (isFieldInvalid('leaveType')) {
+              <p class="text-red-500 text-sm mt-1">{{ getFieldError('leaveType') }}</p>
+            }
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">วันที่เริ่มต้น *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                วันที่เริ่มต้น <span class="text-red-500">*</span>
+              </label>
               <input
                 type="date"
-                [(ngModel)]="leaveForm.startDate"
-                name="startDate"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                formControlName="startDate"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                [class.border-red-500]="isFieldInvalid('startDate')">
+              @if (isFieldInvalid('startDate')) {
+                <p class="text-red-500 text-sm mt-1">{{ getFieldError('startDate') }}</p>
+              }
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">วันที่สิ้นสุด *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                วันที่สิ้นสุด <span class="text-red-500">*</span>
+              </label>
               <input
                 type="date"
-                [(ngModel)]="leaveForm.endDate"
-                name="endDate"
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                formControlName="endDate"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                [class.border-red-500]="isFieldInvalid('endDate')">
+              @if (isFieldInvalid('endDate')) {
+                <p class="text-red-500 text-sm mt-1">{{ getFieldError('endDate') }}</p>
+              }
             </div>
           </div>
 
-          @if (leaveForm.startDate && leaveForm.endDate) {
+          @if (leaveForm.get('totalDays')?.value > 0) {
             <div class="bg-blue-50 p-3 rounded-md">
               <span class="text-sm text-blue-800">
-                จำนวนวัน: <strong>{{ calculateTotalDays() }}</strong> วัน
+                จำนวนวัน: <strong>{{ leaveForm.get('totalDays')?.value }}</strong> วัน
               </span>
             </div>
           }
 
-          <div class="flex items-center">
-            <input
-              type="checkbox"
-              [(ngModel)]="leaveForm.isPaid"
-              name="isPaid"
-              id="isPaid"
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-            <label for="isPaid" class="ml-2 block text-sm text-gray-900">
-              ชำระค่าจ้าง
-            </label>
-          </div>
-
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">เหตุผล</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              เหตุผล <span class="text-red-500">*</span>
+            </label>
             <textarea
-              [(ngModel)]="leaveForm.reason"
-              name="reason"
+              formControlName="reason"
               rows="3"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-red-500]="isFieldInvalid('reason')"
               placeholder="ระบุเหตุผลในการลา..."></textarea>
+            @if (isFieldInvalid('reason')) {
+              <p class="text-red-500 text-sm mt-1">{{ getFieldError('reason') }}</p>
+            }
           </div>
 
           <div class="flex justify-end gap-3 mt-6">
@@ -477,9 +485,9 @@
             </button>
             <button
               type="submit"
-              [disabled]="loading() || leaveFormEl.invalid"
+              [disabled]="loading() || leaveForm.invalid"
               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              [title]="leaveFormEl.invalid ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : ''">
+              [title]="leaveForm.invalid ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : ''">
               {{ loading() ? 'กำลังบันทึก...' : 'บันทึก' }}
             </button>
           </div>

@@ -1,6 +1,6 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EmployeesService, BranchesService } from '../../../../services/openapi-client';
 import {
   EmployeeListDto,
@@ -11,6 +11,12 @@ import {
 import { NotificationService } from '../../../../services/notification.service';
 import { environment } from '../../../../../environments/environment';
 import { formatThaiDate } from '../../../../utils/thai-date.helper';
+import { FormValidators } from '../../../../utils/form-validators';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { ValidationConfigs } from '../../../../utils/validation-configs';
+import { AsyncValidators } from '../../../../utils/async-validators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 // The generated BranchesController actions return untyped IActionResult on the backend,
 // so openapi-generator does not emit a typed BranchDto / ApiResponseDto<IEnumerable<BranchDto>> model.
@@ -24,11 +30,12 @@ interface BranchDto {
 @Component({
   selector: 'app-employee-list-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './employee-list-admin.component.html',
   styleUrls: ['./employee-list-admin.component.css']
 })
-export class EmployeeListAdminComponent implements OnInit {
+export class EmployeeListAdminComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   employees = signal<EmployeeListDto[]>([]);
   filteredEmployees = signal<EmployeeListDto[]>([]);
   branches = signal<BranchDto[]>([]);
@@ -49,31 +56,7 @@ export class EmployeeListAdminComponent implements OnInit {
   photoPreviewUrl = signal<string | null>(null);
 
   // Form
-  employeeForm: any = {
-    employeeCode: '',
-    branchId: null,
-    firstNameTh: '',
-    lastNameTh: '',
-    firstNameEn: '',
-    lastNameEn: '',
-    email: '',
-    phone: '',
-    dateOfBirth: '',
-    nationality: 'thai',
-    idCardNumber: '',
-    passportNumber: '',
-    address: '',
-    position: '',
-    employmentType: 'monthly',
-    salary: null,
-    dailyRate: null,
-    bankAccountNumber: '',
-    hireDate: '',
-    workPermitStartDate: '',
-    workPermitEndDate: '',
-    hasSocialSecurity: true,
-    status: 'active'
-  };
+  employeeForm!: FormGroup;
 
   // Dropdown options
   employmentTypes = [
@@ -116,12 +99,159 @@ export class EmployeeListAdminComponent implements OnInit {
   constructor(
     private employeesService: EmployeesService,
     private branchesService: BranchesService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
+    this.initForm();
+    this.setupDynamicValidation();
     this.loadEmployees();
     this.loadBranches();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initForm(): void {
+    const baseConfig = this.isEditMode()
+      ? ValidationConfigs.getEmployeeEditConfig()
+      : ValidationConfigs.getEmployeeCreateConfig();
+
+    this.employeeForm = this.fb.group({
+      employeeCode: ['', baseConfig['employeeCode']],
+      firstNameTh: ['', baseConfig['firstName']],
+      lastNameTh: ['', baseConfig['lastName']],
+      firstNameEn: [''],
+      lastNameEn: [''],
+      dateOfBirth: ['', baseConfig['dateOfBirth']],
+      nationality: ['thai', baseConfig['nationality']],
+      phone: ['', baseConfig['phone']],
+      email: ['', baseConfig['email']],
+      address: ['', baseConfig['address']],
+      idCardNumber: [''],
+      passportNumber: [''],
+      branchId: [null, baseConfig['branchId']],
+      position: ['', baseConfig['position']],
+      employmentType: ['monthly', baseConfig['employmentType']],
+      hireDate: ['', baseConfig['startDate']],
+      salary: [null],
+      dailyRate: [null],
+      bankName: [''],
+      bankAccountNumber: [''],
+      workPermitStartDate: [''],
+      workPermitEndDate: [''],
+      hasSocialSecurity: [true],
+      employeeStatus: ['active'],
+      notes: ['']
+    }, {
+      validators: this.isEditMode()
+        ? []
+        : [FormValidators.passwordMatch('password', 'confirmPassword')]
+    });
+
+    // Add password fields for create mode
+    if (!this.isEditMode()) {
+      this.employeeForm.addControl('password', this.fb.control('', baseConfig['password'] || []));
+      this.employeeForm.addControl('confirmPassword', this.fb.control('', baseConfig['confirmPassword'] || []));
+
+      // Add async validators for create mode
+      this.employeeForm.get('employeeCode')?.setAsyncValidators([
+        AsyncValidators.uniqueEmployeeCode(this.employeesService)
+      ]);
+      this.employeeForm.get('email')?.setAsyncValidators([
+        AsyncValidators.uniqueEmail(this.employeesService)
+      ]);
+      this.employeeForm.get('idCardNumber')?.setAsyncValidators([
+        AsyncValidators.uniqueIdCard(this.employeesService)
+      ]);
+    } else if (this.selectedEmployee()) {
+      // For edit mode, skip self-check in async validators
+      const currentId = this.selectedEmployee()?.id;
+      this.employeeForm.get('employeeCode')?.setAsyncValidators([
+        AsyncValidators.uniqueEmployeeCode(this.employeesService, currentId)
+      ]);
+      this.employeeForm.get('email')?.setAsyncValidators([
+        AsyncValidators.uniqueEmail(this.employeesService, currentId)
+      ]);
+      this.employeeForm.get('idCardNumber')?.setAsyncValidators([
+        AsyncValidators.uniqueIdCard(this.employeesService, currentId)
+      ]);
+    }
+  }
+
+  private setupDynamicValidation(): void {
+    // Dynamic validation based on nationality
+    this.employeeForm.get('nationality')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((nationality) => {
+        if (nationality === 'thai') {
+          // Thai: ID card required, passport optional
+          FormHelpers.updateConditionalValidation(
+            this.employeeForm,
+            'idCardNumber',
+            [Validators.required, FormValidators.idCard()]
+          );
+          FormHelpers.updateConditionalValidation(this.employeeForm, 'passportNumber', []);
+          FormHelpers.updateConditionalValidation(this.employeeForm, 'workPermitNumber', []);
+          FormHelpers.updateConditionalValidation(this.employeeForm, 'workPermitStartDate', []);
+          FormHelpers.updateConditionalValidation(this.employeeForm, 'workPermitEndDate', []);
+        } else {
+          // Foreign: Passport and work permit required
+          FormHelpers.updateConditionalValidation(this.employeeForm, 'idCardNumber', []);
+          FormHelpers.updateConditionalValidation(
+            this.employeeForm,
+            'passportNumber',
+            [Validators.required, FormValidators.passport()]
+          );
+          FormHelpers.updateConditionalValidation(
+            this.employeeForm,
+            'workPermitNumber',
+            [Validators.required, Validators.maxLength(50)]
+          );
+          FormHelpers.updateConditionalValidation(
+            this.employeeForm,
+            'workPermitStartDate',
+            [Validators.required]
+          );
+          FormHelpers.updateConditionalValidation(
+            this.employeeForm,
+            'workPermitEndDate',
+            [Validators.required]
+          );
+        }
+      });
+
+    // Dynamic validation based on employment type
+    this.employeeForm.get('employmentType')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((type) => {
+        if (type === 'monthly') {
+          FormHelpers.updateConditionalValidation(
+            this.employeeForm,
+            'salary',
+            [Validators.required, FormValidators.positiveNumber()]
+          );
+          FormHelpers.updateConditionalValidation(this.employeeForm, 'dailyRate', []);
+        } else {
+          FormHelpers.updateConditionalValidation(this.employeeForm, 'salary', []);
+          FormHelpers.updateConditionalValidation(
+            this.employeeForm,
+            'dailyRate',
+            [Validators.required, FormValidators.positiveNumber()]
+          );
+        }
+      });
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.employeeForm, fieldName);
+  }
+
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.employeeForm, fieldName);
   }
 
   loadEmployees(): void {
@@ -212,8 +342,9 @@ export class EmployeeListAdminComponent implements OnInit {
     this.selectedEmployee.set(null);
     this.selectedPhotoFile = null;
     this.photoPreviewUrl.set(null);
+    this.initForm(); // Reinitialize the form for create mode
     const today = new Date().toISOString().split('T')[0];
-    this.employeeForm = {
+    this.employeeForm.reset({
       employeeCode: '',
       branchId: null,
       firstNameTh: '',
@@ -236,8 +367,8 @@ export class EmployeeListAdminComponent implements OnInit {
       workPermitStartDate: '',
       workPermitEndDate: '',
       hasSocialSecurity: true,
-      status: 'active'
-    };
+      employeeStatus: 'active'
+    });
     this.showModal.set(true);
   }
 
@@ -249,7 +380,7 @@ export class EmployeeListAdminComponent implements OnInit {
         this.selectedEmployee.set(employee);
         this.selectedPhotoFile = null;
         this.photoPreviewUrl.set(this.getPhotoUrl(employee.photoUrl));
-        this.employeeForm = {
+        this.employeeForm.patchValue({
           employeeCode: employee.employeeCode,
           branchId: employee.branchId,
           firstNameTh: employee.firstNameTh || '',
@@ -276,8 +407,8 @@ export class EmployeeListAdminComponent implements OnInit {
           workPermitStartDate: employee.workPermitStartDate || '',
           workPermitEndDate: employee.workPermitEndDate || '',
           hasSocialSecurity: employee.hasSocialSecurity ?? true,
-          status: employee.status?.toLowerCase() || 'active'
-        };
+          employeeStatus: employee.status?.toLowerCase() || 'active'
+        });
         this.showModal.set(true);
       },
       error: (error: any) => {
@@ -315,30 +446,46 @@ export class EmployeeListAdminComponent implements OnInit {
   }
 
   createEmployee(): void {
+    // Mark all fields as touched to show validation errors
+    FormHelpers.markFormGroupTouched(this.employeeForm);
+
+    // Check if form is valid
+    if (this.employeeForm.invalid || this.employeeForm.pending) {
+      if (this.employeeForm.pending) {
+        this.notificationService.error('กำลังตรวจสอบข้อมูล กรุณารอสักครู่...');
+      } else {
+        this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
+      }
+      return;
+    }
+
+    const formValue = this.employeeForm.value;
+
     const dto: EmployeeCreateDto = {
-      employeeCode: this.employeeForm.employeeCode,
-      branchId: this.employeeForm.branchId,
-      firstNameTh: this.employeeForm.firstNameTh,
-      lastNameTh: this.employeeForm.lastNameTh,
-      firstNameEn: this.employeeForm.firstNameEn,
-      lastNameEn: this.employeeForm.lastNameEn,
-      email: this.employeeForm.email || undefined,
-      phone: this.employeeForm.phone || undefined,
-      dateOfBirth: this.employeeForm.dateOfBirth || undefined,
-      nationality: this.employeeForm.nationality || undefined,
-      idCardNumber: this.employeeForm.idCardNumber || undefined,
-      passportNumber: this.employeeForm.passportNumber || undefined,
-      address: this.employeeForm.address || undefined,
-      position: this.employeeForm.position || undefined,
-      employmentType: this.employeeForm.employmentType || undefined,
-      salary: this.employeeForm.salary || undefined,
-      dailyRate: this.employeeForm.dailyRate || undefined,
-      bankAccountNumber: this.employeeForm.bankAccountNumber || undefined,
-      hireDate: this.employeeForm.hireDate || undefined,
-      workPermitStartDate: this.employeeForm.workPermitStartDate || undefined,
-      workPermitEndDate: this.employeeForm.workPermitEndDate || undefined,
-      hasSocialSecurity: this.employeeForm.hasSocialSecurity,
-      status: this.employeeForm.status || undefined
+      employeeCode: formValue.employeeCode,
+      branchId: formValue.branchId,
+      firstNameTh: formValue.firstNameTh,
+      lastNameTh: formValue.lastNameTh,
+      firstNameEn: formValue.firstNameEn,
+      lastNameEn: formValue.lastNameEn,
+      email: formValue.email || undefined,
+      phone: formValue.phone || undefined,
+      password: formValue.password || undefined,
+      dateOfBirth: formValue.dateOfBirth || undefined,
+      nationality: formValue.nationality || undefined,
+      idCardNumber: formValue.idCardNumber || undefined,
+      passportNumber: formValue.passportNumber || undefined,
+      address: formValue.address || undefined,
+      position: formValue.position || undefined,
+      employmentType: formValue.employmentType || undefined,
+      salary: formValue.salary || undefined,
+      dailyRate: formValue.dailyRate || undefined,
+      bankAccountNumber: formValue.bankAccountNumber || undefined,
+      hireDate: formValue.hireDate || undefined,
+      workPermitStartDate: formValue.workPermitStartDate || undefined,
+      workPermitEndDate: formValue.workPermitEndDate || undefined,
+      hasSocialSecurity: formValue.hasSocialSecurity,
+      status: formValue.employeeStatus || undefined
     };
 
     this.employeesService.employeesCreateEmployee(dto).subscribe({
@@ -375,30 +522,32 @@ export class EmployeeListAdminComponent implements OnInit {
     const employee = this.selectedEmployee();
     if (!employee) return;
 
+    const formValue = this.employeeForm.value;
+
     const dto: EmployeeUpdateDto = {
-      employeeCode: this.employeeForm.employeeCode,
-      branchId: this.employeeForm.branchId,
-      firstNameTh: this.employeeForm.firstNameTh || undefined,
-      lastNameTh: this.employeeForm.lastNameTh || undefined,
-      firstNameEn: this.employeeForm.firstNameEn || undefined,
-      lastNameEn: this.employeeForm.lastNameEn || undefined,
-      email: this.employeeForm.email || undefined,
-      phone: this.employeeForm.phone || undefined,
-      dateOfBirth: this.employeeForm.dateOfBirth || undefined,
-      nationality: this.employeeForm.nationality || undefined,
-      idCardNumber: this.employeeForm.idCardNumber || undefined,
-      passportNumber: this.employeeForm.passportNumber || undefined,
-      address: this.employeeForm.address || undefined,
-      position: this.employeeForm.position || undefined,
-      employmentType: this.employeeForm.employmentType || undefined,
-      salary: this.employeeForm.salary || undefined,
-      dailyRate: this.employeeForm.dailyRate || undefined,
-      bankAccountNumber: this.employeeForm.bankAccountNumber || undefined,
-      hireDate: this.employeeForm.hireDate || undefined,
-      workPermitStartDate: this.employeeForm.workPermitStartDate || undefined,
-      workPermitEndDate: this.employeeForm.workPermitEndDate || undefined,
-      hasSocialSecurity: this.employeeForm.hasSocialSecurity,
-      status: this.employeeForm.status || undefined
+      employeeCode: formValue.employeeCode,
+      branchId: formValue.branchId,
+      firstNameTh: formValue.firstNameTh || undefined,
+      lastNameTh: formValue.lastNameTh || undefined,
+      firstNameEn: formValue.firstNameEn || undefined,
+      lastNameEn: formValue.lastNameEn || undefined,
+      email: formValue.email || undefined,
+      phone: formValue.phone || undefined,
+      dateOfBirth: formValue.dateOfBirth || undefined,
+      nationality: formValue.nationality || undefined,
+      idCardNumber: formValue.idCardNumber || undefined,
+      passportNumber: formValue.passportNumber || undefined,
+      address: formValue.address || undefined,
+      position: formValue.position || undefined,
+      employmentType: formValue.employmentType || undefined,
+      salary: formValue.salary || undefined,
+      dailyRate: formValue.dailyRate || undefined,
+      bankAccountNumber: formValue.bankAccountNumber || undefined,
+      hireDate: formValue.hireDate || undefined,
+      workPermitStartDate: formValue.workPermitStartDate || undefined,
+      workPermitEndDate: formValue.workPermitEndDate || undefined,
+      hasSocialSecurity: formValue.hasSocialSecurity,
+      status: formValue.employeeStatus || undefined
     };
 
     this.employeesService.employeesUpdateEmployee(employee.id!, dto).subscribe({
@@ -533,9 +682,9 @@ export class EmployeeListAdminComponent implements OnInit {
   onEmploymentTypeChange(value: string): void {
     // Reset salary fields when changing employment type
     if (value === 'monthly') {
-      this.employeeForm.dailyRate = null;
+      this.employeeForm.get('dailyRate')?.setValue(null);
     } else if (value === 'daily') {
-      this.employeeForm.salary = null;
+      this.employeeForm.get('salary')?.setValue(null);
     }
   }
 

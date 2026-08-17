@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ExpensesService, ExpenseCategoriesService, BranchesService } from '../../../../services/openapi-client';
 import {
   CreateExpenseDto,
@@ -8,6 +8,8 @@ import {
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
 import { formatThaiDate } from '../../../../utils/thai-date.helper';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { FormValidators } from '../../../../utils/form-validators';
 
 // The generated ExpensesController/ExpenseCategoriesController/BranchesController actions
 // return untyped IActionResult on the backend, so openapi-generator does not emit typed
@@ -45,7 +47,7 @@ interface BranchDto {
 @Component({
   selector: 'app-expense-list-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './expense-list-admin.component.html',
   styleUrls: ['./expense-list-admin.component.css']
 })
@@ -72,18 +74,8 @@ export class ExpenseListAdminComponent implements OnInit {
   isEditMode = signal(false);
   selectedExpense = signal<ExpenseDto | null>(null);
 
-  // Forms
-  expenseForm: any = {
-    branchId: null,
-    categoryId: null,
-    amount: 0,
-    expenseDate: '',
-    description: '',
-    reference: '',
-    paymentMethod: 'cash',
-    userId: null,
-    receiptUrl: ''
-  };
+  // Reactive form
+  expenseForm!: FormGroup;
 
   // Pagination
   currentPage = signal(1);
@@ -102,14 +94,38 @@ export class ExpenseListAdminComponent implements OnInit {
     private expensesService: ExpensesService,
     private categoriesService: ExpenseCategoriesService,
     private branchesService: BranchesService,
-    private notificationService: NotificationService
-  ) {}
+    private notificationService: NotificationService,
+    private fb: FormBuilder
+  ) {
+    this.initForm();
+  }
 
   ngOnInit(): void {
     this.loadExpenses();
     this.loadCategories();
     this.loadBranches();
     this.setCurrentMonth();
+  }
+
+  private initForm(): void {
+    const today = new Date().toISOString().split('T')[0];
+    this.expenseForm = this.fb.group({
+      branchId: [null, Validators.required],
+      categoryId: [null, Validators.required],
+      amount: [0, [Validators.required, FormValidators.positiveNumber()]],
+      expenseDate: [today, Validators.required],
+      description: ['', Validators.maxLength(500)],
+      reference: ['', Validators.maxLength(100)],
+      paymentMethod: ['cash', Validators.required]
+    });
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.expenseForm, fieldName);
+  }
+
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.expenseForm, fieldName);
   }
 
   setCurrentMonth(): void {
@@ -239,34 +255,30 @@ export class ExpenseListAdminComponent implements OnInit {
     this.isEditMode.set(false);
     this.selectedExpense.set(null);
     const today = new Date().toISOString().split('T')[0];
-    this.expenseForm = {
+    this.expenseForm.reset({
       branchId: null,
       categoryId: null,
       amount: 0,
       expenseDate: today,
       description: '',
       reference: '',
-      paymentMethod: 'cash',
-      userId: null,
-      receiptUrl: ''
-    };
+      paymentMethod: 'cash'
+    });
     this.showExpenseModal.set(true);
   }
 
   openEditExpenseModal(expense: ExpenseDto): void {
     this.isEditMode.set(true);
     this.selectedExpense.set(expense);
-    this.expenseForm = {
+    this.expenseForm.patchValue({
       branchId: expense.branchId,
       categoryId: expense.categoryId,
       amount: expense.amount,
       expenseDate: expense.expenseDate?.split('T')[0],
       description: expense.description || '',
       reference: expense.reference || '',
-      paymentMethod: expense.paymentMethod || 'cash',
-      userId: expense.userId,
-      receiptUrl: expense.receiptUrl || ''
-    };
+      paymentMethod: expense.paymentMethod || 'cash'
+    });
     this.showExpenseModal.set(true);
   }
 
@@ -281,6 +293,14 @@ export class ExpenseListAdminComponent implements OnInit {
   }
 
   saveExpense(): void {
+    // Mark all fields as touched to show validation errors
+    FormHelpers.markFormGroupTouched(this.expenseForm);
+
+    // Validate
+    if (this.expenseForm.invalid) {
+      return;
+    }
+
     if (this.isEditMode()) {
       this.updateExpense();
     } else {
@@ -289,16 +309,17 @@ export class ExpenseListAdminComponent implements OnInit {
   }
 
   createExpense(): void {
+    const formValue = this.expenseForm.value;
     const dto: CreateExpenseDto = {
-      branchId: this.expenseForm.branchId,
-      categoryId: this.expenseForm.categoryId,
-      amount: this.expenseForm.amount,
-      expenseDate: this.expenseForm.expenseDate,
-      description: this.expenseForm.description,
-      reference: this.expenseForm.reference,
-      paymentMethod: this.expenseForm.paymentMethod,
-      userId: this.expenseForm.userId,
-      receiptUrl: this.expenseForm.receiptUrl?.trim() || null
+      branchId: formValue.branchId,
+      categoryId: formValue.categoryId,
+      amount: formValue.amount,
+      expenseDate: formValue.expenseDate,
+      description: formValue.description?.trim() || null,
+      reference: formValue.reference?.trim() || null,
+      paymentMethod: formValue.paymentMethod,
+      userId: null,
+      receiptUrl: null
     };
 
     this.expensesService.expensesCreate(dto).subscribe({
@@ -321,14 +342,15 @@ export class ExpenseListAdminComponent implements OnInit {
     const expense = this.selectedExpense();
     if (!expense) return;
 
+    const formValue = this.expenseForm.value;
     const dto: UpdateExpenseDto = {
-      categoryId: this.expenseForm.categoryId,
-      amount: this.expenseForm.amount,
-      expenseDate: this.expenseForm.expenseDate,
-      description: this.expenseForm.description,
-      reference: this.expenseForm.reference,
-      paymentMethod: this.expenseForm.paymentMethod,
-      receiptUrl: this.expenseForm.receiptUrl?.trim() || null
+      categoryId: formValue.categoryId,
+      amount: formValue.amount,
+      expenseDate: formValue.expenseDate,
+      description: formValue.description?.trim() || null,
+      reference: formValue.reference?.trim() || null,
+      paymentMethod: formValue.paymentMethod,
+      receiptUrl: null
     };
 
     this.expensesService.expensesUpdate(expense.id!, dto).subscribe({

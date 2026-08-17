@@ -12,9 +12,9 @@
 /**
  * DTO สำหรับสร้างพนักงานใหม่
  */
-export interface EmployeeCreateDto { 
+export interface EmployeeCreateDto {
     employeeCode: string;
-    email: string;
+    email?: string | null;
     firstNameTh?: string | null;
     lastNameTh?: string | null;
     firstNameEn?: string | null;

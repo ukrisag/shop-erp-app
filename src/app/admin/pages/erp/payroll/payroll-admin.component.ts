@@ -1,6 +1,11 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { FormValidators } from '../../../../utils/form-validators';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { ValidationConfigs } from '../../../../utils/validation-configs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { LoadingSkeletonComponent } from '../../../../components/shared/loading-skeleton/loading-skeleton.component';
 import {
   PayrollService,
@@ -31,11 +36,12 @@ interface BranchDto {
 @Component({
   selector: 'app-payroll-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './payroll-admin.component.html',
   styleUrls: ['./payroll-admin.component.css']
 })
-export class PayrollAdminComponent implements OnInit {
+export class PayrollAdminComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   // Data
   salaryRecords = signal<SalaryRecordDto[]>([]);
   filteredRecords = signal<SalaryRecordDto[]>([]);
@@ -67,34 +73,8 @@ export class PayrollAdminComponent implements OnInit {
   calculationResult = signal<PayrollCalculationResponseDto | null>(null);
 
   // Forms
-  recordForm: any = {
-    employeeId: null,
-    branchId: null,
-    month: new Date().getMonth() + 1,
-    year: new Date().getFullYear(),
-    baseSalary: 0,
-    daysWorked: 0,
-    overtimeHours: 0,
-    overtimeAmount: 0,
-    totalAllowances: 0,
-    phoneAllowance: 0,
-    socialSecurityDeduction: 0,
-    advancePaymentCurrent: 0,
-    advancePaymentPrevious: 0,
-    passportFeeDeduction: 0,
-    taxDeduction: 0,
-    otherDeductions: 0,
-    leaveDays: 0,
-    leaveDeduction: 0,
-    notes: ''
-  };
-
-  calculationForm = {
-    year: new Date().getFullYear(),
-    month: new Date().getMonth() + 1,
-    branchId: null as number | null,
-    employeeIds: [] as number[]
-  };
+  recordForm!: FormGroup;
+  calculationForm!: FormGroup;
 
   // Pagination
   currentPage = signal(1);
@@ -133,7 +113,8 @@ export class PayrollAdminComponent implements OnInit {
     private overtimeService: OvertimeService,
     private leaveService: LeaveService,
     private reportsService: ReportsService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private fb: FormBuilder
   ) {
     // Generate years (current year - 2 to current year + 1)
     const currentYear = new Date().getFullYear();
@@ -143,9 +124,56 @@ export class PayrollAdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.initForms();
     this.loadSalaryRecords();
     this.loadEmployees();
     this.loadBranches();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initForms(): void {
+    // Record form (matching SalaryRecordCreateDto)
+    this.recordForm = this.fb.group({
+      employeeId: [null, ValidationConfigs.payrollRecord.employeeId],
+      branchId: [null, ValidationConfigs.payrollRecord.branchId],
+      month: [new Date().getMonth() + 1, ValidationConfigs.payrollRecord.month],
+      year: [new Date().getFullYear(), ValidationConfigs.payrollRecord.year],
+      baseSalary: [0, ValidationConfigs.payrollRecord.baseSalary],
+      daysWorked: [0, ValidationConfigs.payrollRecord.daysWorked],
+      overtimeHours: [0, ValidationConfigs.payrollRecord.overtimeHours],
+      overtimeAmount: [0, ValidationConfigs.payrollRecord.overtimeAmount],
+      totalAllowances: [0, ValidationConfigs.payrollRecord.totalAllowances],
+      phoneAllowance: [0, ValidationConfigs.payrollRecord.phoneAllowance],
+      socialSecurityDeduction: [0, ValidationConfigs.payrollRecord.socialSecurityDeduction],
+      advancePaymentCurrent: [0, ValidationConfigs.payrollRecord.advancePaymentCurrent],
+      advancePaymentPrevious: [0, ValidationConfigs.payrollRecord.advancePaymentPrevious],
+      passportFeeDeduction: [0, ValidationConfigs.payrollRecord.passportFeeDeduction],
+      taxDeduction: [0, ValidationConfigs.payrollRecord.taxDeduction],
+      otherDeductions: [0, ValidationConfigs.payrollRecord.otherDeductions],
+      leaveDays: [0, ValidationConfigs.payrollRecord.leaveDays],
+      leaveDeduction: [0, ValidationConfigs.payrollRecord.leaveDeduction],
+      notes: ['', ValidationConfigs.payrollRecord.notes]
+    });
+
+    // Calculation form (4 fields)
+    this.calculationForm = this.fb.group({
+      month: [new Date().getMonth() + 1, ValidationConfigs.payrollCalculation.month],
+      year: [new Date().getFullYear(), ValidationConfigs.payrollCalculation.year],
+      branchId: [null],
+      employeeIds: [[]]
+    });
+  }
+
+  isFieldInvalid(formGroup: FormGroup, fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(formGroup, fieldName);
+  }
+
+  getFieldError(formGroup: FormGroup, fieldName: string): string {
+    return FormHelpers.getFieldError(formGroup, fieldName);
   }
 
   loadSalaryRecords(): void {
@@ -281,7 +309,9 @@ export class PayrollAdminComponent implements OnInit {
    *  calculationForm.year/month, so getEmployeesForCalculation() can hide
    *  them. Called on tab switch and whenever the year/month select changes. */
   onCalculationPeriodChange(): void {
-    this.payrollService.payrollGetSalaryRecordsByPeriod(this.calculationForm.year, this.calculationForm.month).subscribe({
+    const year = this.calculationForm.get('year')?.value;
+    const month = this.calculationForm.get('month')?.value;
+    this.payrollService.payrollGetSalaryRecordsByPeriod(year, month).subscribe({
       next: (records: SalaryRecordDto[]) => {
         this.existingRecordEmployeeIds.set(new Set(records.map(r => r.employeeId!).filter(id => id != null)));
       },
@@ -296,8 +326,8 @@ export class PayrollAdminComponent implements OnInit {
    * @returns true ถ้ามี pending records, false ถ้าไม่มี
    */
   async checkPendingRecords(): Promise<boolean> {
-    const year = this.calculationForm.year;
-    const month = this.calculationForm.month;
+    const year = this.calculationForm.get('year')?.value;
+    const month = this.calculationForm.get('month')?.value;
     const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
     const endDate = new Date(year, month, 0).toISOString().split('T')[0];
 
@@ -345,11 +375,11 @@ export class PayrollAdminComponent implements OnInit {
     }
 
     const request: PayrollCalculationRequestDto = {
-      year: this.calculationForm.year,
-      month: this.calculationForm.month,
-      branchId: this.calculationForm.branchId || undefined,
-      employeeIds: this.calculationForm.employeeIds.length > 0
-        ? this.calculationForm.employeeIds
+      year: this.calculationForm.get('year')?.value,
+      month: this.calculationForm.get('month')?.value,
+      branchId: this.calculationForm.get('branchId')?.value || undefined,
+      employeeIds: (this.calculationForm.get('employeeIds')?.value || []).length > 0
+        ? this.calculationForm.get('employeeIds')?.value
         : undefined
     };
 
@@ -377,13 +407,15 @@ export class PayrollAdminComponent implements OnInit {
         this.notificationService.success(`Successfully calculated payroll for ${result.salaryRecords?.length || 0} records`);
         this.loading.set(false);
         // Reload salary records to show new calculations
-        this.loadSalaryRecordsByPeriod(this.calculationForm.year, this.calculationForm.month);
+        const year = this.calculationForm.get('year')?.value;
+        const month = this.calculationForm.get('month')?.value;
+        this.loadSalaryRecordsByPeriod(year, month);
         // Clear the checkbox selection and refresh the exclusion list so the
         // employees just calculated no longer show up as selectable - both of
         // these used to linger indefinitely (selection never got cleared, and
         // nothing ever re-checked which employees already had a record) so
         // reopening this tab kept offering the same already-processed people.
-        this.calculationForm.employeeIds = [];
+        this.calculationForm.patchValue({ employeeIds: [] });
         this.onCalculationPeriodChange();
       },
       error: (error: any) => {
@@ -398,7 +430,7 @@ export class PayrollAdminComponent implements OnInit {
   openAddRecordModal(): void {
     this.isEditMode.set(false);
     this.selectedRecord.set(null);
-    this.recordForm = {
+    this.recordForm.reset({
       employeeId: null,
       branchId: null,
       month: new Date().getMonth() + 1,
@@ -418,14 +450,14 @@ export class PayrollAdminComponent implements OnInit {
       leaveDays: 0,
       leaveDeduction: 0,
       notes: ''
-    };
+    });
     this.showRecordModal.set(true);
   }
 
   openEditRecordModal(record: SalaryRecordDto): void {
     this.isEditMode.set(true);
     this.selectedRecord.set(record);
-    this.recordForm = {
+    this.recordForm.patchValue({
       employeeId: record.employeeId,
       branchId: record.branchId,
       month: record.month,
@@ -445,7 +477,7 @@ export class PayrollAdminComponent implements OnInit {
       leaveDays: record.leaveDays || 0,
       leaveDeduction: record.leaveDeduction || 0,
       notes: record.notes || ''
-    };
+    });
     this.showRecordModal.set(true);
   }
 
@@ -464,26 +496,27 @@ export class PayrollAdminComponent implements OnInit {
   }
 
   createRecord(): void {
+    const formValue = this.recordForm.value;
     const dto: SalaryRecordCreateDto = {
-      employeeId: this.recordForm.employeeId!,
-      branchId: this.recordForm.branchId || undefined,
-      month: this.recordForm.month,
-      year: this.recordForm.year,
-      baseSalary: this.recordForm.baseSalary,
-      daysWorked: this.recordForm.daysWorked,
-      overtimeHours: this.recordForm.overtimeHours,
-      overtimeAmount: this.recordForm.overtimeAmount,
-      totalAllowances: this.recordForm.totalAllowances,
-      phoneAllowance: this.recordForm.phoneAllowance,
-      socialSecurityDeduction: this.recordForm.socialSecurityDeduction,
-      advancePaymentCurrent: this.recordForm.advancePaymentCurrent,
-      advancePaymentPrevious: this.recordForm.advancePaymentPrevious,
-      passportFeeDeduction: this.recordForm.passportFeeDeduction,
-      taxDeduction: this.recordForm.taxDeduction,
-      otherDeductions: this.recordForm.otherDeductions,
-      leaveDays: this.recordForm.leaveDays,
-      leaveDeduction: this.recordForm.leaveDeduction,
-      notes: this.recordForm.notes
+      employeeId: formValue.employeeId!,
+      branchId: formValue.branchId || undefined,
+      month: formValue.month,
+      year: formValue.year,
+      baseSalary: formValue.baseSalary,
+      daysWorked: formValue.daysWorked,
+      overtimeHours: formValue.overtimeHours,
+      overtimeAmount: formValue.overtimeAmount,
+      totalAllowances: formValue.totalAllowances,
+      phoneAllowance: formValue.phoneAllowance,
+      socialSecurityDeduction: formValue.socialSecurityDeduction,
+      advancePaymentCurrent: formValue.advancePaymentCurrent,
+      advancePaymentPrevious: formValue.advancePaymentPrevious,
+      passportFeeDeduction: formValue.passportFeeDeduction,
+      taxDeduction: formValue.taxDeduction,
+      otherDeductions: formValue.otherDeductions,
+      leaveDays: formValue.leaveDays,
+      leaveDeduction: formValue.leaveDeduction,
+      notes: formValue.notes
     };
 
     this.payrollService.payrollCreateSalaryRecord(dto).subscribe({
@@ -552,27 +585,39 @@ export class PayrollAdminComponent implements OnInit {
   onEmployeeSelect(employeeId: number): void {
     const employee = this.employees().find(e => e.id === employeeId);
     if (employee) {
-      this.recordForm.employeeId = employeeId;
-      this.recordForm.branchId = employee.branchId || null;
-
       // Set base salary based on employment type
       if (employee.employmentType === 'monthly') {
-        this.recordForm.baseSalary = employee.salary || 0;
-        this.recordForm.daysWorked = 0; // Not applicable for monthly
+        this.recordForm.patchValue({
+          employeeId: employeeId,
+          branchId: employee.branchId || null,
+          baseSalary: employee.salary || 0,
+          daysWorked: 0 // Not applicable for monthly
+        });
       } else if (employee.employmentType === 'daily') {
-        this.recordForm.baseSalary = employee.dailyRate || 0;
-        this.recordForm.daysWorked = 0; // User should input
+        this.recordForm.patchValue({
+          employeeId: employeeId,
+          branchId: employee.branchId || null,
+          baseSalary: employee.dailyRate || 0,
+          daysWorked: 0 // User should input
+        });
+      } else {
+        this.recordForm.patchValue({
+          employeeId: employeeId,
+          branchId: employee.branchId || null
+        });
       }
     }
   }
 
   toggleEmployeeForCalculation(employeeId: number): void {
-    const index = this.calculationForm.employeeIds.indexOf(employeeId);
+    const employeeIds = this.calculationForm.get('employeeIds')?.value || [];
+    const index = employeeIds.indexOf(employeeId);
     if (index > -1) {
-      this.calculationForm.employeeIds.splice(index, 1);
+      employeeIds.splice(index, 1);
     } else {
-      this.calculationForm.employeeIds.push(employeeId);
+      employeeIds.push(employeeId);
     }
+    this.calculationForm.patchValue({ employeeIds });
   }
 
   /** The "สาขา (ถ้าต้องการกรอง)" select only fed calculationForm.branchId into
@@ -585,22 +630,26 @@ export class PayrollAdminComponent implements OnInit {
   getEmployeesForCalculation(): EmployeeListDto[] {
     const existing = this.existingRecordEmployeeIds();
     let list = this.employees().filter(e => !existing.has(e.id!));
-    if (this.calculationForm.branchId) {
-      list = list.filter(e => e.branchId === this.calculationForm.branchId);
+    const branchId = this.calculationForm.get('branchId')?.value;
+    if (branchId) {
+      list = list.filter(e => e.branchId === branchId);
     }
     return list;
   }
 
   selectAllEmployees(): void {
-    this.calculationForm.employeeIds = this.getEmployeesForCalculation().map(e => e.id!);
+    this.calculationForm.patchValue({
+      employeeIds: this.getEmployeesForCalculation().map(e => e.id!)
+    });
   }
 
   deselectAllEmployees(): void {
-    this.calculationForm.employeeIds = [];
+    this.calculationForm.patchValue({ employeeIds: [] });
   }
 
   isEmployeeSelected(employeeId: number): boolean {
-    return this.calculationForm.employeeIds.includes(employeeId);
+    const employeeIds = this.calculationForm.get('employeeIds')?.value || [];
+    return employeeIds.includes(employeeId);
   }
 
   // Helpers
@@ -639,22 +688,20 @@ export class PayrollAdminComponent implements OnInit {
   }
 
   calculateTotalEarnings(): number {
-    const form = this.recordForm;
-    return (form.baseSalary || 0) +
-           (form.overtimeAmount || 0) +
-           (form.totalAllowances || 0) +
-           (form.phoneAllowance || 0);
+    return (this.recordForm.get('baseSalary')?.value || 0) +
+           (this.recordForm.get('overtimeAmount')?.value || 0) +
+           (this.recordForm.get('totalAllowances')?.value || 0) +
+           (this.recordForm.get('phoneAllowance')?.value || 0);
   }
 
   calculateTotalDeductions(): number {
-    const form = this.recordForm;
-    return (form.socialSecurityDeduction || 0) +
-           (form.advancePaymentCurrent || 0) +
-           (form.advancePaymentPrevious || 0) +
-           (form.passportFeeDeduction || 0) +
-           (form.taxDeduction || 0) +
-           (form.otherDeductions || 0) +
-           (form.leaveDeduction || 0);
+    return (this.recordForm.get('socialSecurityDeduction')?.value || 0) +
+           (this.recordForm.get('advancePaymentCurrent')?.value || 0) +
+           (this.recordForm.get('advancePaymentPrevious')?.value || 0) +
+           (this.recordForm.get('passportFeeDeduction')?.value || 0) +
+           (this.recordForm.get('taxDeduction')?.value || 0) +
+           (this.recordForm.get('otherDeductions')?.value || 0) +
+           (this.recordForm.get('leaveDeduction')?.value || 0);
   }
 
   calculateNetSalary(): number {

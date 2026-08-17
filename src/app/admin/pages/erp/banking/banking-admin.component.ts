@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BankAccountsService, BankTransactionsService, BranchesService } from '../../../../services/openapi-client';
 import {
@@ -11,6 +11,8 @@ import {
 } from '../../../../services/openapi-client/model/models';
 import { NotificationService } from '../../../../services/notification.service';
 import { formatThaiDate } from '../../../../utils/thai-date.helper';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { FormValidators } from '../../../../utils/form-validators';
 
 // The generated BranchesController actions return untyped IActionResult on the backend,
 // so openapi-generator does not emit a typed BranchDto model. Define the shape locally.
@@ -30,7 +32,7 @@ interface BranchDto {
 @Component({
   selector: 'app-banking-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './banking-admin.component.html',
   styleUrls: ['./banking-admin.component.css']
 })
@@ -65,26 +67,9 @@ export class BankingAdminComponent implements OnInit {
   selectedAccount = signal<BankAccountDto | null>(null);
   selectedTransaction = signal<BankTransactionDto | null>(null);
 
-  // Forms
-  accountForm: any = {
-    branchId: null,
-    bankName: '',
-    accountNumber: '',
-    accountName: '',
-    accountType: 'savings',
-    initialBalance: 0
-  };
-
-  transactionForm: any = {
-    bankAccountId: null,
-    transactionDate: '',
-    transactionType: 'deposit',
-    amount: 0,
-    description: '',
-    erpSalesPaymentId: null,
-    ecommercePaymentId: null,
-    expenseId: null
-  };
+  // Reactive forms
+  accountForm!: FormGroup;
+  transactionForm!: FormGroup;
 
   // Pagination
   currentAccountPage = signal(1);
@@ -114,8 +99,11 @@ export class BankingAdminComponent implements OnInit {
     private branchesService: BranchesService,
     private notificationService: NotificationService,
     private route: ActivatedRoute,
-    private router: Router
-  ) {}
+    private router: Router,
+    private fb: FormBuilder
+  ) {
+    this.initForms();
+  }
 
   ngOnInit(): void {
     // Check query parameter for active tab
@@ -131,6 +119,39 @@ export class BankingAdminComponent implements OnInit {
     this.loadTransactions();
     this.loadBranches();
     this.setCurrentMonth();
+  }
+
+  private initForms(): void {
+    const today = new Date().toISOString().split('T')[0];
+
+    this.accountForm = this.fb.group({
+      branchId: [null, Validators.required],
+      bankName: ['', [Validators.required, Validators.maxLength(100)]],
+      accountNumber: ['', [Validators.required, Validators.maxLength(50)]],
+      accountName: ['', [Validators.required, Validators.maxLength(100)]],
+      accountType: ['savings', Validators.required],
+      initialBalance: [0, [Validators.required, Validators.min(0)]],
+      isActive: [true]
+    });
+
+    this.transactionForm = this.fb.group({
+      bankAccountId: [null, Validators.required],
+      transactionDate: [today, Validators.required],
+      transactionType: ['deposit', Validators.required],
+      amount: [0, [Validators.required, FormValidators.positiveNumber()]],
+      description: ['', Validators.maxLength(500)],
+      erpSalesPaymentId: [null],
+      ecommercePaymentId: [null],
+      expenseId: [null]
+    });
+  }
+
+  isFieldInvalid(formGroup: FormGroup, fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(formGroup, fieldName);
+  }
+
+  getFieldError(formGroup: FormGroup, fieldName: string): string {
+    return FormHelpers.getFieldError(formGroup, fieldName);
   }
 
   setCurrentMonth(): void {
@@ -283,14 +304,15 @@ export class BankingAdminComponent implements OnInit {
   openAddAccountModal(): void {
     this.isEditMode.set(false);
     this.selectedAccount.set(null);
-    this.accountForm = {
+    this.accountForm.reset({
       branchId: null,
       bankName: '',
       accountNumber: '',
       accountName: '',
       accountType: 'savings',
-      initialBalance: 0
-    };
+      initialBalance: 0,
+      isActive: true
+    });
     this.showAccountModal.set(true);
   }
 
@@ -299,14 +321,14 @@ export class BankingAdminComponent implements OnInit {
     this.selectedAccount.set(account);
     // When editing, we only allow changing account details, not the balance
     // Balance can only be changed through transactions
-    this.accountForm = {
+    this.accountForm.patchValue({
       branchId: account.branchId,
       bankName: account.bankName,
       accountNumber: account.accountNumber,
       accountName: account.accountName,
       accountType: account.accountType,
       isActive: account.isActive
-    };
+    });
     this.showAccountModal.set(true);
   }
 
@@ -316,6 +338,12 @@ export class BankingAdminComponent implements OnInit {
   }
 
   saveAccount(): void {
+    if (this.accountForm.invalid) {
+      FormHelpers.markFormGroupTouched(this.accountForm);
+      this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+
     if (this.isEditMode()) {
       this.updateAccount();
     } else {
@@ -324,7 +352,7 @@ export class BankingAdminComponent implements OnInit {
   }
 
   createAccount(): void {
-    const dto: CreateBankAccountDto = this.accountForm;
+    const dto: CreateBankAccountDto = this.accountForm.value;
 
     this.accountsService.bankAccountsCreateAccount(dto).subscribe({
       next: (response: any) => {
@@ -346,12 +374,13 @@ export class BankingAdminComponent implements OnInit {
 
     // When updating, we don't change the balance - only account details
     // Balance should only change through transactions
+    const formValue = this.accountForm.value;
     const dto: CreateBankAccountDto = {
-      branchId: this.accountForm.branchId,
-      bankName: this.accountForm.bankName,
-      accountNumber: this.accountForm.accountNumber,
-      accountName: this.accountForm.accountName,
-      accountType: this.accountForm.accountType,
+      branchId: formValue.branchId,
+      bankName: formValue.bankName,
+      accountNumber: formValue.accountNumber,
+      accountName: formValue.accountName,
+      accountType: formValue.accountType,
       initialBalance: account.balance  // Keep existing balance, don't allow editing
     };
 
@@ -393,7 +422,7 @@ export class BankingAdminComponent implements OnInit {
     this.isEditMode.set(false);
     this.selectedTransaction.set(null);
     const today = new Date().toISOString().split('T')[0];
-    this.transactionForm = {
+    this.transactionForm.reset({
       bankAccountId: null,
       transactionDate: today,
       transactionType: 'deposit',
@@ -402,7 +431,7 @@ export class BankingAdminComponent implements OnInit {
       erpSalesPaymentId: null,
       ecommercePaymentId: null,
       expenseId: null
-    };
+    });
     this.showTransactionModal.set(true);
   }
 
@@ -412,7 +441,13 @@ export class BankingAdminComponent implements OnInit {
   }
 
   createTransaction(): void {
-    const dto: CreateBankTransactionDto = this.transactionForm;
+    if (this.transactionForm.invalid) {
+      FormHelpers.markFormGroupTouched(this.transactionForm);
+      this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+
+    const dto: CreateBankTransactionDto = this.transactionForm.value;
 
     this.transactionsService.bankTransactionsCreateTransaction(dto).subscribe({
       next: (response: any) => {

@@ -346,29 +346,34 @@
       </div>
 
       <div class="p-6 max-h-[calc(90vh-120px)] overflow-y-auto">
-        <form (ngSubmit)="saveOrder()">
+        <form [formGroup]="orderForm" (ngSubmit)="saveOrder()">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">สาขา <span class="text-red-500">*</span></label>
-              <select [(ngModel)]="orderForm.branchId" name="branchId" required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <select formControlName="branchId" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                [class.border-red-500]="isFieldInvalid('branchId')">
                 <option [value]="null">เลือกสาขา</option>
                 @for (branch of branches(); track branch.id) {
                   <option [value]="branch.id">{{ branch.name }}</option>
                 }
               </select>
+              @if (isFieldInvalid('branchId')) {
+                <p class="mt-1 text-sm text-red-600">{{ getFieldError('branchId') }}</p>
+              }
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">วันที่ <span class="text-red-500">*</span></label>
-              <input type="date" [(ngModel)]="orderForm.orderDate" name="orderDate" required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <input type="date" formControlName="orderDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                [class.border-red-500]="isFieldInvalid('orderDate')">
+              @if (isFieldInvalid('orderDate')) {
+                <p class="mt-1 text-sm text-red-600">{{ getFieldError('orderDate') }}</p>
+              }
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">ประเภท</label>
-              <select [(ngModel)]="orderForm.orderType" name="orderType"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <select formControlName="orderType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 @for (type of orderTypes; track type.value) {
                   <option [value]="type.value">{{ type.label }}</option>
                 }
@@ -377,8 +382,7 @@
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">สถานะ</label>
-              <select [(ngModel)]="orderForm.status" name="status"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <select formControlName="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 @for (status of orderStatuses; track status.value) {
                   <option [value]="status.value">{{ status.label }}</option>
                 }
@@ -387,20 +391,21 @@
 
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700 mb-2">ชื่อลูกค้า <span class="text-red-500">*</span></label>
-              <input type="text" [(ngModel)]="orderForm.customerName" name="customerName" required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <input type="text" formControlName="customerName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                [class.border-red-500]="isFieldInvalid('customerName')">
+              @if (isFieldInvalid('customerName')) {
+                <p class="mt-1 text-sm text-red-600">{{ getFieldError('customerName') }}</p>
+              }
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">เบอร์โทร</label>
-              <input type="tel" [(ngModel)]="orderForm.customerPhone" name="customerPhone"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <input type="tel" formControlName="customerPhone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
             </div>
 
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700 mb-2">ที่อยู่</label>
-              <textarea [(ngModel)]="orderForm.customerAddress" name="customerAddress" rows="2"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+              <textarea formControlName="customerAddress" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
             </div>
           </div>
 
@@ -417,7 +422,7 @@
               </button>
             </div>
 
-            @if (orderForm.items.length === 0) {
+            @if (itemsFormArray.length === 0) {
               <div class="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
@@ -425,20 +430,17 @@
                 <p class="mt-2 text-sm text-gray-600">ยังไม่มีรายการสินค้า กดปุ่ม "เพิ่มสินค้า" เพื่อเริ่มต้น</p>
               </div>
             } @else {
-              <div class="space-y-4">
-                @for (item of orderForm.items; track $index) {
-                  <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div class="space-y-4" formArrayName="items">
+                @for (item of itemsFormArray.controls; track $index) {
+                  <div class="bg-gray-50 rounded-lg p-4 border border-gray-200" [formGroupName]="$index">
                     <div class="grid grid-cols-12 gap-3">
-                      <!-- Product Selector with Image -->
+                      <!-- Product Selector -->
                       <div class="col-span-12">
                         <label class="block text-xs font-medium text-gray-700 mb-2">
                           เลือกสินค้า <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
-                          <select
-                            [(ngModel)]="item.productId"
-                            [name]="'itemProduct' + $index"
-                            (ngModelChange)="onProductSelect($index, $any($event))"
+                          <select formControlName="productId" (change)="onProductSelect($index, $any($event.target).value)"
                             class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 appearance-none pr-10">
                             <option [value]="null">-- เลือกสินค้า --</option>
                             @for (product of products(); track product.id) {
@@ -447,23 +449,15 @@
                               </option>
                             }
                           </select>
-                          <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                          </div>
                         </div>
 
-                        <!-- Show selected product details with image -->
-                        @if (item.productId) {
+                        <!-- Show selected product details -->
+                        @if (item.get('productId')?.value) {
                           @for (product of products(); track product.id) {
-                            @if (product.id === item.productId) {
+                            @if (product.id === item.get('productId')?.value) {
                               <div class="mt-2 flex items-center gap-3 p-2 bg-white rounded-lg border border-gray-200">
                                 @if (product.primaryImage) {
-                                  <img
-                                    [src]="product.primaryImage"
-                                    [alt]="product.name || ''"
-                                    class="w-12 h-12 object-cover rounded-lg border border-gray-200">
+                                  <img [src]="product.primaryImage" [alt]="product.name || ''" class="w-12 h-12 object-cover rounded-lg border border-gray-200">
                                 } @else {
                                   <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
                                     <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -484,27 +478,21 @@
                       <!-- Quantity -->
                       <div class="col-span-4 md:col-span-3">
                         <label class="block text-xs font-medium text-gray-700 mb-1">จำนวน</label>
-                        <input type="number" [(ngModel)]="item.quantity" [name]="'itemQty' + $index"
-                          (ngModelChange)="updateItemTotal($index)"
-                          min="1" step="1"
+                        <input type="number" formControlName="quantity" (input)="updateItemTotal($index)" min="1" step="1"
                           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                       </div>
 
                       <!-- Unit Price -->
                       <div class="col-span-4 md:col-span-3">
                         <label class="block text-xs font-medium text-gray-700 mb-1">ราคา/หน่วย</label>
-                        <input type="number" [(ngModel)]="item.unitPrice" [name]="'itemPrice' + $index"
-                          (ngModelChange)="updateItemTotal($index)"
-                          min="0" step="0.01"
+                        <input type="number" formControlName="unitPrice" (input)="updateItemTotal($index)" min="0" step="0.01"
                           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                       </div>
 
                       <!-- Discount -->
                       <div class="col-span-4 md:col-span-3">
                         <label class="block text-xs font-medium text-gray-700 mb-1">ส่วนลด</label>
-                        <input type="number" [(ngModel)]="item.discount" [name]="'itemDiscount' + $index"
-                          (ngModelChange)="updateItemTotal($index)"
-                          min="0" step="0.01"
+                        <input type="number" formControlName="discount" (input)="updateItemTotal($index)" min="0" step="0.01"
                           class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                       </div>
 
@@ -524,7 +512,7 @@
                     <div class="mt-3 pt-3 border-t border-gray-300 text-right">
                       <span class="text-sm text-gray-600">รวม: </span>
                       <span class="text-lg font-semibold text-gray-900">
-                        {{ ((item.quantity || 0) * (item.unitPrice || 0) - (item.discount || 0)) | number:'1.2-2' }} ฿
+                        {{ ((item.get('quantity')?.value || 0) * (item.get('unitPrice')?.value || 0) - (item.get('discount')?.value || 0)) | number:'1.2-2' }} ฿
                       </span>
                     </div>
                   </div>
@@ -538,47 +526,38 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">ส่วนลดรวม (บาท)</label>
-                <input type="number" [(ngModel)]="orderForm.discountAmount" name="discountAmount"
-                  (ngModelChange)="calculateAmounts()"
-                  min="0" step="0.01"
+                <input type="number" formControlName="discountAmount" (input)="calculateAmounts()" min="0" step="0.01"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">ส่วนลดรวม (%)</label>
-                <input type="number" [(ngModel)]="orderForm.discountPercentage" name="discountPercentage"
-                  (ngModelChange)="calculateAmounts()"
-                  min="0" max="100" step="0.01"
+                <input type="number" formControlName="discountPercentage" (input)="calculateAmounts()" min="0" max="100" step="0.01"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
               </div>
 
               <div class="flex items-center gap-2">
-                <input type="checkbox" [(ngModel)]="orderForm.vatEnabled" name="vatEnabled"
-                  (ngModelChange)="calculateAmounts()"
-                  id="vatEnabled" class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+                <input type="checkbox" formControlName="vatEnabled" (change)="calculateAmounts()" id="vatEnabled" class="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
                 <label for="vatEnabled" class="text-sm font-medium text-gray-700">คำนวณ VAT</label>
               </div>
 
-              @if (orderForm.vatEnabled) {
+              @if (orderForm.get('vatEnabled')?.value) {
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">VAT (%)</label>
-                  <input type="number" [(ngModel)]="orderForm.vatPercentage" name="vatPercentage"
-                    (ngModelChange)="calculateAmounts()"
-                    min="0" step="0.01"
+                  <input type="number" formControlName="vatPercentage" (input)="calculateAmounts()" min="0" step="0.01"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 </div>
               }
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">มัดจำ</label>
-                <input type="number" [(ngModel)]="orderForm.depositAmount" name="depositAmount"
-                  min="0" step="0.01"
+                <input type="number" formControlName="depositAmount" min="0" step="0.01"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">วันนัดส่งสินค้า</label>
-                <input type="date" [(ngModel)]="orderForm.deliveryAppointmentDate" name="deliveryAppointmentDate"
+                <input type="date" formControlName="deliveryAppointmentDate"
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
               </div>
             </div>
@@ -587,42 +566,39 @@
             <div class="mt-4 bg-blue-50 rounded-lg p-4 space-y-2">
               <div class="flex justify-between text-sm">
                 <span class="text-gray-700">ยอดรวมสินค้า:</span>
-                <span class="font-medium">{{ orderForm.subtotal | number:'1.2-2' }} ฿</span>
+                <span class="font-medium">{{ subtotal | number:'1.2-2' }} ฿</span>
               </div>
-              @if ((orderForm.discountAmount || 0) > 0 || (orderForm.discountPercentage || 0) > 0) {
+              @if ((orderForm.get('discountAmount')?.value || 0) > 0 || (orderForm.get('discountPercentage')?.value || 0) > 0) {
                 <div class="flex justify-between text-sm text-red-600">
                   <span>ส่วนลด:</span>
                   <span>
-                    - {{ ((orderForm.discountAmount || 0) + ((orderForm.subtotal || 0) * (orderForm.discountPercentage || 0) / 100)) | number:'1.2-2' }} ฿
+                    - {{ ((orderForm.get('discountAmount')?.value || 0) + ((subtotal || 0) * (orderForm.get('discountPercentage')?.value || 0) / 100)) | number:'1.2-2' }} ฿
                   </span>
                 </div>
               }
-              @if (orderForm.vatEnabled) {
+              @if (orderForm.get('vatEnabled')?.value) {
                 <div class="flex justify-between text-sm">
-                  <span class="text-gray-700">VAT {{ orderForm.vatPercentage }}%:</span>
-                  <span class="font-medium">{{ orderForm.vatAmount | number:'1.2-2' }} ฿</span>
+                  <span class="text-gray-700">VAT {{ orderForm.get('vatPercentage')?.value }}%:</span>
+                  <span class="font-medium">{{ vatAmount | number:'1.2-2' }} ฿</span>
                 </div>
               }
               <div class="flex justify-between text-base font-bold border-t border-blue-200 pt-2 mt-2">
                 <span class="text-gray-900">ยอดรวมทั้งหมด:</span>
-                <span class="text-blue-700">{{ orderForm.totalAmount | number:'1.2-2' }} ฿</span>
+                <span class="text-blue-700">{{ totalAmount | number:'1.2-2' }} ฿</span>
               </div>
             </div>
 
             <div class="mt-4">
               <label class="block text-sm font-medium text-gray-700 mb-2">หมายเหตุ</label>
-              <textarea [(ngModel)]="orderForm.notes" name="notes" rows="3"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+              <textarea formControlName="notes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
             </div>
           </div>
 
           <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
-            <button type="button" (click)="closeModals()"
-              class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+            <button type="button" (click)="closeModals()" class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
               ยกเลิก
             </button>
-            <button type="submit"
-              class="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button type="submit" [disabled]="orderForm.invalid" class="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
               {{ isEditMode() ? 'บันทึก' : 'สร้าง' }}
             </button>
           </div>
@@ -646,24 +622,29 @@
       </div>
 
       <div class="p-6">
-        <form (ngSubmit)="savePayment()">
+        <form [formGroup]="paymentForm" (ngSubmit)="savePayment()">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">วันที่ชำระ <span class="text-red-500">*</span></label>
-              <input type="date" [(ngModel)]="paymentForm.paymentDate" name="paymentDate" required
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <input type="date" formControlName="paymentDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                [class.border-red-500]="isPaymentFieldInvalid('paymentDate')">
+              @if (isPaymentFieldInvalid('paymentDate')) {
+                <p class="mt-1 text-sm text-red-600">{{ getPaymentFieldError('paymentDate') }}</p>
+              }
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">จำนวนเงิน <span class="text-red-500">*</span></label>
-              <input type="number" [(ngModel)]="paymentForm.amount" name="amount" required min="0" step="0.01"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <input type="number" formControlName="amount" min="0" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                [class.border-red-500]="isPaymentFieldInvalid('amount')">
+              @if (isPaymentFieldInvalid('amount')) {
+                <p class="mt-1 text-sm text-red-600">{{ getPaymentFieldError('amount') }}</p>
+              }
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">ประเภท</label>
-              <select [(ngModel)]="paymentForm.paymentType" name="paymentType"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <select formControlName="paymentType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 @for (type of paymentTypes; track type.value) {
                   <option [value]="type.value">{{ type.label }}</option>
                 }
@@ -672,8 +653,7 @@
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">วิธีชำระ</label>
-              <select [(ngModel)]="paymentForm.paymentMethod" name="paymentMethod"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <select formControlName="paymentMethod" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                 @for (method of paymentMethods; track method.value) {
                   <option [value]="method.value">{{ method.label }}</option>
                 }
@@ -681,30 +661,26 @@
             </div>
 
             <!-- Bank Transfer Fields -->
-            @if (paymentForm.paymentMethod === 'transfer') {
+            @if (paymentForm.get('paymentMethod')?.value === 'transfer') {
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">ธนาคาร</label>
-                <input type="text" [(ngModel)]="paymentForm.bankName" name="bankName"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <input type="text" formControlName="bankName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">เลขที่บัญชี</label>
-                <input type="text" [(ngModel)]="paymentForm.accountNumber" name="accountNumber"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <input type="text" formControlName="accountNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">วันที่โอน</label>
-                <input type="date" [(ngModel)]="paymentForm.transferDate" name="transferDate"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <input type="date" formControlName="transferDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">อัปโหลดสลิป</label>
-                <input type="file" (change)="onPaymentSlipSelect($event)" accept="image/*"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                @if (paymentForm.slipUrl) {
+                <input type="file" (change)="onPaymentSlipSelect($event)" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                @if (paymentForm.get('slipUrl')?.value) {
                   <p class="text-xs text-green-600 mt-1">✓ อัปโหลดสลิปแล้ว</p>
                 }
                 @if (uploadingSlip()) {
@@ -715,18 +691,15 @@
 
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700 mb-2">หมายเหตุ</label>
-              <textarea [(ngModel)]="paymentForm.notes" name="notes" rows="3"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+              <textarea formControlName="notes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
             </div>
           </div>
 
           <div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">
-            <button type="button" (click)="closeModals()"
-              class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+            <button type="button" (click)="closeModals()" class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
               ยกเลิก
             </button>
-            <button type="submit"
-              class="flex-1 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+            <button type="submit" [disabled]="paymentForm.invalid" class="flex-1 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
               บันทึก
             </button>
           </div>

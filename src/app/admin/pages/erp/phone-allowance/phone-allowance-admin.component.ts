@@ -1,6 +1,6 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { LoadingSkeletonComponent } from '../../../../components/shared/loading-skeleton/loading-skeleton.component';
 import { PhoneAllowanceService } from '../../../../services/openapi-client/api/phoneAllowance.service';
 import { EmployeesService } from '../../../../services/openapi-client/api/employees.service';
@@ -13,15 +13,21 @@ import {
   PhoneAllowanceApprovalDto,
   EmployeeListDto
 } from '../../../../services/openapi-client/model/models';
+import { FormValidators } from '../../../../utils/form-validators';
+import { FormHelpers } from '../../../../utils/form-helpers';
+import { ValidationConfigs } from '../../../../utils/validation-configs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-phone-allowance-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, LoadingSkeletonComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, LoadingSkeletonComponent],
   templateUrl: './phone-allowance-admin.component.html',
   styleUrls: ['./phone-allowance-admin.component.css']
 })
-export class PhoneAllowanceAdminComponent implements OnInit {
+export class PhoneAllowanceAdminComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   // State signals
   activeTab = signal<'records' | 'pending'>('records');
   phoneAllowanceRecords = signal<PhoneAllowanceDto[]>([]);
@@ -44,16 +50,7 @@ export class PhoneAllowanceAdminComponent implements OnInit {
   isEditMode = signal(false);
 
   // Form data
-  phoneAllowanceForm: any = {
-    employeeId: null,
-    periodYear: new Date().getFullYear(),
-    periodMonth: new Date().getMonth() + 1,
-    amount: null,
-    actualUsage: null,
-    maxAllowance: null,
-    billAttachment: '',
-    notes: ''
-  };
+  phoneAllowanceForm!: FormGroup;
 
   // Approval form
   approvalForm = {
@@ -110,7 +107,8 @@ export class PhoneAllowanceAdminComponent implements OnInit {
   constructor(
     private phoneAllowanceService: PhoneAllowanceService,
     private employeesService: EmployeesService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private fb: FormBuilder
   ) {
     // Generate year options
     const currentYear = new Date().getFullYear();
@@ -119,7 +117,45 @@ export class PhoneAllowanceAdminComponent implements OnInit {
     }
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initForm(): void {
+    this.phoneAllowanceForm = this.fb.group({
+      employeeId: [null, ValidationConfigs.phoneAllowance.employeeId],
+      periodMonth: [new Date().getMonth() + 1, ValidationConfigs.phoneAllowance.month],
+      periodYear: [new Date().getFullYear(), ValidationConfigs.phoneAllowance.year],
+      maxAllowance: [null, ValidationConfigs.phoneAllowance.maxAllowance],
+      actualUsage: [null, [
+        ...ValidationConfigs.phoneAllowance.actualUsage,
+        FormValidators.actualUsageVsAllowance('maxAllowance')
+      ]],
+      amount: [null, ValidationConfigs.phoneAllowance.claimAmount],
+      billAttachment: ['', ValidationConfigs.phoneAllowance.receiptNumber],
+      notes: [''],
+      status: ['pending']
+    });
+
+    // Update actualUsage validation when maxAllowance changes
+    this.phoneAllowanceForm.get('maxAllowance')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.phoneAllowanceForm.get('actualUsage')?.updateValueAndValidity();
+      });
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.phoneAllowanceForm, fieldName);
+  }
+
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.phoneAllowanceForm, fieldName);
+  }
+
   ngOnInit(): void {
+    this.initForm();
     this.loadEmployees();
     this.loadPhoneAllowanceRecords();
   }
@@ -193,48 +229,56 @@ export class PhoneAllowanceAdminComponent implements OnInit {
 
     this.isEditMode.set(true);
     this.selectedRecord.set(record);
-    this.phoneAllowanceForm = {
+    this.phoneAllowanceForm.patchValue({
       employeeId: record.employeeId,
-      periodYear: record.periodYear,
       periodMonth: record.periodMonth,
-      amount: record.amount,
-      actualUsage: record.actualUsage,
+      periodYear: record.periodYear,
       maxAllowance: record.maxAllowance,
+      actualUsage: record.actualUsage,
+      amount: record.amount,
       billAttachment: record.billAttachment || '',
-      notes: record.notes || ''
-    };
+      notes: record.notes || '',
+      status: record.status
+    });
     this.loading.set(false);
     this.showFormModal.set(true);
   }
 
   resetForm(): void {
     const currentDate = new Date();
-    this.phoneAllowanceForm = {
+    this.phoneAllowanceForm.reset({
       employeeId: null,
-      periodYear: currentDate.getFullYear(),
       periodMonth: currentDate.getMonth() + 1,
-      amount: null,
-      actualUsage: null,
+      periodYear: currentDate.getFullYear(),
       maxAllowance: null,
+      actualUsage: null,
+      amount: null,
       billAttachment: '',
-      notes: ''
-    };
+      notes: '',
+      status: 'pending'
+    });
   }
 
   savePhoneAllowanceRecord(): void {
-    if (!this.validateForm()) {
+    // Mark all fields as touched to trigger validation display
+    FormHelpers.markFormGroupTouched(this.phoneAllowanceForm);
+
+    // Validate form
+    if (!this.phoneAllowanceForm.valid) {
+      this.notificationService.error('กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง');
       return;
     }
 
     this.loading.set(true);
+    const formValue = this.phoneAllowanceForm.value;
 
     if (this.isEditMode()) {
       const updateDto: PhoneAllowanceUpdateDto = {
-        amount: this.phoneAllowanceForm.amount,
-        actualUsage: this.phoneAllowanceForm.actualUsage,
-        maxAllowance: this.phoneAllowanceForm.maxAllowance,
-        billAttachment: this.phoneAllowanceForm.billAttachment,
-        notes: this.phoneAllowanceForm.notes
+        amount: formValue.amount,
+        actualUsage: formValue.actualUsage,
+        maxAllowance: formValue.maxAllowance,
+        billAttachment: formValue.billAttachment,
+        notes: formValue.notes || ''
       };
 
       this.phoneAllowanceService.phoneAllowanceUpdatePhoneAllowance(this.selectedRecord()!.id!, updateDto).subscribe({
@@ -254,14 +298,14 @@ export class PhoneAllowanceAdminComponent implements OnInit {
       });
     } else {
       const createDto: PhoneAllowanceCreateDto = {
-        employeeId: this.phoneAllowanceForm.employeeId,
-        periodYear: this.phoneAllowanceForm.periodYear,
-        periodMonth: this.phoneAllowanceForm.periodMonth,
-        amount: this.phoneAllowanceForm.amount,
-        actualUsage: this.phoneAllowanceForm.actualUsage,
-        maxAllowance: this.phoneAllowanceForm.maxAllowance,
-        billAttachment: this.phoneAllowanceForm.billAttachment,
-        notes: this.phoneAllowanceForm.notes
+        employeeId: formValue.employeeId,
+        periodYear: formValue.periodYear,
+        periodMonth: formValue.periodMonth,
+        amount: formValue.amount,
+        actualUsage: formValue.actualUsage,
+        maxAllowance: formValue.maxAllowance,
+        billAttachment: formValue.billAttachment,
+        notes: formValue.notes || ''
       };
 
       this.phoneAllowanceService.phoneAllowanceCreatePhoneAllowance(createDto).subscribe({
@@ -283,31 +327,38 @@ export class PhoneAllowanceAdminComponent implements OnInit {
   }
 
   validateForm(): boolean {
-    if (!this.phoneAllowanceForm.employeeId && !this.isEditMode()) {
+    const employeeId = this.phoneAllowanceForm.get('employeeId')?.value;
+    const periodYear = this.phoneAllowanceForm.get('year')?.value;
+    const periodMonth = this.phoneAllowanceForm.get('month')?.value;
+    const amount = this.phoneAllowanceForm.get('claimAmount')?.value;
+    const actualUsage = this.phoneAllowanceForm.get('actualUsage')?.value;
+    const maxAllowance = this.phoneAllowanceForm.get('maxAllowance')?.value;
+
+    if (!employeeId && !this.isEditMode()) {
       this.notificationService.error('กรุณาเลือกพนักงาน');
       return false;
     }
-    if (!this.phoneAllowanceForm.periodYear) {
+    if (!periodYear) {
       this.notificationService.error('กรุณาระบุปี');
       return false;
     }
-    if (!this.phoneAllowanceForm.periodMonth || this.phoneAllowanceForm.periodMonth < 1 || this.phoneAllowanceForm.periodMonth > 12) {
+    if (!periodMonth || periodMonth < 1 || periodMonth > 12) {
       this.notificationService.error('กรุณาระบุเดือน 1-12');
       return false;
     }
-    if (!this.phoneAllowanceForm.amount || this.phoneAllowanceForm.amount < 0) {
+    if (!amount || amount < 0) {
       this.notificationService.error('กรุณาระบุจำนวนเงินที่ถูกต้อง');
       return false;
     }
-    if (this.phoneAllowanceForm.actualUsage !== null && this.phoneAllowanceForm.actualUsage < 0) {
+    if (actualUsage !== null && actualUsage < 0) {
       this.notificationService.error('กรุณาระบุค่าใช้จ่ายจริงที่ถูกต้อง');
       return false;
     }
-    if (this.phoneAllowanceForm.maxAllowance !== null && this.phoneAllowanceForm.maxAllowance < 0) {
+    if (maxAllowance !== null && maxAllowance < 0) {
       this.notificationService.error('กรุณาระบุวงเงินสูงสุดที่ถูกต้อง');
       return false;
     }
-    if (this.phoneAllowanceForm.maxAllowance && this.phoneAllowanceForm.amount > this.phoneAllowanceForm.maxAllowance) {
+    if (maxAllowance && amount > maxAllowance) {
       this.notificationService.error('จำนวนเงินเกินวงเงินสูงสุดที่กำหนด');
       return false;
     }

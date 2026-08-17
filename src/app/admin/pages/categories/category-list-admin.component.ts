@@ -1,29 +1,21 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdminCategoryService } from '../../services/admin-category.service';
 import { NotificationService } from '../../../services/notification.service';
 import { ReportService } from '../../../services/report.service';
 import { CategoryDto } from '../../../services/openapi-client/model/categoryDto';
 import { CreateCategoryDto } from '../../../services/openapi-client/model/createCategoryDto';
+import { FormHelpers } from '../../../utils/form-helpers';
 
 interface CategoryWithLevel extends CategoryDto {
   level: number;
 }
 
-interface CategoryFormData {
-  name: string;
-  slug: string;
-  parentId: number | null;
-  description: string;
-  displayOrder: number;
-  isActive: boolean;
-}
-
 @Component({
   selector: 'app-category-list-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './category-list-admin.component.html',
   styleUrls: ['./category-list-admin.component.css']
 })
@@ -40,15 +32,8 @@ export class CategoryListAdminComponent implements OnInit {
   isEditMode = signal(false);
   editingCategoryId = signal<number | undefined>(undefined);
 
-  // Form data
-  formData: CategoryFormData = {
-    name: '',
-    slug: '',
-    parentId: null,
-    description: '',
-    displayOrder: 0,
-    isActive: true
-  };
+  // Reactive form
+  categoryForm!: FormGroup;
 
   // Delete confirmation
   categoryToDelete = signal<CategoryDto | undefined>(undefined);
@@ -60,11 +45,33 @@ export class CategoryListAdminComponent implements OnInit {
   constructor(
     private adminCategoryService: AdminCategoryService,
     private notificationService: NotificationService,
-    private reportService: ReportService
-  ) {}
+    private reportService: ReportService,
+    private fb: FormBuilder
+  ) {
+    this.initForm();
+  }
 
   ngOnInit(): void {
     this.loadCategories();
+  }
+
+  private initForm(): void {
+    this.categoryForm = this.fb.group({
+      name: ['', [Validators.required, Validators.maxLength(200)]],
+      slug: ['', [Validators.required, Validators.maxLength(200)]],
+      parentId: [null],
+      description: ['', Validators.maxLength(500)],
+      displayOrder: [0, [Validators.min(0)]],
+      isActive: [true]
+    });
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    return FormHelpers.isFieldInvalid(this.categoryForm, fieldName);
+  }
+
+  getFieldError(fieldName: string): string {
+    return FormHelpers.getFieldError(this.categoryForm, fieldName);
   }
 
   loadCategories(): void {
@@ -107,14 +114,14 @@ export class CategoryListAdminComponent implements OnInit {
   onAddNew(): void {
     this.isEditMode.set(false);
     this.editingCategoryId.set(undefined);
-    this.formData = {
+    this.categoryForm.reset({
       name: '',
       slug: '',
       parentId: null,
       description: '',
       displayOrder: 0,
       isActive: true
-    };
+    });
     this.showModal.set(true);
   }
 
@@ -123,14 +130,14 @@ export class CategoryListAdminComponent implements OnInit {
 
     this.isEditMode.set(true);
     this.editingCategoryId.set(category.id);
-    this.formData = {
+    this.categoryForm.patchValue({
       name: category.name || '',
       slug: category.slug || '',
       parentId: category.parentId || null,
       description: category.description || '',
       displayOrder: category.displayOrder || 0,
       isActive: category.isActive ?? true
-    };
+    });
     this.showModal.set(true);
   }
 
@@ -180,35 +187,33 @@ export class CategoryListAdminComponent implements OnInit {
   }
 
   onNameChange(): void {
-    if (!this.isEditMode() || !this.formData.slug) {
-      this.formData = {
-        ...this.formData,
-        slug: this.adminCategoryService.generateSlug(this.formData.name)
-      };
+    const currentName = this.categoryForm.get('name')?.value || '';
+    const currentSlug = this.categoryForm.get('slug')?.value || '';
+
+    if (!this.isEditMode() || !currentSlug) {
+      this.categoryForm.patchValue({
+        slug: this.adminCategoryService.generateSlug(currentName)
+      });
     }
   }
 
   onSaveCategory(): void {
-    const currentFormData = this.formData;
+    // Mark all fields as touched to show validation errors
+    FormHelpers.markFormGroupTouched(this.categoryForm);
 
     // Validate
-    if (!currentFormData.name.trim()) {
-      this.notificationService.error('กรุณากรอกชื่อหมวดหมู่');
+    if (this.categoryForm.invalid) {
       return;
     }
 
-    if (!currentFormData.slug.trim()) {
-      this.notificationService.error('กรุณากรอก Slug');
-      return;
-    }
-
+    const formValue = this.categoryForm.value;
     const categoryDto: CreateCategoryDto = {
-      name: currentFormData.name.trim(),
-      slug: currentFormData.slug.trim(),
-      parentId: currentFormData.parentId,
-      description: currentFormData.description.trim() || null,
-      displayOrder: currentFormData.displayOrder,
-      isActive: currentFormData.isActive
+      name: formValue.name.trim(),
+      slug: formValue.slug.trim(),
+      parentId: formValue.parentId,
+      description: formValue.description?.trim() || null,
+      displayOrder: formValue.displayOrder,
+      isActive: formValue.isActive
     };
 
     if (this.isEditMode() && this.editingCategoryId()) {
@@ -242,14 +247,14 @@ export class CategoryListAdminComponent implements OnInit {
 
   onCancelModal(): void {
     this.showModal.set(false);
-    this.formData = {
+    this.categoryForm.reset({
       name: '',
       slug: '',
       parentId: null,
       description: '',
       displayOrder: 0,
       isActive: true
-    };
+    });
   }
 
   getIndentation(level: number): string {

@@ -346,14 +346,15 @@
           </button>
         </div>
 
-        <form (ngSubmit)="savePhoneAllowanceRecord()" #phoneAllowanceFormEl="ngForm" class="space-y-4">
+        <form [formGroup]="phoneAllowanceForm" (ngSubmit)="savePhoneAllowanceRecord()" class="space-y-4">
           @if (!isEditMode()) {
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">พนักงาน *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                พนักงาน <span class="text-red-500">*</span>
+              </label>
               <select
-                [(ngModel)]="phoneAllowanceForm.employeeId"
-                name="employeeId"
-                required
+                formControlName="employeeId"
+                [class.border-red-500]="isFieldInvalid('employeeId')"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option [value]="null">เลือกพนักงาน</option>
                 @for (employee of employees(); track employee.id) {
@@ -362,51 +363,66 @@
                   </option>
                 }
               </select>
+              @if (isFieldInvalid('employeeId')) {
+                <div class="text-red-500 text-sm mt-1">{{ getFieldError('employeeId') }}</div>
+              }
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">ปี *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  ปี <span class="text-red-500">*</span>
+                </label>
                 <select
-                  [(ngModel)]="phoneAllowanceForm.periodYear"
-                  name="periodYear"
-                  required
+                  formControlName="periodYear"
+                  [class.border-red-500]="isFieldInvalid('periodYear')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                   @for (year of yearOptions; track year) {
                     <option [value]="year">{{ year }}</option>
                   }
                 </select>
+                @if (isFieldInvalid('periodYear')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('periodYear') }}</div>
+                }
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">เดือน *</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  เดือน <span class="text-red-500">*</span>
+                </label>
                 <select
-                  [(ngModel)]="phoneAllowanceForm.periodMonth"
-                  name="periodMonth"
-                  required
+                  formControlName="periodMonth"
+                  [class.border-red-500]="isFieldInvalid('periodMonth')"
                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                   @for (month of monthNames; track $index) {
                     <option [value]="$index + 1">{{ month }}</option>
                   }
                 </select>
+                @if (isFieldInvalid('periodMonth')) {
+                  <div class="text-red-500 text-sm mt-1">{{ getFieldError('periodMonth') }}</div>
+                }
               </div>
             </div>
           }
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">จำนวนเงินที่เบิก *</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                จำนวนเงินที่เบิก <span class="text-red-500">*</span>
+              </label>
               <input
                 type="number"
-                [(ngModel)]="phoneAllowanceForm.amount"
-                name="amount"
+                formControlName="amount"
                 step="0.01"
                 min="0"
-                required
+                [class.border-red-500]="isFieldInvalid('amount')"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-              @if (phoneAllowanceForm.maxAllowance && phoneAllowanceForm.amount > phoneAllowanceForm.maxAllowance) {
+              @if (isFieldInvalid('amount')) {
+                <div class="text-red-500 text-sm mt-1">{{ getFieldError('amount') }}</div>
+              }
+              @if (phoneAllowanceForm.get('maxAllowance')?.value && phoneAllowanceForm.get('amount')?.value > phoneAllowanceForm.get('maxAllowance')?.value) {
                 <p class="mt-1 text-xs text-red-600">
-                  เกินวงเงินสูงสุด {{ formatCurrency(phoneAllowanceForm.maxAllowance) }} ฿
+                  เกินวงเงินสูงสุด {{ formatCurrency(phoneAllowanceForm.get('maxAllowance')?.value) }} ฿
                 </p>
               }
             </div>
@@ -415,11 +431,14 @@
               <label class="block text-sm font-medium text-gray-700 mb-2">วงเงินสูงสุด</label>
               <input
                 type="number"
-                [(ngModel)]="phoneAllowanceForm.maxAllowance"
-                name="maxAllowance"
+                formControlName="maxAllowance"
                 step="0.01"
                 min="0"
+                [class.border-red-500]="isFieldInvalid('maxAllowance')"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              @if (isFieldInvalid('maxAllowance')) {
+                <div class="text-red-500 text-sm mt-1">{{ getFieldError('maxAllowance') }}</div>
+              }
             </div>
           </div>
 
@@ -427,14 +446,17 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">ค่าใช้จ่ายจริง</label>
             <input
               type="number"
-              [(ngModel)]="phoneAllowanceForm.actualUsage"
-              name="actualUsage"
+              formControlName="actualUsage"
               step="0.01"
               min="0"
+              [class.border-red-500]="isFieldInvalid('actualUsage')"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            @if (phoneAllowanceForm.actualUsage && phoneAllowanceForm.maxAllowance) {
+            @if (isFieldInvalid('actualUsage')) {
+              <div class="text-red-500 text-sm mt-1">{{ getFieldError('actualUsage') }}</div>
+            }
+            @if (phoneAllowanceForm.get('actualUsage')?.value && phoneAllowanceForm.get('maxAllowance')?.value) {
               <p class="mt-1 text-xs text-gray-600">
-                ใช้ไป {{ Math.round((phoneAllowanceForm.actualUsage / phoneAllowanceForm.maxAllowance) * 100) }}% ของวงเงิน
+                ใช้ไป {{ Math.round((phoneAllowanceForm.get('actualUsage')?.value / phoneAllowanceForm.get('maxAllowance')?.value) * 100) }}% ของวงเงิน
               </p>
             }
           </div>
@@ -443,20 +465,26 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">ลิงก์เอกสารบิล</label>
             <input
               type="text"
-              [(ngModel)]="phoneAllowanceForm.billAttachment"
-              name="billAttachment"
+              formControlName="billAttachment"
+              [class.border-red-500]="isFieldInvalid('billAttachment')"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="https://...">
+            @if (isFieldInvalid('billAttachment')) {
+              <div class="text-red-500 text-sm mt-1">{{ getFieldError('billAttachment') }}</div>
+            }
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">หมายเหตุ</label>
             <textarea
-              [(ngModel)]="phoneAllowanceForm.notes"
-              name="notes"
+              formControlName="notes"
               rows="3"
+              [class.border-red-500]="isFieldInvalid('notes')"
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="ระบุหมายเหตุเพิ่มเติม..."></textarea>
+            @if (isFieldInvalid('notes')) {
+              <div class="text-red-500 text-sm mt-1">{{ getFieldError('notes') }}</div>
+            }
           </div>
 
           <div class="flex justify-end gap-3 mt-6">
@@ -468,9 +496,9 @@
             </button>
             <button
               type="submit"
-              [disabled]="loading() || phoneAllowanceFormEl.invalid"
+              [disabled]="loading() || phoneAllowanceForm.invalid"
               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              [title]="phoneAllowanceFormEl.invalid ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : ''">
+              [title]="phoneAllowanceForm.invalid ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : ''">
               {{ loading() ? 'กำลังบันทึก...' : 'บันทึก' }}
             </button>
           </div>
