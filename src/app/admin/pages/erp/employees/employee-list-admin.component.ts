@@ -158,15 +158,12 @@ export class EmployeeListAdminComponent implements OnInit, OnDestroy {
       this.employeeForm.addControl('confirmPassword', this.fb.control('', baseConfig['confirmPassword'] || []));
 
       // Add async validators for create mode (reduced debounce time to 300ms for better UX)
-      this.employeeForm.get('employeeCode')?.setAsyncValidators([
-        AsyncValidators.uniqueEmployeeCode(this.employeesService, undefined, 300)
-      ]);
+      // Note: employeeCode uniqueness check removed per user request
       this.employeeForm.get('idCardNumber')?.setAsyncValidators([
         AsyncValidators.uniqueIdCard(this.employeesService, undefined, 300)
       ]);
     }
-    // Note: No async validators in edit mode - employeeCode is readonly,
-    // and idCardNumber shouldn't trigger uniqueness checks during edit
+    // Note: No async validators in edit mode
   }
 
   private setupDynamicValidation(): void {
