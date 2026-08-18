@@ -37,11 +37,9 @@ export class UserListAdminComponent implements OnInit {
   showToggleConfirm = signal(false);
   toggleAction = signal<'ban' | 'activate'>('ban');
 
-  // Available roles (E-commerce specific)
+  // Available roles (E-commerce Customers)
   roles = [
-    { value: 'customer', label: 'ลูกค้าทั่วไป' },
-    { value: 'admin', label: 'ผู้ดูแล E-Commerce' },
-    { value: 'super_admin', label: 'ผู้ดูแลระบบสูงสุด' }
+    { value: 'customer', label: 'ลูกค้าทั่วไป' }
   ];
 
   // Available statuses
@@ -73,14 +71,11 @@ export class UserListAdminComponent implements OnInit {
       next: (response) => {
         let users = response.users || [];
 
-        // IMPORTANT: Filter to show ONLY e-commerce customers
-        // Exclude employees (those with employee_code or non-customer roles)
+        // IMPORTANT: Filter to show ONLY e-commerce customers (role = 'customer')
+        // Exclude staff/employees and admin users
         users = users.filter(u => {
-          // Only show customers and e-commerce admins
-          // Exclude anyone with employee_code (they're staff, not customers)
           const hasEmployeeCode = (u as any).employeeCode;
-          return !hasEmployeeCode &&
-                 (u.role === 'customer' || u.role === 'admin' || u.role === 'super_admin');
+          return !hasEmployeeCode && u.role === 'customer';
         });
 
         // Apply additional filters

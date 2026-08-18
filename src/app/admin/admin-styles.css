@@ -16,7 +16,7 @@ html.dark body,
 :is(.dark) .admin-page,
 :is(.dark) .main-content .p-6,
 :is(.dark) .main-content > div {
-  background-color: #000000 !important;
+  background-color: #161617 !important;
   color: #f5f5f7 !important;
 }
 
@@ -36,7 +36,7 @@ html.dark body,
 }
 
 :is(.dark) .admin-page {
-  background-color: #000000 !important;
+  background-color: #161617 !important;
   color: #f5f5f7 !important;
 }
 
@@ -1148,4 +1148,256 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
 :is(.dark) input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   filter: invert(0.9) brightness(1.2) !important;
   opacity: 0.8 !important;
+}
+
+/* ========================================
+   PAGINATION CONTROLS DARK MODE OVERRIDES
+   ======================================== */
+:is(.dark) div[class*="mt-6"] div[class*="bg-white"],
+:is(.dark) div[class*="mt-4"] div[class*="bg-white"],
+:is(.dark) .pagination-container,
+html.dark div[class*="mt-6"] div[class*="bg-white"],
+html.dark div[class*="mt-4"] div[class*="bg-white"] {
+  background-color: #1c1c1e !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f5f5f7 !important;
+}
+
+:is(.dark) div[class*="mt-6"] .text-gray-600,
+:is(.dark) div[class*="mt-6"] .text-gray-700,
+:is(.dark) div[class*="mt-4"] .text-gray-600,
+:is(.dark) div[class*="mt-4"] .text-gray-700,
+html.dark div[class*="mt-6"] .text-gray-600,
+html.dark div[class*="mt-6"] .text-gray-700 {
+  color: #d2d2d7 !important;
+}
+
+/* Pagination Buttons in Dark Mode */
+:is(.dark) button[class*="px-3 py-1"],
+:is(.dark) button[class*="px-4 py-2"],
+html.dark button[class*="px-3 py-1"],
+html.dark button[class*="px-4 py-2"] {
+  background-color: #242426;
+  color: #f5f5f7;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+:is(.dark) button[class*="px-3 py-1"]:hover:not([disabled]),
+:is(.dark) button[class*="px-4 py-2"]:hover:not([disabled]),
+html.dark button[class*="px-3 py-1"]:hover:not([disabled]),
+html.dark button[class*="px-4 py-2"]:hover:not([disabled]) {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+/* Disabled Pagination Buttons in Dark Mode */
+:is(.dark) button[disabled],
+:is(.dark) button[class*="cursor-not-allowed"],
+html.dark button[disabled],
+html.dark button[class*="cursor-not-allowed"] {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  color: #6e6e73 !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  cursor: not-allowed !important;
+  opacity: 0.5 !important;
+}
+
+/* Active Page Number Button in Dark Mode */
+:is(.dark) button[class*="bg-primary-"],
+:is(.dark) button[class*="bg-amber-"],
+:is(.dark) button[class*="bg-yellow-"],
+html.dark button[class*="bg-primary-"],
+html.dark button[class*="bg-amber-"] {
+  background-color: #d97706 !important;
+  color: #ffffff !important;
+  border-color: #d97706 !important;
+  font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   COMPREHENSIVE ADMIN DARK MODE TEXT CONTRAST & LEGIBILITY SYSTEM
+   Fixes all unreadable dark-gray/black text on dark background across all Admin pages
+   ========================================================================== */
+
+/* 1. Primary High-Contrast Text (Headings, Main Titles, Table Cell Primary Values, Stat Card Numbers) */
+:is(.dark) .admin-page h1,
+:is(.dark) .admin-page h2,
+:is(.dark) .admin-page h3,
+:is(.dark) .admin-page h4,
+:is(.dark) .admin-page h5,
+:is(.dark) .admin-page h6,
+:is(.dark) .admin-page label,
+:is(.dark) .admin-page .text-gray-900,
+:is(.dark) .admin-page .text-gray-800,
+:is(.dark) .admin-page .text-slate-900,
+:is(.dark) .admin-page .text-slate-800,
+:is(.dark) .admin-page .text-neutral-900,
+:is(.dark) .admin-page .text-zinc-900,
+:is(.dark) .main-content h1,
+:is(.dark) .main-content h2,
+:is(.dark) .main-content h3,
+:is(.dark) .main-content h4,
+:is(.dark) .main-content h5,
+:is(.dark) .main-content h6,
+:is(.dark) .main-content label,
+:is(.dark) .main-content .text-gray-900,
+:is(.dark) .main-content .text-gray-800,
+:is(.dark) .main-content .text-slate-900,
+:is(.dark) .main-content .text-slate-800,
+:is(.dark) .main-content .text-neutral-900,
+:is(.dark) .main-content .text-zinc-900,
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-slate-900,
+html.dark .text-slate-800 {
+  color: #f5f5f7 !important;
+}
+
+/* 2. Secondary High-Contrast Text (Form Labels, Card Subtitles, Filter Titles, Table Cell Secondary Data) */
+:is(.dark) .admin-page .text-gray-700,
+:is(.dark) .admin-page .text-slate-700,
+:is(.dark) .admin-page .text-neutral-700,
+:is(.dark) .admin-page .text-zinc-700,
+:is(.dark) .main-content .text-gray-700,
+:is(.dark) .main-content .text-slate-700,
+:is(.dark) .main-content .text-neutral-700,
+:is(.dark) .main-content .text-zinc-700,
+html.dark .text-gray-700,
+html.dark .text-slate-700 {
+  color: #e5e5ea !important;
+}
+
+/* 3. Muted/Secondary Text (Descriptions, Helper Texts, Captions, Empty State Messages, Table Headers) */
+:is(.dark) .admin-page .text-gray-600,
+:is(.dark) .admin-page .text-gray-500,
+:is(.dark) .admin-page .text-slate-600,
+:is(.dark) .admin-page .text-slate-500,
+:is(.dark) .admin-page .text-neutral-600,
+:is(.dark) .admin-page .text-neutral-500,
+:is(.dark) .main-content .text-gray-600,
+:is(.dark) .main-content .text-gray-500,
+:is(.dark) .main-content .text-slate-600,
+:is(.dark) .main-content .text-slate-500,
+:is(.dark) .main-content .text-neutral-600,
+:is(.dark) .main-content .text-neutral-500,
+html.dark .text-gray-600,
+html.dark .text-gray-500,
+html.dark .text-slate-600,
+html.dark .text-slate-500 {
+  color: #a1a1a6 !important;
+}
+
+/* 4. Table Headers & Labels in Dark Mode */
+:is(.dark) th,
+:is(.dark) thead th,
+:is(.dark) th[class*="text-gray-"],
+html.dark th,
+html.dark thead th {
+  color: #d2d2d7 !important;
+  background-color: #121212 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 5. Subheaders, Cards, Filters, Containers with bg-white or bg-gray-50 */
+:is(.dark) div[class*="bg-white"],
+:is(.dark) div[class*="bg-gray-50"],
+:is(.dark) div[class*="bg-gray-100"],
+:is(.dark) section[class*="bg-white"],
+html.dark div[class*="bg-white"],
+html.dark div[class*="bg-gray-50"],
+html.dark div[class*="bg-gray-100"] {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+:is(.dark) .bg-gray-50,
+:is(.dark) .bg-gray-100,
+:is(.dark) .bg-slate-50,
+:is(.dark) .bg-slate-100,
+html.dark .bg-gray-50,
+html.dark .bg-gray-100 {
+  background-color: #1c1c1e !important;
+  color: #f5f5f7 !important;
+}
+
+/* 6. Form Links & Interactive Text (Blue / Indigo links in dark mode) */
+:is(.dark) .text-blue-600,
+:is(.dark) .text-blue-500,
+:is(.dark) .text-indigo-600,
+:is(.dark) a.text-blue-600,
+:is(.dark) button.text-blue-600,
+html.dark .text-blue-600,
+html.dark a.text-blue-600 {
+  color: #fbbf24 !important;
+}
+
+:is(.dark) .text-blue-600:hover,
+:is(.dark) .text-blue-500:hover,
+:is(.dark) a.text-blue-600:hover,
+html.dark a.text-blue-600:hover {
+  color: #fef08a !important;
+}
+
+/* 7. Hover background for table rows & cards */
+:is(.dark) tr.hover\:bg-gray-50:hover,
+:is(.dark) tr.hover\:bg-gray-100:hover,
+:is(.dark) tr:hover,
+html.dark tr.hover\:bg-gray-50:hover,
+html.dark tr:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* 8. Badge Contrast Overrides */
+:is(.dark) span[class*="bg-gray-100"],
+:is(.dark) span[class*="bg-gray-200"],
+html.dark span[class*="bg-gray-100"] {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #d2d2d7 !important;
+}
+
+/* ==========================================================================
+   MODAL CANCEL & SECONDARY BUTTON DARK MODE HOVER SYSTEM
+   Prevents white-on-white text disappearance when hovering cancel/secondary buttons
+   ========================================================================== */
+
+/* Base State for Cancel & Secondary Buttons in Dark Mode */
+:is(.dark) .modal button:not([type="submit"]):not(.btn-primary):not(.btn-danger):not(.bg-amber-600):not(.bg-primary-600),
+:is(.dark) div[class*="fixed inset-0"] button:not([type="submit"]):not(.btn-primary):not(.btn-danger):not(.bg-amber-600):not(.bg-primary-600),
+:is(.dark) .modal-footer button:not([type="submit"]):not(.btn-primary):not(.btn-danger),
+:is(.dark) button[class*="hover:bg-gray-"]:not(.btn-primary):not(.btn-danger),
+:is(.dark) button[class*="hover:bg-slate-"]:not(.btn-primary):not(.btn-danger),
+html.dark button[class*="hover:bg-gray-"]:not(.btn-primary):not(.btn-danger) {
+  background-color: #242426 !important;
+  color: #f5f5f7 !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Hover State for Cancel & Secondary Buttons in Dark Mode */
+:is(.dark) .modal button:not([type="submit"]):not(.btn-primary):not(.btn-danger):not(.bg-amber-600):not(.bg-primary-600):hover,
+:is(.dark) div[class*="fixed inset-0"] button:not([type="submit"]):not(.btn-primary):not(.btn-danger):not(.bg-amber-600):not(.bg-primary-600):hover,
+:is(.dark) .modal-footer button:not([type="submit"]):not(.btn-primary):not(.btn-danger):hover,
+:is(.dark) button[class*="hover:bg-gray-"]:not(.btn-primary):not(.btn-danger):hover,
+:is(.dark) button[class*="hover:bg-slate-"]:not(.btn-primary):not(.btn-danger):hover,
+html.dark button[class*="hover:bg-gray-"]:not(.btn-primary):not(.btn-danger):hover {
+  background-color: #3a3a3c !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Modal Close '×' Icon Button in Dark Mode */
+:is(.dark) button.modal-close,
+:is(.dark) .modal button[aria-label="Close"],
+:is(.dark) .modal button[aria-label="ปิด"],
+:is(.dark) div[class*="fixed inset-0"] button[class*="text-gray-400"] {
+  color: #a1a1a6 !important;
+  background-color: transparent !important;
+}
+
+:is(.dark) button.modal-close:hover,
+:is(.dark) .modal button[aria-label="Close"]:hover,
+:is(.dark) .modal button[aria-label="ปิด"]:hover,
+:is(.dark) div[class*="fixed inset-0"] button[class*="text-gray-400"]:hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }

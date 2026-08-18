@@ -1,4 +1,5 @@
-.container {
+.material-requisition-container {
+  width: 100%;
   min-height: 100vh;
 }
 
@@ -38,7 +39,7 @@
 }
 
 @media (max-width: 768px) {
-  .container {
+  .material-requisition-container {
     padding: 1rem;
   }
 }
