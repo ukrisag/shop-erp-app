@@ -17,8 +17,8 @@ import { CartService } from './services/cart.service';
   styleUrl: './app.css'
 })
 export class AppComponent implements OnInit {
-  title = 'ร้านสี - สีคุณภาพสำหรับทุกโปรเจกต์';
-  isAdminRoute = false;
+  title = 'ร้านเครื่องครัวแสงทอง';
+  isAdminRoute = typeof window !== 'undefined' ? window.location.pathname.startsWith('/admin') : false;
 
   constructor(
     private authService: AuthService,
@@ -26,17 +26,22 @@ export class AppComponent implements OnInit {
     private cartService: CartService,
     private router: Router
   ) {
-    // Check if current route is admin
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: any) => {
-        this.isAdminRoute = event.url.startsWith('/admin');
-      });
+    this.checkAdminRoute();
+
+    // Check if route changes
+    this.router.events.subscribe(() => {
+      this.checkAdminRoute();
+    });
+  }
+
+  private checkAdminRoute(): void {
+    const path = typeof window !== 'undefined' ? window.location.pathname : '';
+    const routerUrl = this.router.url && this.router.url !== '/' ? this.router.url : '';
+    this.isAdminRoute = routerUrl.startsWith('/admin') || path.startsWith('/admin');
   }
 
   ngOnInit(): void {
-    // Check initial route
-    this.isAdminRoute = this.router.url.startsWith('/admin');
+    this.checkAdminRoute();
 
     // Load wishlist and cart if user is authenticated
     if (this.authService.isAuthenticated) {

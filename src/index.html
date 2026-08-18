@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="th">
+<html lang="th" class="preload">
 <head>
   <meta charset="utf-8">
   <title>ร้านเครื่องครัวแสงทอง - ศูนย์รวมเครื่องครัวและอุปกรณ์ร้านอาหารคุณภาพพรีเมียม</title>
@@ -8,6 +8,27 @@
   <meta name="description" content="ศูนย์รวมเครื่องครัวสแตนเลส Food Grade SUS304 และอุปกรณ์ร้านอาหาร โรงแรม ครบวงจร พร้อมจัดส่งทั่วประเทศ">
   <meta name="keywords" content="เครื่องครัวสแตนเลส, อุปกรณ์ร้านอาหาร, สแตนเลส 304, ร้านเครื่องครัวแสงทอง, เครื่องครัวคุณภาพ">
   <meta name="theme-color" content="#f5f5f7">
+
+  <!-- Anti-FOUC & Anti-Flicker Theme Script -->
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('apple_theme');
+        var isDark = t === 'dark' || (!t && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var root = document.documentElement;
+        if (isDark) {
+          root.classList.add('dark');
+          root.style.backgroundColor = '#161617';
+        } else {
+          root.classList.remove('dark');
+          root.style.backgroundColor = '#f5f5f7';
+        }
+        window.addEventListener('DOMContentLoaded', function() {
+          setTimeout(function() { root.classList.remove('preload'); }, 80);
+        });
+      } catch (e) {}
+    })();
+  </script>
 
   <!-- Apple Web App Meta -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -21,7 +42,26 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="manifest" href="manifest.webmanifest">
 </head>
-<body class="bg-[#f5f5f7] text-[#1d1d1f] antialiased">
-  <app-root></app-root>
+<body class="bg-[#f5f5f7] dark:bg-[#161617] text-[#1d1d1f] dark:text-[#f5f5f7] antialiased">
+  <app-root>
+    <style>
+      .app-splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f5f5f7;
+        z-index: 99999;
+      }
+      html.dark .app-splash {
+        background-color: #161617;
+      }
+    </style>
+    <div class="app-splash">
+      <div style="width:36px;height:36px;border:3px solid rgba(217,119,6,0.25);border-top-color:#d97706;border-radius:50%;animation:app-spin .8s linear infinite;"></div>
+    </div>
+    <style>@keyframes app-spin{to{transform:rotate(360deg)}}</style>
+  </app-root>
 </body>
 </html>

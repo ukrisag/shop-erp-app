@@ -36,7 +36,7 @@ interface BranchDto {
 @Component({
   selector: 'app-payroll-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, LoadingSkeletonComponent],
   templateUrl: './payroll-admin.component.html',
   styleUrls: ['./payroll-admin.component.css']
 })

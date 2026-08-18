@@ -348,18 +348,10 @@ div[class*="w-12 h-12"] svg,
 .form-input,
 .form-select,
 .form-textarea,
-.admin-page input[type="text"],
-.admin-page input[type="email"],
-.admin-page input[type="password"],
-.admin-page input[type="number"],
-.admin-page input[type="date"],
+.admin-page input,
 .admin-page select,
 .admin-page textarea,
-.main-content input[type="text"],
-.main-content input[type="email"],
-.main-content input[type="password"],
-.main-content input[type="number"],
-.main-content input[type="date"],
+.main-content input,
 .main-content select,
 .main-content textarea {
   width: 100%;
@@ -391,23 +383,57 @@ div[class*="w-12 h-12"] svg,
 :is(.dark) .form-input,
 :is(.dark) .form-select,
 :is(.dark) .form-textarea,
-:is(.dark) .admin-page input[type="text"],
-:is(.dark) .admin-page input[type="email"],
-:is(.dark) .admin-page input[type="password"],
-:is(.dark) .admin-page input[type="number"],
-:is(.dark) .admin-page input[type="date"],
+:is(.dark) .admin-page input,
 :is(.dark) .admin-page select,
 :is(.dark) .admin-page textarea,
-:is(.dark) .main-content input[type="text"],
-:is(.dark) .main-content input[type="email"],
-:is(.dark) .main-content input[type="password"],
-:is(.dark) .main-content input[type="number"],
-:is(.dark) .main-content input[type="date"],
+:is(.dark) .main-content input,
 :is(.dark) .main-content select,
-:is(.dark) .main-content textarea {
+:is(.dark) .main-content textarea,
+:is(.dark) div[class*="fixed inset-0"] input,
+:is(.dark) div[class*="fixed inset-0"] select,
+:is(.dark) div[class*="fixed inset-0"] textarea,
+:is(.dark) .modal input,
+:is(.dark) .modal select,
+:is(.dark) .modal textarea,
+html.dark input,
+html.dark select,
+html.dark textarea {
   background-color: #242426 !important;
   color: #f5f5f7 !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+:is(.dark) select option,
+:is(.dark) select optgroup,
+html.dark select option,
+html.dark select optgroup {
+  background-color: #242426 !important;
+  color: #f5f5f7 !important;
+}
+
+:is(.dark) input[type="date"]::-webkit-calendar-picker-indicator,
+:is(.dark) input[type="time"]::-webkit-calendar-picker-indicator,
+:is(.dark) input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+:is(.dark) input[type="month"]::-webkit-calendar-picker-indicator,
+html.dark input[type="date"]::-webkit-calendar-picker-indicator,
+html.dark input[type="time"]::-webkit-calendar-picker-indicator,
+html.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+html.dark input[type="month"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(0.9) !important;
+}
+
+:is(.dark) input[readonly],
+:is(.dark) input[disabled],
+:is(.dark) select[disabled],
+:is(.dark) textarea[disabled],
+:is(.dark) input.bg-gray-100,
+html.dark input[readonly],
+html.dark input[disabled],
+html.dark select[disabled],
+html.dark textarea[disabled] {
+  background-color: #1c1c1e !important;
+  color: #86868b !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 :is(.dark) .form-input:focus,
@@ -418,7 +444,13 @@ div[class*="w-12 h-12"] svg,
 :is(.dark) .admin-page textarea:focus,
 :is(.dark) .main-content input:focus,
 :is(.dark) .main-content select:focus,
-:is(.dark) .main-content textarea:focus {
+:is(.dark) .main-content textarea:focus,
+:is(.dark) div[class*="fixed inset-0"] input:focus,
+:is(.dark) div[class*="fixed inset-0"] select:focus,
+:is(.dark) div[class*="fixed inset-0"] textarea:focus,
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus {
   background-color: #1d1d1f !important;
   border-color: #fbbf24 !important;
   box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.2) !important;
@@ -823,6 +855,86 @@ div[class*="fixed inset-0"][class*="z-50"] > div[class*="bg-white"] > .p-6 {
 :is(.dark) .modal-footer {
   background-color: #121212 !important;
   border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Modal Internal Elements & Form Labels Dark Mode Overrides */
+:is(.dark) div[class*="fixed inset-0"] label,
+:is(.dark) .modal label,
+html.dark div[class*="fixed inset-0"] label,
+html.dark .modal label {
+  color: #f5f5f7 !important;
+}
+
+:is(.dark) div[class*="fixed inset-0"] h2,
+:is(.dark) div[class*="fixed inset-0"] h3,
+:is(.dark) div[class*="fixed inset-0"] h4,
+:is(.dark) .modal h2,
+:is(.dark) .modal h3,
+:is(.dark) .modal h4,
+html.dark div[class*="fixed inset-0"] h2,
+html.dark div[class*="fixed inset-0"] h3,
+html.dark div[class*="fixed inset-0"] h4 {
+  color: #f5f5f7 !important;
+}
+
+:is(.dark) div[class*="fixed inset-0"] p[class*="text-gray-"],
+:is(.dark) div[class*="fixed inset-0"] span[class*="text-gray-"],
+:is(.dark) .modal p[class*="text-gray-"],
+:is(.dark) .modal span[class*="text-gray-"],
+html.dark div[class*="fixed inset-0"] p[class*="text-gray-"],
+html.dark div[class*="fixed inset-0"] span[class*="text-gray-"] {
+  color: #a1a1a6 !important;
+}
+
+:is(.dark) div[class*="fixed inset-0"] .sticky,
+:is(.dark) div[class*="fixed inset-0"] div[class*="sticky"],
+:is(.dark) div[class*="fixed inset-0"] div[class*="bg-gray-50"],
+:is(.dark) div[class*="fixed inset-0"] div[class*="bg-gray-100"],
+html.dark div[class*="fixed inset-0"] .sticky,
+html.dark div[class*="fixed inset-0"] div[class*="bg-gray-50"],
+html.dark div[class*="fixed inset-0"] div[class*="bg-gray-100"] {
+  background-color: #1c1c1e !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f5f5f7 !important;
+}
+
+:is(.dark) div[class*="fixed inset-0"] div[class*="bg-blue-50"],
+:is(.dark) div[class*="fixed inset-0"] div[class*="bg-indigo-50"],
+html.dark div[class*="fixed inset-0"] div[class*="bg-blue-50"],
+html.dark div[class*="fixed inset-0"] div[class*="bg-indigo-50"] {
+  background-color: rgba(0, 113, 227, 0.15) !important;
+  color: #2997ff !important;
+  border-color: rgba(0, 113, 227, 0.3) !important;
+}
+
+:is(.dark) div[class*="fixed inset-0"] div[class*="bg-blue-50"] *,
+html.dark div[class*="fixed inset-0"] div[class*="bg-blue-50"] * {
+  color: #2997ff !important;
+}
+
+/* ========================================
+   SKELETON LOADING DARK MODE STYLES
+   ======================================== */
+app-loading-skeleton .bg-gray-200,
+.animate-pulse .bg-gray-200,
+.animate-pulse .bg-gray-100,
+.animate-pulse .bg-gray-300 {
+  background-color: #e5e5ea;
+}
+
+:is(.dark) app-loading-skeleton [class*="bg-gray-"],
+:is(.dark) app-loading-skeleton .bg-gray-200,
+:is(.dark) .animate-pulse [class*="bg-gray-"],
+:is(.dark) .animate-pulse .bg-gray-200,
+:is(.dark) .animate-pulse .bg-gray-100,
+:is(.dark) .animate-pulse .bg-gray-300,
+html.dark app-loading-skeleton [class*="bg-gray-"],
+html.dark app-loading-skeleton .bg-gray-200,
+html.dark .animate-pulse [class*="bg-gray-"],
+html.dark .animate-pulse .bg-gray-200,
+html.dark .animate-pulse .bg-gray-100,
+html.dark .animate-pulse .bg-gray-300 {
+  background-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* ==========================================================================
