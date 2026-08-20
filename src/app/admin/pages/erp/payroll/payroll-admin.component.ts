@@ -647,6 +647,21 @@ export class PayrollAdminComponent implements OnInit, OnDestroy {
     this.calculationForm.patchValue({ employeeIds: [] });
   }
 
+  isAllEmployeesSelected(): boolean {
+    const employees = this.getEmployeesForCalculation();
+    if (employees.length === 0) return false;
+    const selectedIds = this.calculationForm.get('employeeIds')?.value || [];
+    return employees.every(e => selectedIds.includes(e.id!));
+  }
+
+  toggleAllEmployees(event: any): void {
+    if (event.target?.checked) {
+      this.selectAllEmployees();
+    } else {
+      this.deselectAllEmployees();
+    }
+  }
+
   isEmployeeSelected(employeeId: number): boolean {
     const employeeIds = this.calculationForm.get('employeeIds')?.value || [];
     return employeeIds.includes(employeeId);

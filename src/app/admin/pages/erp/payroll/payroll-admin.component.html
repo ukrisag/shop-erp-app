@@ -426,50 +426,87 @@
       <!-- Employee Selection -->
       <div class="mb-6">
         <div class="flex items-center justify-between mb-3">
-          <label class="block text-sm font-medium text-gray-700">เลือกพนักงาน</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-[#d2d2d7]">เลือกพนักงาน</label>
           <div class="flex gap-2">
             <button
               (click)="selectAllEmployees()"
-              class="text-sm text-green-600 hover:text-green-700 font-medium">
+              class="text-sm text-green-600 dark:text-[#4ade80] hover:text-green-700 font-medium">
               เลือกทั้งหมด
             </button>
             <span class="text-gray-400">|</span>
             <button
               (click)="deselectAllEmployees()"
-              class="text-sm text-gray-600 hover:text-gray-700 font-medium">
+              class="text-sm text-gray-600 dark:text-[#a1a1a6] hover:text-gray-700 font-medium">
               ยกเลิกทั้งหมด
             </button>
           </div>
         </div>
 
-        <div class="border border-gray-300 rounded-lg max-h-96 overflow-y-auto">
+        <div class="border border-gray-200 dark:border-white/[0.08] rounded-xl overflow-hidden shadow-sm bg-white dark:bg-[#161617]">
           @if (getEmployeesForCalculation().length === 0) {
-            <div class="p-8 text-center text-gray-500">
-              <p>ไม่พบพนักงานที่ใช้งานอยู่</p>
+            <div class="p-8 text-center text-gray-500 dark:text-[#a1a1a6]">
+              <p>ไม่พบพนักงานที่ใช้งานอยู่ หรือพนักงานในงวดนี้คำนวณเงินเดือนแล้วทั้งหมด</p>
             </div>
-          }
-          @for (employee of getEmployeesForCalculation(); track employee.id) {
-            <div class="flex items-center p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
-              <input
-                type="checkbox"
-                [checked]="isEmployeeSelected(employee.id!)"
-                (change)="toggleEmployeeForCalculation(employee.id!)"
-                class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 mr-3">
-              <div class="flex-1">
-                <div class="font-medium text-gray-900">{{ employee.fullNameTh || employee.fullNameEn }}</div>
-                <div class="text-sm text-gray-600">
-                  {{ employee.employeeCode }} • {{ employee.branchName || '-' }} •
-                  <span [class.text-blue-600]="employee.employmentType === 'monthly'" [class.text-green-600]="employee.employmentType === 'daily'">
-                    {{ employee.employmentType === 'monthly' ? 'รายเดือน' : 'รายวัน' }}
-                  </span>
-                </div>
-              </div>
+          } @else {
+            <div class="max-h-96 overflow-y-auto custom-scrollbar">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-white/[0.08]">
+                <thead class="bg-gray-50 dark:bg-[#1c1c1e] sticky top-0 z-10">
+                  <tr>
+                    <th class="w-12 px-4 py-3 text-center">
+                      <input
+                        type="checkbox"
+                        [checked]="isAllEmployeesSelected()"
+                        (change)="toggleAllEmployees($event)"
+                        class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer">
+                    </th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-[#d2d2d7] uppercase tracking-wider">รหัสพนักงาน</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-[#d2d2d7] uppercase tracking-wider">ชื่อ-นามสกุล</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-[#d2d2d7] uppercase tracking-wider">สาขา</th>
+                    <th class="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-[#d2d2d7] uppercase tracking-wider">ประเภทการจ้าง</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-white/[0.08] bg-white dark:bg-[#161617]">
+                  @for (employee of getEmployeesForCalculation(); track employee.id) {
+                    <tr (click)="toggleEmployeeForCalculation(employee.id!)" class="hover:bg-gray-50 dark:hover:bg-white/[0.04] cursor-pointer transition-colors">
+                      <td class="w-12 px-4 py-3 text-center" (click)="$event.stopPropagation()">
+                        <input
+                          type="checkbox"
+                          [checked]="isEmployeeSelected(employee.id!)"
+                          (change)="toggleEmployeeForCalculation(employee.id!)"
+                          class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer">
+                      </td>
+                      <td class="px-4 py-3 text-sm font-mono text-gray-900 dark:text-[#f5f5f7] whitespace-nowrap">
+                        {{ employee.employeeCode }}
+                      </td>
+                      <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-[#f5f5f7] whitespace-nowrap">
+                        {{ employee.fullNameTh || employee.fullNameEn }}
+                      </td>
+                      <td class="px-4 py-3 text-sm text-gray-600 dark:text-[#a1a1a6] whitespace-nowrap">
+                        {{ employee.branchName || '-' }}
+                      </td>
+                      <td class="px-4 py-3 text-sm text-center whitespace-nowrap">
+                        <span class="px-2.5 py-1 text-xs font-semibold rounded-full"
+                          [class.bg-blue-100]="employee.employmentType === 'monthly'"
+                          [class.text-blue-800]="employee.employmentType === 'monthly'"
+                          [class.dark:bg-blue-900/30]="employee.employmentType === 'monthly'"
+                          [class.dark:text-blue-300]="employee.employmentType === 'monthly'"
+                          [class.bg-green-100]="employee.employmentType === 'daily'"
+                          [class.text-green-800]="employee.employmentType === 'daily'"
+                          [class.dark:bg-green-900/30]="employee.employmentType === 'daily'"
+                          [class.dark:text-green-300]="employee.employmentType === 'daily'">
+                          {{ employee.employmentType === 'monthly' ? 'รายเดือน' : 'รายวัน' }}
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
             </div>
           }
         </div>
 
-        <div class="mt-2 text-sm text-gray-600">
-          เลือกแล้ว: <span class="font-medium text-gray-900">{{ calculationForm.get('employeeIds')?.value?.length || 0 }}</span> คน
+        <div class="mt-2 text-sm text-gray-600 dark:text-[#a1a1a6]">
+          เลือกแล้ว: <span class="font-medium text-gray-900 dark:text-[#f5f5f7]">{{ calculationForm.get('employeeIds')?.value?.length || 0 }}</span> คน
         </div>
       </div>
 
